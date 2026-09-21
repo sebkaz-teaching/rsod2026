@@ -13,5 +13,6 @@ build/
 /.quarto/
 **/*.quarto_ipynb
 
-/.quarto/
-**/*.quarto_ipynb
+# _server/ (rsod-quiz PHP backend): never commit local secrets or the DB
+_server/config.local.php
+_server/data/

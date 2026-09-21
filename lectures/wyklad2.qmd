@@ -373,3 +373,70 @@ Opanowanie ich pozwala budować i analizować nawet bardzo złożone systemy inf
 	•	Dokumentacja SQLite
 	•	Dokumentacja PostgreSQL
 	•	A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts
+
+---
+
+## ✅ Sprawdź się
+
+<div id="rsod-quiz"></div>
+<script src="../assets/js/quiz-engine.js"></script>
+<script>
+RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+  lecture: "wyklad2",
+  title: "Model relacyjny i podstawy SQL",
+  submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
+  questions: [
+    {
+      id: "q1", points: 1, diff: "bardzo łatwe",
+      text: "Co to jest DBMS?",
+      options: [
+        {v:"A", t:"Język zapytań do bazy danych"},
+        {v:"B", t:"Oprogramowanie pośredniczące między użytkownikiem a bazą danych"},
+        {v:"C", t:"Typ pliku CSV"},
+        {v:"D", t:"Model relacyjny danych"}
+      ]
+    },
+    {
+      id: "q2", points: 1, diff: "łatwe",
+      text: "Co jednoznacznie identyfikuje wiersz w tabeli i nie może przyjmować wartości NULL?",
+      options: [
+        {v:"A", t:"Klucz obcy"},
+        {v:"B", t:"Klucz kandydujący"},
+        {v:"C", t:"Klucz główny (PRIMARY KEY)"},
+        {v:"D", t:"Indeks"}
+      ]
+    },
+    {
+      id: "q3", points: 2, diff: "średnie",
+      text: "Jak realizuje się relację N:M między dwiema tabelami w modelu relacyjnym?",
+      options: [
+        {v:"A", t:"Przez dodanie kolumny NULL w jednej z tabel"},
+        {v:"B", t:"Przez tabelę pośredniczącą z kluczami obcymi do obu tabel"},
+        {v:"C", t:"Przez połączenie obu tabel w jedną"},
+        {v:"D", t:"Model relacyjny nie obsługuje N:M"}
+      ]
+    },
+    {
+      id: "q4", points: 2, diff: "trudne",
+      text: "Czym różni się INNER JOIN od LEFT JOIN?",
+      options: [
+        {v:"A", t:"INNER JOIN zwraca więcej wierszy niż LEFT JOIN"},
+        {v:"B", t:"LEFT JOIN zwraca tylko dopasowane rekordy, INNER JOIN wszystkie z lewej tabeli"},
+        {v:"C", t:"INNER JOIN zwraca tylko dopasowane rekordy, LEFT JOIN — wszystkie z lewej tabeli, nawet bez dopasowania"},
+        {v:"D", t:"To synonimy, nie ma różnicy"}
+      ]
+    },
+    {
+      id: "q5", points: 3, diff: "wnioskowanie",
+      text: "Tabela Ksiazki ma wiersze, w których autor_id jest NULL (książki bez przypisanego autora). Czy poniższe zapytanie je zwróci?",
+      code: "SELECT k.tytul, a.imie\nFROM Ksiazki k\nJOIN Autorzy a ON k.autor_id = a.autor_id;",
+      options: [
+        {v:"A", t:"Tak, pojawią się z pustym imie"},
+        {v:"B", t:"Nie — warunek ON k.autor_id = a.autor_id dla NULL nigdy nie jest TRUE, JOIN (czyli INNER JOIN) je pomija; trzeba LEFT JOIN"},
+        {v:"C", t:"Tak, bo JOIN domyślnie zachowuje się jak LEFT JOIN"},
+        {v:"D", t:"Nastąpi błąd składniowy"}
+      ]
+    }
+  ]
+});
+</script>
