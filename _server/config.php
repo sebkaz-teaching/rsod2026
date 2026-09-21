@@ -61,8 +61,55 @@ return [
             ],
         ],
 
-        // 'prba2026' => [
-        //     'wyklad2' => [ ... ],
-        // ],
+        'prba2026' => [
+            // Recap of wyklad 1, shown at the top of wyklad2.qmd
+            'wyklad2' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'B', 'points' => 2],
+                'q4' => ['correct' => 'C', 'points' => 2],
+                'q5' => ['correct' => 'C', 'points' => 3],
+            ],
+            // Recap of wyklad 2, shown at the top of wyklad3.qmd
+            'wyklad3' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'B', 'points' => 2],
+                'q4' => ['correct' => 'C', 'points' => 2],
+                'q5' => ['correct' => 'C', 'points' => 3],
+            ],
+            // Recap of wyklad 3, shown at the top of wyklad4.qmd
+            'wyklad4' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'B', 'points' => 2],
+                'q4' => ['correct' => 'C', 'points' => 2],
+                'q5' => ['correct' => 'B', 'points' => 3],
+            ],
+            // Recap of wyklad 4, shown at the top of wyklad5.qmd
+            'wyklad5' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'B', 'points' => 2],
+                'q4' => ['correct' => 'B', 'points' => 2],
+                'q5' => ['correct' => 'B', 'points' => 3],
+            ],
+            // Recap of wyklad 5, shown at the top of wyklad6.qmd
+            'wyklad6' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'C', 'points' => 2],
+                'q4' => ['correct' => 'B', 'points' => 2],
+                'q5' => ['correct' => 'C', 'points' => 3],
+            ],
+            // Recap of wyklad 6, shown at the top of wyklad7.qmd
+            'wyklad7' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'B', 'points' => 2],
+                'q4' => ['correct' => 'B', 'points' => 2],
+                'q5' => ['correct' => 'B', 'points' => 3],
+            ],
+        ],
     ],
 ];
