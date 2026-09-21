@@ -1,0 +1,359 @@
+---
+title: "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+---
+
+## 1️⃣ Transakcje i ich właściwości (ACID)
+
+### 🔹 Co to jest transakcja?
+
+Transakcja to logiczna jednostka pracy w bazie danych, składająca się z jednej lub wielu operacji (INSERT, UPDATE, DELETE, itp.), które powinny być wykonane całościowo.
+
+Transakcja to zbiór operacji, które albo wszystkie się powiodą, albo żadna – nie ma stanu pośredniego.
+
+Przykład:
+```sql
+BEGIN;
+UPDATE Konta SET Saldo = Saldo - 100 WHERE NrKonta = 101;
+UPDATE Konta SET Saldo = Saldo + 100 WHERE NrKonta = 202;
+COMMIT;
+```
+
+➡️ Jeśli obie aktualizacje się powiodą – zmiany zostaną zatwierdzone (COMMIT).
+
+➡️ Jeśli jedna z operacji się nie uda – baza może przywrócić stan sprzed transakcji (ROLLBACK).
+
+
+### 🔹 Operacje sterujące transakcją
+
+- BEGIN / START TRANSACTION – rozpoczęcie transakcji,
+- COMMIT – zatwierdzenie zmian,
+- ROLLBACK – cofnięcie zmian do stanu początkowego,
+- SAVEPOINT – ustawienie punktu częściowego cofnięcia.
+
+```sql
+BEGIN;
+INSERT INTO Studenci VALUES (1001, 'Anna', 'Nowak', 22);
+SAVEPOINT p1;
+UPDATE Studenci SET Wiek = 23 WHERE NrIndeksu = 1001;
+ROLLBACK TO SAVEPOINT p1;
+COMMIT;
+```
+➡️ Zmieniono wiek Anny, ale cofnięto tylko ostatnią operację (ROLLBACK TO p1).
+
+➡️ Wstawienie rekordu pozostało
+
+
+## 2️⃣ Współbieżność i problemy spójności
+
+### 🔹 Co to jest współbieżność?
+
+Współbieżność (ang. concurrency) to sytuacja, gdy wiele transakcji wykonuje się jednocześnie na tej samej bazie danych.
+
+Dzięki współbieżności baza może obsługiwać wielu użytkowników naraz, ale…
+
+➡️ może dojść do konfliktów, jeśli transakcje modyfikują te same dane.
+
+### 🔹 Przykład konfliktu współbieżności
+
+Transakcja 1
+```sql
+BEGIN;
+UPDATE Konto SET Saldo = Saldo - 500 WHERE ID = 1;
+```
+
+Transakcja 2
+```sql
+BEGIN;
+UPDATE Konto SET Saldo = Saldo - 300 WHERE ID = 1;
+
+```
+
+Obie modyfikują ten sam rekord.
+Jeśli system nie zapewni izolacji — saldo końcowe może być błędne.
+
+
+## 3️⃣ Poziomy izolacji transakcji
+
+Bazy danych zapewniają różne poziomy izolacji, które równoważą spójność danych i wydajność.
+
+### 🔹 Przykład w PostgreSQL:
+
+```sql
+BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+SELECT * FROM Zamowienia WHERE KlientID = 10;
+-- Inna transakcja modyfikuje dane
+SELECT * FROM Zamowienia WHERE KlientID = 10;
+COMMIT;
+
+```
+
+➡️ Na poziomie REPEATABLE READ oba SELECT-y zobaczą ten sam zestaw danych, nawet jeśli inna transakcja je zmieniła w międzyczasie.
+
+
+
+# 1️⃣3️⃣ Podzapytania (Subqueries) w SQL
+
+Podzapytanie to **zapytanie wewnątrz innego zapytania SQL**. 
+Służy do wykonywania bardziej złożonych operacji, kiedy jedno zapytanie potrzebuje wyników innego.  
+Możemy je traktować jak „mini-zapytania”, które dostarczają danych do zapytania głównego.
+
+Podzapytania mogą występować w różnych miejscach:
+
+- w klauzuli **WHERE** – do filtrowania danych,
+- w klauzuli **FROM** – jako tymczasowa tabela,
+- w klauzuli **SELECT** – do obliczeń w każdej krotce,
+- w konstrukcjach **EXISTS**, **IN**, **ALL**, **ANY** – do testowania warunków logicznych.
+
+
+## 🔹 1. Podzapytanie w klauzuli WHERE (jednowartościowe)
+
+To najczęstszy typ podzapytania.  
+Zapytanie główne wybiera dane na podstawie **wartości zwróconej przez podzapytanie**.
+
+### 🧩 Przykład:
+
+Znajdź książki napisane przez autora o nazwisku *Sienkiewicz*.
+
+```sql
+SELECT tytul, rok
+FROM Ksiazki
+WHERE autor_id = (
+    SELECT autor_id
+    FROM Autorzy
+    WHERE nazwisko = 'Sienkiewicz'
+);
+```
+
+### 📘 Opis działania:
+
+1.	Podzapytanie wewnętrzne szuka identyfikatora autora autor_id, którego nazwisko to Sienkiewicz.
+2.	Zapytanie główne wybiera z tabeli Ksiazki tylko te rekordy, w których autor_id jest równy wynikowi podzapytania.
+
+> 🔸 Takie podzapytanie musi zwrócić jedną wartość (scalar subquery) – w przeciwnym razie wystąpi błąd.
+
+## 🔹 2. Podzapytanie zwracające wiele wartości (operator IN)
+
+Jeśli podzapytanie zwraca więcej niż jeden rekord, używamy operatora IN.
+
+### 🧩 Przykład:
+
+Znajdź wszystkie książki autorów, których nazwiska zaczynają się na literę M.
+
+```sql
+SELECT tytul, rok
+FROM Ksiazki
+WHERE autor_id IN (
+    SELECT autor_id
+    FROM Autorzy
+    WHERE nazwisko LIKE 'M%'
+);
+```
+
+### 📘 Opis działania:
+
+- Podzapytanie wewnętrzne zwraca listę identyfikatorów autorów, np. [1, 5, 7].
+- Zapytanie główne wybiera książki, których autor_id znajduje się na tej liście.
+
+> 🔸 Operator IN można traktować jak porównanie z „wieloma wartościami jednocześnie”.
+
+
+## 🔹 3. Podzapytanie w klauzuli SELECT
+
+Podzapytanie może też zwracać pojedynczą wartość (skalarną) i być użyte w liście kolumn.
+
+### 🧩 Przykład:
+
+Wyświetl listę autorów wraz z liczbą ich książek.
+
+```sql
+SELECT
+    a.imie,
+    a.nazwisko,
+    (
+        SELECT COUNT(*)
+        FROM Ksiazki k
+        WHERE k.autor_id = a.autor_id
+    ) AS liczba_ksiazek
+FROM Autorzy a;
+
+```
+
+### 📘 Opis działania:
+
+- Dla każdego autora (a.autor_id) wykonuje się osobne podzapytanie,
+które liczy książki przypisane do tego autora.
+- Wynik jest dodawany jako nowa kolumna liczba_ksiazek.
+
+> 🔸 To tzw. podzapytanie skorelowane (correlated subquery), ponieważ odnosi się do kolumny z zapytania głównego.
+
+## 🔹 4. Podzapytanie w klauzuli FROM (tabela pochodna)
+
+Podzapytanie może tworzyć tymczasową tabelę w sekcji FROM.
+Takie rozwiązanie nazywa się derived table i pozwala na pracę z przetworzonymi danymi.
+
+### 🧩 Przykład:
+
+Policz średni rok wydania książek, a następnie wybierz te, które są starsze od średniej.
+
+```sql
+SELECT tytul, rok
+FROM (
+    SELECT *
+    FROM Ksiazki
+) AS K
+WHERE K.rok < (
+    SELECT AVG(rok) FROM Ksiazki
+);
+```
+
+### 📘 Opis działania:
+
+- Podzapytanie w FROM tworzy tymczasową tabelę K.
+- W klauzuli WHERE używamy innego podzapytania, które liczy średni rok wydania.
+- Wynik to książki starsze od średniej publikacji.
+
+## 🔹 5. Korelowane podzapytanie (correlated subquery)
+
+To podzapytanie, które odwołuje się do kolumn z zapytania głównego.
+Wykonuje się dla każdego wiersza osobno – dlatego bywa wolniejsze, ale bardzo elastyczne.
+
+### 🧩 Przykład:
+
+Znajdź najstarszą książkę każdego autora.
+
+```sql
+SELECT k.tytul, k.rok, a.nazwisko
+FROM Ksiazki k
+JOIN Autorzy a ON k.autor_id = a.autor_id
+WHERE k.rok = (
+    SELECT MIN(rok)
+    FROM Ksiazki
+    WHERE autor_id = k.autor_id
+);
+
+```
+
+### 📘 Opis działania:
+
+- Dla każdego wiersza w tabeli Ksiazki podzapytanie szuka najmniejszego roku dla tego samego autora.
+- Porównanie k.rok = (MIN(rok)) sprawia, że zostaje tylko najstarsza książka każdego autora.
+
+## 🔹 6. Podzapytanie z EXISTS
+
+Operator EXISTS sprawdza, czy podzapytanie zwróciło jakiekolwiek wiersze.
+Nie liczy ich — interesuje nas jedynie, czy wynik istnieje (TRUE/FALSE).
+
+### 🧩 Przykład:
+
+Znajdź autorów, którzy napisali przynajmniej jedną książkę.
+```sql
+SELECT imie, nazwisko
+FROM Autorzy a
+WHERE EXISTS (
+    SELECT 1
+    FROM Ksiazki k
+    WHERE k.autor_id = a.autor_id
+);
+
+```
+
+### 📘 Opis działania:
+
+- Dla każdego autora sprawdzane jest, czy istnieje co najmniej jeden wiersz w tabeli Ksiazki z tym samym autor_id.
+- Jeśli tak — warunek EXISTS zwraca TRUE, a autor pojawia się w wyniku.
+
+
+## 🔹 7. Porównania z ALL / ANY
+
+Operator ALL wymaga, aby warunek był spełniony dla wszystkich wyników podzapytania.
+Operator ANY (lub SOME) – aby warunek był spełniony dla przynajmniej jednego.
+
+### 🧩 Przykład:
+
+Znajdź książki wydane wcześniej niż wszystkie książki Prusa.
+```sql
+SELECT tytul, rok
+FROM Ksiazki
+WHERE rok < ALL (
+    SELECT rok
+    FROM Ksiazki
+    WHERE autor_id = (
+        SELECT autor_id FROM Autorzy WHERE nazwisko = 'Prus'
+    )
+);
+```
+
+### 📘 Opis działania:
+
+- Podzapytanie wewnętrzne zwraca lata publikacji książek Prusa.
+- Zapytanie główne wybiera tylko te książki, których rok jest mniejszy niż wszystkie te wartości.
+
+
+
+### 🧮 Podsumowanie typów podzapytań w SQL
+
+| **Typ podzapytania** | **Miejsce użycia** | **Zwracany wynik** | **Typowe operatory** | **Przykład zastosowania** |
+|------------------------|--------------------|--------------------|----------------------|----------------------------|
+| **Jednowartościowe (scalar)** | `WHERE`, `SELECT` | Pojedyncza wartość (1 rekord, 1 kolumna) | `=`, `<`, `>` | Autor o nazwisku „Sienkiewicz” |
+| **Wielowartościowe (multivalue)** | `WHERE` | Lista wartości (wiele rekordów) | `IN`, `NOT IN` | Autorzy, których nazwisko zaczyna się na „M” |
+| **Korelowane (correlated)** | `WHERE`, `SELECT` | Zmienny wynik dla każdego wiersza | `=`, `EXISTS` | Najstarsza książka danego autora |
+| **Zagnieżdżone w FROM (tabela pochodna)** | `FROM` | Zbiór wierszy (tymczasowa tabela) | — | Średni rok wydania książek i porównanie ze średnią |
+| **Z operatorem EXISTS / NOT EXISTS** | `WHERE` | Prawda / Fałsz (czy istnieje wynik) | `EXISTS`, `NOT EXISTS` | Autorzy, którzy napisali przynajmniej jedną książkę |
+| **Z operatorem ALL / ANY / SOME** | `WHERE` | Porównanie z wieloma wartościami | `ALL`, `ANY`, `SOME` | Książki starsze niż wszystkie książki Prusa |
+
+
+## 4️⃣ Widoki (Views)
+
+### 🔹 Czym jest widok?
+
+Widok (VIEW) to wirtualna tabela, która prezentuje dane pochodzące z jednej lub wielu tabel.
+Widok nie przechowuje danych samodzielnie – zawsze opiera się na zapytaniu SQL.
+
+Przykład:
+```sql
+CREATE VIEW StudenciPelnoletni AS
+SELECT Imie, Nazwisko, Wiek
+FROM Studenci
+WHERE Wiek >= 18;
+```
+➡️ Teraz można użyć widoku jak zwykłej tabeli:
+```sql
+SELECT * FROM StudenciPelnoletni;
+```
+### 🔹 Zalety widoków
+
+1.	Abstrakcja danych – użytkownik nie musi znać złożonej struktury tabel.
+2.	Bezpieczeństwo – można ograniczyć dostęp do wrażliwych kolumn.
+3.	Reużywalność – skomplikowane zapytania można zapisać raz jako widok.
+4.	Izolacja logiki – zmiana struktury tabeli nie wymaga zmiany zapytań użytkowników.
+
+
+### 🔹 Widoki z ograniczeniami (WITH CHECK OPTION)
+
+Jeśli chcesz, aby przez widok można było wstawiać dane tylko zgodne z jego definicją, użyj WITH CHECK OPTION.
+
+```sql
+CREATE VIEW StudenciMlodsi AS
+SELECT * FROM Studenci
+WHERE Wiek < 25
+WITH CHECK OPTION;
+```
+
+➡️ Próba wstawienia studenta starszego niż 25 lat zakończy się błędem:
+
+```sql
+INSERT INTO StudenciMlodsi VALUES (1234, 'Jan', 'Kowalski', 30);
+-- ERROR: nie spełnia warunku widoku
+```
+
+### 🔹 Widoki w praktyce – bezpieczeństwo danych
+
+Przykład ograniczenia dostępu do poufnych danych:
+
+```sql
+CREATE VIEW PracownicyPubliczni AS
+SELECT Imie, Nazwisko, Dzial
+FROM Pracownicy;
+```
+Użytkownicy mogą zobaczyć tylko dane działowe, ale nie np. pensje.
+

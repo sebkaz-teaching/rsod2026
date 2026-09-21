@@ -1,0 +1,155 @@
+---
+title: "Normalizacja i projektowanie baz danych"
+---
+
+
+## 🎯 Temat: Jak uniknąć błędów w projektowaniu?
+
+Celem wykładu jest pokazanie, jak unikać błędów podczas projektowania relacyjnych baz danych poprzez stosowanie zasad **normalizacji**, zrozumienie **zależności funkcjonalnych** oraz wykorzystanie **diagramów ERD** (Entity–Relationship Diagram).
+
+
+## 🧠 Cele wykładu
+
+- nauczenie zasad **normalizacji** relacyjnych baz danych,  
+- zrozumienie pojęcia **zależności funkcjonalnych**,  
+- wprowadzenie do **diagramów ERD** jako narzędzia modelowania danych.
+
+
+
+## 1. Problemy złego projektu bazy danych
+
+Złe zaprojektowanie struktury bazy danych prowadzi do wielu problemów:
+
+### 🔹 Redundancja danych
+
+To **powielanie tych samych informacji** w różnych miejscach bazy. 
+
+Przykład: jeśli w każdej tabeli z zamówieniami przechowujemy pełne dane klienta, to zmiana jego adresu wymaga aktualizacji wielu rekordów.
+
+### 🔹 Anomalie danych
+
+Błędy i niekonsekwencje wynikające z nadmiarowej struktury danych.
+
+- **Anomalia aktualizacji** – zmiana jednej informacji wymaga wielu modyfikacji.  
+  *Np. zmiana nazwiska wykładowcy w kilku wierszach tabeli.*
+
+- **Anomalia wstawiania** – brak możliwości dodania danych bez istnienia innych.  
+  *Np. nie można dodać nowego kursu, dopóki nie zapisze się na niego student.*
+
+- **Anomalia usuwania** – usunięcie rekordu powoduje utratę innych informacji.  
+  *Np. usunięcie ostatniego studenta z kursu powoduje utratę danych o samym kursie.*
+
+👉 **Wniosek:** błędy projektowe utrudniają utrzymanie spójności danych.
+
+---
+
+## 2. Zależności funkcjonalne
+
+### 🔹 Definicja
+
+Zależność funkcjonalna (ang. *functional dependency*) opisuje **relację między atrybutami** w tabeli.
+
+Mówimy, że atrybut *B* jest **funkcyjnie zależny** od atrybutu *A* (zapis:  
+**A → B**), jeśli każdej wartości *A* odpowiada dokładnie jedna wartość *B*.
+
+### 🔹 Przykłady
+- NrIndeksu → Imię, Nazwisko, Kierunek  
+  (każdy numer indeksu jednoznacznie identyfikuje studenta)
+- Kurs → Sala, Prowadzący  
+  (dany kurs odbywa się zawsze w tej samej sali, prowadzony przez tę samą osobę)
+
+### 🔹 Klucze
+- **Klucz główny (primary key)** – jednoznacznie identyfikuje wiersz tabeli.  
+- **Klucz kandydujący (candidate key)** – minimalny zestaw atrybutów, który może być kluczem.  
+- **Klucz obcy (foreign key)** – wskazuje na klucz główny w innej tabeli i tworzy powiązanie między tabelami.
+
+### 🔹 Typy zależności
+- **Zależność pełna** – atrybut zależy od całego klucza złożonego.  
+- **Zależność częściowa** – atrybut zależy tylko od części klucza.  
+- **Zależność przechodnia** – atrybut zależy pośrednio od klucza (A → B → C).
+
+---
+
+## 3. Formy normalne (1NF – 3NF, BCNF)
+
+Normalizacja to proces przekształcania tabel w taki sposób, aby **usunąć redundancję** i **zapobiec anomaliom**.
+
+### 🧩 Pierwsza postać normalna (1NF)
+
+- Wszystkie wartości w tabeli są **atomowe** (niepodzielne).  
+- Brak list, zbiorów lub kolumn powtarzających się.  
+  
+✅ *Każda kolumna ma jedną wartość w komórce.*
+
+**Przykład (naruszenie 1NF):**
+
+| Student  | NrIndeksu  | Kursy |
+|----------|------------|--------|
+| Jan Nowak | 12345 | Bazy danych, Programowanie |
+
+✅ *Poprawnie:*  
+Tworzymy osobną tabelę STUDENT_KURS, gdzie każdy kurs to osobny rekord.
+
+---
+
+### 🧩 Druga postać normalna (2NF)
+
+- Tabela jest w 1NF **i** wszystkie atrybuty niekluczowe zależą **w pełni** od całego klucza głównego.  
+- Dotyczy tabel z **kluczem złożonym**.
+
+**Przykład:**
+
+Tabela ZAPISY(StudentID, KursID, Sala)  
+→ atrybut *Sala* zależy tylko od *KursID*, a nie od całego klucza (StudentID, KursID).  
+Rozwiązanie: wydziel tabelę KURS(KursID, Sala).
+
+---
+
+### 🧩 Trzecia postać normalna (3NF)
+
+- Tabela jest w 2NF **i** nie zawiera zależności przechodnich.  
+- Każdy atrybut niekluczowy zależy bezpośrednio od klucza głównego.
+
+**Przykład:**
+
+NrIndeksu → Kierunek, Kierunek → Dziekan  
+➡️ *Dziekan* zależy pośrednio od *NrIndeksu*.  
+Rozwiązanie: osobna tabela KIERUNEK(Dziekan, Kierunek).
+
+
+## 4. Diagramy ERD (Entity–Relationship Diagram)
+
+Diagram ERD jest graficznym sposobem przedstawienia **modelu konceptualnego** bazy danych.
+
+### 🔹 Główne elementy ERD
+
+- **Encja (Entity)** – obiekt, o którym przechowujemy dane (np. Student, Kurs).  
+- **Atrybut (Attribute)** – właściwość encji (np. Imię, Nazwisko, NrIndeksu).  
+- **Relacja (Relationship)** – powiązanie między encjami (np. Student zapisuje się na Kurs).  
+- **Kardynalność (Cardinality)** – określa liczność relacji:  
+  - 1:1 (jeden do jednego)  
+  - 1:N (jeden do wielu)  
+  - N:M (wielu do wielu)  
+- **Identyfikator (Primary Key)** – atrybut jednoznacznie identyfikujący encję.
+
+### 🔹 Przykład:
+
+```sql
+STUDENT (NrIndeksu, Imię, Nazwisko, Kierunek)
+KURS (KursID, Nazwa, Prowadzący)
+ZAPIS (NrIndeksu, KursID, DataZapisu)
+
+```
+
+Relacja między STUDENT a KURS: N:M poprzez encję pośredniczącą ZAPIS.
+
+---
+
+## 5. Proces projektowania bazy danych
+
+Projektowanie bazy to proces etapowy:
+
+1. **Analiza wymagań** – zrozumienie, jakie dane są potrzebne i jakie operacje będą wykonywane.  
+2. **Model konceptualny** – opis danych w postaci ERD.  
+3. **Model logiczny** – zamiana modelu ERD na relacyjny schemat tabel.  
+4. **Model fizyczny** – implementacja w konkretnym systemie DBMS (np. PostgreSQL, MySQL).

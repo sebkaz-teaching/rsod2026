@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Informacje ogólne – Relacyjne Systemy Organizacji Danych</title>
+<title>Normalizacja i projektowanie baz danych – Relacyjne Systemy Organizacji Danych</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,25 +26,60 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-94ae530b1fc9924793afbc3bb7de9d3b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-94ae530b1fc9924793afbc3bb7de9d3b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -74,7 +109,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 </head>
 
 <body class="nav-sidebar docked quarto-light">
@@ -86,7 +121,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Informacje ogólne</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/wyklad1.html">Wykłady</a></li><li class="breadcrumb-item"><a href="../lectures/wyklad3.html">Normalizacja i projektowanie baz danych</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -101,7 +136,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Relacyjne Systemy Organizacji Danych</a> 
+      <a href="../">Relacyjne Systemy Organizacji Danych</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -113,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Informacje ogólne</span></a>
   </div>
 </li>
@@ -128,31 +163,31 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lectures/wyklad1.html" class="sidebar-item-text sidebar-link">
+  <a href="../lectures/wyklad1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Od pliku do bazy danych</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lectures/wyklad2.html" class="sidebar-item-text sidebar-link">
+  <a href="../lectures/wyklad2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Model relacyjny i podstawy SQL</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lectures/wyklad3.html" class="sidebar-item-text sidebar-link">
+  <a href="../lectures/wyklad3.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Normalizacja i projektowanie baz danych</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lectures/wyklad4.html" class="sidebar-item-text sidebar-link">
+  <a href="../lectures/wyklad4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Podstawy PL/SQL, optymalizacja zapytań i indeksy</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./lectures/wyklad5.html" class="sidebar-item-text sidebar-link">
+  <a href="../lectures/wyklad5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Mechanizmy zapewniania spójności danych i wprowadzenie do widoków</span></a>
   </div>
 </li>
@@ -168,17 +203,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title"><strong>Sections</strong></h2>
    
   <ul class="collapse">
-  <li><a href="#relacyjne-systemy-organizacji-danych" id="toc-relacyjne-systemy-organizacji-danych" class="nav-link active" data-scroll-target="#relacyjne-systemy-organizacji-danych">Relacyjne Systemy Organizacji Danych</a></li>
-  <li><a href="#kalendarz" id="toc-kalendarz" class="nav-link" data-scroll-target="#kalendarz">Kalendarz</a></li>
+  <li><a href="#temat-jak-uniknąć-błędów-w-projektowaniu" id="toc-temat-jak-uniknąć-błędów-w-projektowaniu" class="nav-link active" data-scroll-target="#temat-jak-uniknąć-błędów-w-projektowaniu">🎯 Temat: Jak uniknąć błędów w projektowaniu?</a></li>
+  <li><a href="#cele-wykładu" id="toc-cele-wykładu" class="nav-link" data-scroll-target="#cele-wykładu">🧠 Cele wykładu</a></li>
+  <li><a href="#problemy-złego-projektu-bazy-danych" id="toc-problemy-złego-projektu-bazy-danych" class="nav-link" data-scroll-target="#problemy-złego-projektu-bazy-danych">1. Problemy złego projektu bazy danych</a></li>
+  <li><a href="#zależności-funkcjonalne" id="toc-zależności-funkcjonalne" class="nav-link" data-scroll-target="#zależności-funkcjonalne">2. Zależności funkcjonalne</a></li>
+  <li><a href="#formy-normalne-1nf-3nf-bcnf" id="toc-formy-normalne-1nf-3nf-bcnf" class="nav-link" data-scroll-target="#formy-normalne-1nf-3nf-bcnf">3. Formy normalne (1NF – 3NF, BCNF)</a></li>
+  <li><a href="#diagramy-erd-entityrelationship-diagram" id="toc-diagramy-erd-entityrelationship-diagram" class="nav-link" data-scroll-target="#diagramy-erd-entityrelationship-diagram">4. Diagramy ERD (Entity–Relationship Diagram)</a></li>
+  <li><a href="#proces-projektowania-bazy-danych" id="toc-proces-projektowania-bazy-danych" class="nav-link" data-scroll-target="#proces-projektowania-bazy-danych">5. Proces projektowania bazy danych</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/wyklad1.html">Wykłady</a></li><li class="breadcrumb-item"><a href="../lectures/wyklad3.html">Normalizacja i projektowanie baz danych</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Informacje ogólne</h1>
+<h1 class="title">Normalizacja i projektowanie baz danych</h1>
 </div>
 
 
@@ -195,28 +235,187 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="relacyjne-systemy-organizacji-danych" class="level2">
-<h2 class="anchored" data-anchor-id="relacyjne-systemy-organizacji-danych">Relacyjne Systemy Organizacji Danych</h2>
-<p>Kod:</p>
-<p>Semestr: zimowy</p>
+<section id="temat-jak-uniknąć-błędów-w-projektowaniu" class="level2">
+<h2 class="anchored" data-anchor-id="temat-jak-uniknąć-błędów-w-projektowaniu">🎯 Temat: Jak uniknąć błędów w projektowaniu?</h2>
+<p>Celem wykładu jest pokazanie, jak unikać błędów podczas projektowania relacyjnych baz danych poprzez stosowanie zasad <strong>normalizacji</strong>, zrozumienie <strong>zależności funkcjonalnych</strong> oraz wykorzystanie <strong>diagramów ERD</strong> (Entity–Relationship Diagram).</p>
 </section>
-<section id="kalendarz" class="level2">
-<h2 class="anchored" data-anchor-id="kalendarz">Kalendarz</h2>
-<!-- TODO: uzupełnić na podstawie https://wel.wat.edu.pl/planyzajec/zima/dr__Zajac_Sebastian.htm -->
-<section id="wykład-dla-grup" class="level3">
-<h3 class="anchored" data-anchor-id="wykład-dla-grup">Wykład dla grup:</h3>
-<ol type="1">
-<li>TODO: dzień tygodnia, godzina, sala</li>
-</ol>
+<section id="cele-wykładu" class="level2">
+<h2 class="anchored" data-anchor-id="cele-wykładu">🧠 Cele wykładu</h2>
+<ul>
+<li>nauczenie zasad <strong>normalizacji</strong> relacyjnych baz danych,<br>
+</li>
+<li>zrozumienie pojęcia <strong>zależności funkcjonalnych</strong>,<br>
+</li>
+<li>wprowadzenie do <strong>diagramów ERD</strong> jako narzędzia modelowania danych.</li>
+</ul>
 </section>
-<section id="laboratorium-dla-grup" class="level3">
-<h3 class="anchored" data-anchor-id="laboratorium-dla-grup">Laboratorium dla grup:</h3>
+<section id="problemy-złego-projektu-bazy-danych" class="level2">
+<h2 class="anchored" data-anchor-id="problemy-złego-projektu-bazy-danych">1. Problemy złego projektu bazy danych</h2>
+<p>Złe zaprojektowanie struktury bazy danych prowadzi do wielu problemów:</p>
+<section id="redundancja-danych" class="level3">
+<h3 class="anchored" data-anchor-id="redundancja-danych">🔹 Redundancja danych</h3>
+<p>To <strong>powielanie tych samych informacji</strong> w różnych miejscach bazy.</p>
+<p>Przykład: jeśli w każdej tabeli z zamówieniami przechowujemy pełne dane klienta, to zmiana jego adresu wymaga aktualizacji wielu rekordów.</p>
+</section>
+<section id="anomalie-danych" class="level3">
+<h3 class="anchored" data-anchor-id="anomalie-danych">🔹 Anomalie danych</h3>
+<p>Błędy i niekonsekwencje wynikające z nadmiarowej struktury danych.</p>
+<ul>
+<li><p><strong>Anomalia aktualizacji</strong> – zmiana jednej informacji wymaga wielu modyfikacji.<br>
+<em>Np. zmiana nazwiska wykładowcy w kilku wierszach tabeli.</em></p></li>
+<li><p><strong>Anomalia wstawiania</strong> – brak możliwości dodania danych bez istnienia innych.<br>
+<em>Np. nie można dodać nowego kursu, dopóki nie zapisze się na niego student.</em></p></li>
+<li><p><strong>Anomalia usuwania</strong> – usunięcie rekordu powoduje utratę innych informacji.<br>
+<em>Np. usunięcie ostatniego studenta z kursu powoduje utratę danych o samym kursie.</em></p></li>
+</ul>
+<p>👉 <strong>Wniosek:</strong> błędy projektowe utrudniają utrzymanie spójności danych.</p>
+<hr>
+</section>
+</section>
+<section id="zależności-funkcjonalne" class="level2">
+<h2 class="anchored" data-anchor-id="zależności-funkcjonalne">2. Zależności funkcjonalne</h2>
+<section id="definicja" class="level3">
+<h3 class="anchored" data-anchor-id="definicja">🔹 Definicja</h3>
+<p>Zależność funkcjonalna (ang. <em>functional dependency</em>) opisuje <strong>relację między atrybutami</strong> w tabeli.</p>
+<p>Mówimy, że atrybut <em>B</em> jest <strong>funkcyjnie zależny</strong> od atrybutu <em>A</em> (zapis:<br>
+<strong>A → B</strong>), jeśli każdej wartości <em>A</em> odpowiada dokładnie jedna wartość <em>B</em>.</p>
+</section>
+<section id="przykłady" class="level3">
+<h3 class="anchored" data-anchor-id="przykłady">🔹 Przykłady</h3>
+<ul>
+<li>NrIndeksu → Imię, Nazwisko, Kierunek<br>
+(każdy numer indeksu jednoznacznie identyfikuje studenta)</li>
+<li>Kurs → Sala, Prowadzący<br>
+(dany kurs odbywa się zawsze w tej samej sali, prowadzony przez tę samą osobę)</li>
+</ul>
+</section>
+<section id="klucze" class="level3">
+<h3 class="anchored" data-anchor-id="klucze">🔹 Klucze</h3>
+<ul>
+<li><strong>Klucz główny (primary key)</strong> – jednoznacznie identyfikuje wiersz tabeli.<br>
+</li>
+<li><strong>Klucz kandydujący (candidate key)</strong> – minimalny zestaw atrybutów, który może być kluczem.<br>
+</li>
+<li><strong>Klucz obcy (foreign key)</strong> – wskazuje na klucz główny w innej tabeli i tworzy powiązanie między tabelami.</li>
+</ul>
+</section>
+<section id="typy-zależności" class="level3">
+<h3 class="anchored" data-anchor-id="typy-zależności">🔹 Typy zależności</h3>
+<ul>
+<li><strong>Zależność pełna</strong> – atrybut zależy od całego klucza złożonego.<br>
+</li>
+<li><strong>Zależność częściowa</strong> – atrybut zależy tylko od części klucza.<br>
+</li>
+<li><strong>Zależność przechodnia</strong> – atrybut zależy pośrednio od klucza (A → B → C).</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="formy-normalne-1nf-3nf-bcnf" class="level2">
+<h2 class="anchored" data-anchor-id="formy-normalne-1nf-3nf-bcnf">3. Formy normalne (1NF – 3NF, BCNF)</h2>
+<p>Normalizacja to proces przekształcania tabel w taki sposób, aby <strong>usunąć redundancję</strong> i <strong>zapobiec anomaliom</strong>.</p>
+<section id="pierwsza-postać-normalna-1nf" class="level3">
+<h3 class="anchored" data-anchor-id="pierwsza-postać-normalna-1nf">🧩 Pierwsza postać normalna (1NF)</h3>
+<ul>
+<li>Wszystkie wartości w tabeli są <strong>atomowe</strong> (niepodzielne).<br>
+</li>
+<li>Brak list, zbiorów lub kolumn powtarzających się.</li>
+</ul>
+<p>✅ <em>Każda kolumna ma jedną wartość w komórce.</em></p>
+<p><strong>Przykład (naruszenie 1NF):</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Student</th>
+<th>NrIndeksu</th>
+<th>Kursy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Jan Nowak</td>
+<td>12345</td>
+<td>Bazy danych, Programowanie</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <em>Poprawnie:</em><br>
+Tworzymy osobną tabelę STUDENT_KURS, gdzie każdy kurs to osobny rekord.</p>
+<hr>
+</section>
+<section id="druga-postać-normalna-2nf" class="level3">
+<h3 class="anchored" data-anchor-id="druga-postać-normalna-2nf">🧩 Druga postać normalna (2NF)</h3>
+<ul>
+<li>Tabela jest w 1NF <strong>i</strong> wszystkie atrybuty niekluczowe zależą <strong>w pełni</strong> od całego klucza głównego.<br>
+</li>
+<li>Dotyczy tabel z <strong>kluczem złożonym</strong>.</li>
+</ul>
+<p><strong>Przykład:</strong></p>
+<p>Tabela ZAPISY(StudentID, KursID, Sala)<br>
+→ atrybut <em>Sala</em> zależy tylko od <em>KursID</em>, a nie od całego klucza (StudentID, KursID).<br>
+Rozwiązanie: wydziel tabelę KURS(KursID, Sala).</p>
+<hr>
+</section>
+<section id="trzecia-postać-normalna-3nf" class="level3">
+<h3 class="anchored" data-anchor-id="trzecia-postać-normalna-3nf">🧩 Trzecia postać normalna (3NF)</h3>
+<ul>
+<li>Tabela jest w 2NF <strong>i</strong> nie zawiera zależności przechodnich.<br>
+</li>
+<li>Każdy atrybut niekluczowy zależy bezpośrednio od klucza głównego.</li>
+</ul>
+<p><strong>Przykład:</strong></p>
+<p>NrIndeksu → Kierunek, Kierunek → Dziekan<br>
+➡️ <em>Dziekan</em> zależy pośrednio od <em>NrIndeksu</em>.<br>
+Rozwiązanie: osobna tabela KIERUNEK(Dziekan, Kierunek).</p>
+</section>
+</section>
+<section id="diagramy-erd-entityrelationship-diagram" class="level2">
+<h2 class="anchored" data-anchor-id="diagramy-erd-entityrelationship-diagram">4. Diagramy ERD (Entity–Relationship Diagram)</h2>
+<p>Diagram ERD jest graficznym sposobem przedstawienia <strong>modelu konceptualnego</strong> bazy danych.</p>
+<section id="główne-elementy-erd" class="level3">
+<h3 class="anchored" data-anchor-id="główne-elementy-erd">🔹 Główne elementy ERD</h3>
+<ul>
+<li><strong>Encja (Entity)</strong> – obiekt, o którym przechowujemy dane (np. Student, Kurs).<br>
+</li>
+<li><strong>Atrybut (Attribute)</strong> – właściwość encji (np. Imię, Nazwisko, NrIndeksu).<br>
+</li>
+<li><strong>Relacja (Relationship)</strong> – powiązanie między encjami (np. Student zapisuje się na Kurs).<br>
+</li>
+<li><strong>Kardynalność (Cardinality)</strong> – określa liczność relacji:
+<ul>
+<li>1:1 (jeden do jednego)<br>
+</li>
+<li>1:N (jeden do wielu)<br>
+</li>
+<li>N:M (wielu do wielu)<br>
+</li>
+</ul></li>
+<li><strong>Identyfikator (Primary Key)</strong> – atrybut jednoznacznie identyfikujący encję.</li>
+</ul>
+</section>
+<section id="przykład" class="level3">
+<h3 class="anchored" data-anchor-id="przykład">🔹 Przykład:</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>STUDENT (NrIndeksu, Imię, Nazwisko, Kierunek)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>KURS (KursID, Nazwa, Prowadzący)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ZAPIS (NrIndeksu, KursID, DataZapisu)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Relacja między STUDENT a KURS: N:M poprzez encję pośredniczącą ZAPIS.</p>
+<hr>
+</section>
+</section>
+<section id="proces-projektowania-bazy-danych" class="level2">
+<h2 class="anchored" data-anchor-id="proces-projektowania-bazy-danych">5. Proces projektowania bazy danych</h2>
+<p>Projektowanie bazy to proces etapowy:</p>
 <ol type="1">
-<li>TODO: dzień tygodnia, godzina, sala</li>
+<li><strong>Analiza wymagań</strong> – zrozumienie, jakie dane są potrzebne i jakie operacje będą wykonywane.<br>
+</li>
+<li><strong>Model konceptualny</strong> – opis danych w postaci ERD.<br>
+</li>
+<li><strong>Model logiczny</strong> – zamiana modelu ERD na relacyjny schemat tabel.<br>
+</li>
+<li><strong>Model fizyczny</strong> – implementacja w konkretnym systemie DBMS (np. PostgreSQL, MySQL).</li>
 </ol>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

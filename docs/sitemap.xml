@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://sebkaz-teaching.github.io/rsod2026/lectures/wyklad5.html</loc>
+    <lastmod>2026-09-21T09:29:45.570Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sebkaz-teaching.github.io/rsod2026/lectures/wyklad1.html</loc>
+    <lastmod>2026-09-21T09:28:39.046Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sebkaz-teaching.github.io/rsod2026/lectures/wyklad2.html</loc>
+    <lastmod>2026-09-21T09:29:37.578Z</lastmod>
+  </url>
+  <url>
     <loc>https://sebkaz-teaching.github.io/rsod2026/index.html</loc>
     <lastmod>2026-09-21T07:54:51.546Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sebkaz-teaching.github.io/rsod2026/lectures/wyklad3.html</loc>
+    <lastmod>2026-09-21T09:29:45.566Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sebkaz-teaching.github.io/rsod2026/lectures/wyklad4.html</loc>
+    <lastmod>2026-09-21T09:33:02.146Z</lastmod>
   </url>
 </urlset>

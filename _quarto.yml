@@ -10,6 +10,13 @@ website:
     style: "docked"
     contents:
       - index.qmd
+      - section: "Wykłady"
+        contents:
+          - lectures/wyklad1.qmd
+          - lectures/wyklad2.qmd
+          - lectures/wyklad3.qmd
+          - lectures/wyklad4.qmd
+          - lectures/wyklad5.qmd
   page-footer: "Copyright 2026, Sebastian Zając"
 format:
   html:

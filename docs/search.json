@@ -1,5 +1,423 @@
 [
   {
+    "objectID": "lectures/wyklad5.html",
+    "href": "lectures/wyklad5.html",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "",
+    "text": "Transakcja to logiczna jednostka pracy w bazie danych, składająca się z jednej lub wielu operacji (INSERT, UPDATE, DELETE, itp.), które powinny być wykonane całościowo.\nTransakcja to zbiór operacji, które albo wszystkie się powiodą, albo żadna – nie ma stanu pośredniego.\nPrzykład:\nBEGIN;\nUPDATE Konta SET Saldo = Saldo - 100 WHERE NrKonta = 101;\nUPDATE Konta SET Saldo = Saldo + 100 WHERE NrKonta = 202;\nCOMMIT;\n➡️ Jeśli obie aktualizacje się powiodą – zmiany zostaną zatwierdzone (COMMIT).\n➡️ Jeśli jedna z operacji się nie uda – baza może przywrócić stan sprzed transakcji (ROLLBACK).\n\n\n\n\nBEGIN / START TRANSACTION – rozpoczęcie transakcji,\nCOMMIT – zatwierdzenie zmian,\nROLLBACK – cofnięcie zmian do stanu początkowego,\nSAVEPOINT – ustawienie punktu częściowego cofnięcia.\n\nBEGIN;\nINSERT INTO Studenci VALUES (1001, 'Anna', 'Nowak', 22);\nSAVEPOINT p1;\nUPDATE Studenci SET Wiek = 23 WHERE NrIndeksu = 1001;\nROLLBACK TO SAVEPOINT p1;\nCOMMIT;\n➡️ Zmieniono wiek Anny, ale cofnięto tylko ostatnią operację (ROLLBACK TO p1).\n➡️ Wstawienie rekordu pozostało",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#transakcje-i-ich-właściwości-acid",
+    "href": "lectures/wyklad5.html#transakcje-i-ich-właściwości-acid",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "",
+    "text": "Transakcja to logiczna jednostka pracy w bazie danych, składająca się z jednej lub wielu operacji (INSERT, UPDATE, DELETE, itp.), które powinny być wykonane całościowo.\nTransakcja to zbiór operacji, które albo wszystkie się powiodą, albo żadna – nie ma stanu pośredniego.\nPrzykład:\nBEGIN;\nUPDATE Konta SET Saldo = Saldo - 100 WHERE NrKonta = 101;\nUPDATE Konta SET Saldo = Saldo + 100 WHERE NrKonta = 202;\nCOMMIT;\n➡️ Jeśli obie aktualizacje się powiodą – zmiany zostaną zatwierdzone (COMMIT).\n➡️ Jeśli jedna z operacji się nie uda – baza może przywrócić stan sprzed transakcji (ROLLBACK).\n\n\n\n\nBEGIN / START TRANSACTION – rozpoczęcie transakcji,\nCOMMIT – zatwierdzenie zmian,\nROLLBACK – cofnięcie zmian do stanu początkowego,\nSAVEPOINT – ustawienie punktu częściowego cofnięcia.\n\nBEGIN;\nINSERT INTO Studenci VALUES (1001, 'Anna', 'Nowak', 22);\nSAVEPOINT p1;\nUPDATE Studenci SET Wiek = 23 WHERE NrIndeksu = 1001;\nROLLBACK TO SAVEPOINT p1;\nCOMMIT;\n➡️ Zmieniono wiek Anny, ale cofnięto tylko ostatnią operację (ROLLBACK TO p1).\n➡️ Wstawienie rekordu pozostało",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#współbieżność-i-problemy-spójności",
+    "href": "lectures/wyklad5.html#współbieżność-i-problemy-spójności",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "2️⃣ Współbieżność i problemy spójności",
+    "text": "2️⃣ Współbieżność i problemy spójności\n\n🔹 Co to jest współbieżność?\nWspółbieżność (ang. concurrency) to sytuacja, gdy wiele transakcji wykonuje się jednocześnie na tej samej bazie danych.\nDzięki współbieżności baza może obsługiwać wielu użytkowników naraz, ale…\n➡️ może dojść do konfliktów, jeśli transakcje modyfikują te same dane.\n\n\n🔹 Przykład konfliktu współbieżności\nTransakcja 1\nBEGIN;\nUPDATE Konto SET Saldo = Saldo - 500 WHERE ID = 1;\nTransakcja 2\nBEGIN;\nUPDATE Konto SET Saldo = Saldo - 300 WHERE ID = 1;\nObie modyfikują ten sam rekord. Jeśli system nie zapewni izolacji — saldo końcowe może być błędne.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#poziomy-izolacji-transakcji",
+    "href": "lectures/wyklad5.html#poziomy-izolacji-transakcji",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "3️⃣ Poziomy izolacji transakcji",
+    "text": "3️⃣ Poziomy izolacji transakcji\nBazy danych zapewniają różne poziomy izolacji, które równoważą spójność danych i wydajność.\n\n🔹 Przykład w PostgreSQL:\nBEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;\nSELECT * FROM Zamowienia WHERE KlientID = 10;\n-- Inna transakcja modyfikuje dane\nSELECT * FROM Zamowienia WHERE KlientID = 10;\nCOMMIT;\n➡️ Na poziomie REPEATABLE READ oba SELECT-y zobaczą ten sam zestaw danych, nawet jeśli inna transakcja je zmieniła w międzyczasie.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#podzapytanie-w-klauzuli-where-jednowartościowe",
+    "href": "lectures/wyklad5.html#podzapytanie-w-klauzuli-where-jednowartościowe",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 1. Podzapytanie w klauzuli WHERE (jednowartościowe)",
+    "text": "🔹 1. Podzapytanie w klauzuli WHERE (jednowartościowe)\nTo najczęstszy typ podzapytania.\nZapytanie główne wybiera dane na podstawie wartości zwróconej przez podzapytanie.\n\n🧩 Przykład:\nZnajdź książki napisane przez autora o nazwisku Sienkiewicz.\nSELECT tytul, rok\nFROM Ksiazki\nWHERE autor_id = (\n    SELECT autor_id\n    FROM Autorzy\n    WHERE nazwisko = 'Sienkiewicz'\n);\n\n\n📘 Opis działania:\n\nPodzapytanie wewnętrzne szuka identyfikatora autora autor_id, którego nazwisko to Sienkiewicz.\nZapytanie główne wybiera z tabeli Ksiazki tylko te rekordy, w których autor_id jest równy wynikowi podzapytania.\n\n\n🔸 Takie podzapytanie musi zwrócić jedną wartość (scalar subquery) – w przeciwnym razie wystąpi błąd.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#podzapytanie-zwracające-wiele-wartości-operator-in",
+    "href": "lectures/wyklad5.html#podzapytanie-zwracające-wiele-wartości-operator-in",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 2. Podzapytanie zwracające wiele wartości (operator IN)",
+    "text": "🔹 2. Podzapytanie zwracające wiele wartości (operator IN)\nJeśli podzapytanie zwraca więcej niż jeden rekord, używamy operatora IN.\n\n🧩 Przykład:\nZnajdź wszystkie książki autorów, których nazwiska zaczynają się na literę M.\nSELECT tytul, rok\nFROM Ksiazki\nWHERE autor_id IN (\n    SELECT autor_id\n    FROM Autorzy\n    WHERE nazwisko LIKE 'M%'\n);\n\n\n📘 Opis działania:\n\nPodzapytanie wewnętrzne zwraca listę identyfikatorów autorów, np. [1, 5, 7].\nZapytanie główne wybiera książki, których autor_id znajduje się na tej liście.\n\n\n🔸 Operator IN można traktować jak porównanie z „wieloma wartościami jednocześnie”.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#podzapytanie-w-klauzuli-select",
+    "href": "lectures/wyklad5.html#podzapytanie-w-klauzuli-select",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 3. Podzapytanie w klauzuli SELECT",
+    "text": "🔹 3. Podzapytanie w klauzuli SELECT\nPodzapytanie może też zwracać pojedynczą wartość (skalarną) i być użyte w liście kolumn.\n\n🧩 Przykład:\nWyświetl listę autorów wraz z liczbą ich książek.\nSELECT\n    a.imie,\n    a.nazwisko,\n    (\n        SELECT COUNT(*)\n        FROM Ksiazki k\n        WHERE k.autor_id = a.autor_id\n    ) AS liczba_ksiazek\nFROM Autorzy a;\n\n\n📘 Opis działania:\n\nDla każdego autora (a.autor_id) wykonuje się osobne podzapytanie, które liczy książki przypisane do tego autora.\nWynik jest dodawany jako nowa kolumna liczba_ksiazek.\n\n\n🔸 To tzw. podzapytanie skorelowane (correlated subquery), ponieważ odnosi się do kolumny z zapytania głównego.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#podzapytanie-w-klauzuli-from-tabela-pochodna",
+    "href": "lectures/wyklad5.html#podzapytanie-w-klauzuli-from-tabela-pochodna",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 4. Podzapytanie w klauzuli FROM (tabela pochodna)",
+    "text": "🔹 4. Podzapytanie w klauzuli FROM (tabela pochodna)\nPodzapytanie może tworzyć tymczasową tabelę w sekcji FROM. Takie rozwiązanie nazywa się derived table i pozwala na pracę z przetworzonymi danymi.\n\n🧩 Przykład:\nPolicz średni rok wydania książek, a następnie wybierz te, które są starsze od średniej.\nSELECT tytul, rok\nFROM (\n    SELECT *\n    FROM Ksiazki\n) AS K\nWHERE K.rok &lt; (\n    SELECT AVG(rok) FROM Ksiazki\n);\n\n\n📘 Opis działania:\n\nPodzapytanie w FROM tworzy tymczasową tabelę K.\nW klauzuli WHERE używamy innego podzapytania, które liczy średni rok wydania.\nWynik to książki starsze od średniej publikacji.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#korelowane-podzapytanie-correlated-subquery",
+    "href": "lectures/wyklad5.html#korelowane-podzapytanie-correlated-subquery",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 5. Korelowane podzapytanie (correlated subquery)",
+    "text": "🔹 5. Korelowane podzapytanie (correlated subquery)\nTo podzapytanie, które odwołuje się do kolumn z zapytania głównego. Wykonuje się dla każdego wiersza osobno – dlatego bywa wolniejsze, ale bardzo elastyczne.\n\n🧩 Przykład:\nZnajdź najstarszą książkę każdego autora.\nSELECT k.tytul, k.rok, a.nazwisko\nFROM Ksiazki k\nJOIN Autorzy a ON k.autor_id = a.autor_id\nWHERE k.rok = (\n    SELECT MIN(rok)\n    FROM Ksiazki\n    WHERE autor_id = k.autor_id\n);\n\n\n📘 Opis działania:\n\nDla każdego wiersza w tabeli Ksiazki podzapytanie szuka najmniejszego roku dla tego samego autora.\nPorównanie k.rok = (MIN(rok)) sprawia, że zostaje tylko najstarsza książka każdego autora.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#podzapytanie-z-exists",
+    "href": "lectures/wyklad5.html#podzapytanie-z-exists",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 6. Podzapytanie z EXISTS",
+    "text": "🔹 6. Podzapytanie z EXISTS\nOperator EXISTS sprawdza, czy podzapytanie zwróciło jakiekolwiek wiersze. Nie liczy ich — interesuje nas jedynie, czy wynik istnieje (TRUE/FALSE).\n\n🧩 Przykład:\nZnajdź autorów, którzy napisali przynajmniej jedną książkę.\nSELECT imie, nazwisko\nFROM Autorzy a\nWHERE EXISTS (\n    SELECT 1\n    FROM Ksiazki k\n    WHERE k.autor_id = a.autor_id\n);\n\n\n📘 Opis działania:\n\nDla każdego autora sprawdzane jest, czy istnieje co najmniej jeden wiersz w tabeli Ksiazki z tym samym autor_id.\nJeśli tak — warunek EXISTS zwraca TRUE, a autor pojawia się w wyniku.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#porównania-z-all-any",
+    "href": "lectures/wyklad5.html#porównania-z-all-any",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "🔹 7. Porównania z ALL / ANY",
+    "text": "🔹 7. Porównania z ALL / ANY\nOperator ALL wymaga, aby warunek był spełniony dla wszystkich wyników podzapytania. Operator ANY (lub SOME) – aby warunek był spełniony dla przynajmniej jednego.\n\n🧩 Przykład:\nZnajdź książki wydane wcześniej niż wszystkie książki Prusa.\nSELECT tytul, rok\nFROM Ksiazki\nWHERE rok &lt; ALL (\n    SELECT rok\n    FROM Ksiazki\n    WHERE autor_id = (\n        SELECT autor_id FROM Autorzy WHERE nazwisko = 'Prus'\n    )\n);\n\n\n📘 Opis działania:\n\nPodzapytanie wewnętrzne zwraca lata publikacji książek Prusa.\nZapytanie główne wybiera tylko te książki, których rok jest mniejszy niż wszystkie te wartości.\n\n\n\n🧮 Podsumowanie typów podzapytań w SQL\n\n\n\n\n\n\n\n\n\n\nTyp podzapytania\nMiejsce użycia\nZwracany wynik\nTypowe operatory\nPrzykład zastosowania\n\n\n\n\nJednowartościowe (scalar)\nWHERE, SELECT\nPojedyncza wartość (1 rekord, 1 kolumna)\n=, &lt;, &gt;\nAutor o nazwisku „Sienkiewicz”\n\n\nWielowartościowe (multivalue)\nWHERE\nLista wartości (wiele rekordów)\nIN, NOT IN\nAutorzy, których nazwisko zaczyna się na „M”\n\n\nKorelowane (correlated)\nWHERE, SELECT\nZmienny wynik dla każdego wiersza\n=, EXISTS\nNajstarsza książka danego autora\n\n\nZagnieżdżone w FROM (tabela pochodna)\nFROM\nZbiór wierszy (tymczasowa tabela)\n—\nŚredni rok wydania książek i porównanie ze średnią\n\n\nZ operatorem EXISTS / NOT EXISTS\nWHERE\nPrawda / Fałsz (czy istnieje wynik)\nEXISTS, NOT EXISTS\nAutorzy, którzy napisali przynajmniej jedną książkę\n\n\nZ operatorem ALL / ANY / SOME\nWHERE\nPorównanie z wieloma wartościami\nALL, ANY, SOME\nKsiążki starsze niż wszystkie książki Prusa",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#widoki-views",
+    "href": "lectures/wyklad5.html#widoki-views",
+    "title": "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków",
+    "section": "4️⃣ Widoki (Views)",
+    "text": "4️⃣ Widoki (Views)\n\n🔹 Czym jest widok?\nWidok (VIEW) to wirtualna tabela, która prezentuje dane pochodzące z jednej lub wielu tabel. Widok nie przechowuje danych samodzielnie – zawsze opiera się na zapytaniu SQL.\nPrzykład:\nCREATE VIEW StudenciPelnoletni AS\nSELECT Imie, Nazwisko, Wiek\nFROM Studenci\nWHERE Wiek &gt;= 18;\n➡️ Teraz można użyć widoku jak zwykłej tabeli:\nSELECT * FROM StudenciPelnoletni;\n\n\n🔹 Zalety widoków\n\nAbstrakcja danych – użytkownik nie musi znać złożonej struktury tabel.\nBezpieczeństwo – można ograniczyć dostęp do wrażliwych kolumn.\nReużywalność – skomplikowane zapytania można zapisać raz jako widok.\nIzolacja logiki – zmiana struktury tabeli nie wymaga zmiany zapytań użytkowników.\n\n\n\n🔹 Widoki z ograniczeniami (WITH CHECK OPTION)\nJeśli chcesz, aby przez widok można było wstawiać dane tylko zgodne z jego definicją, użyj WITH CHECK OPTION.\nCREATE VIEW StudenciMlodsi AS\nSELECT * FROM Studenci\nWHERE Wiek &lt; 25\nWITH CHECK OPTION;\n➡️ Próba wstawienia studenta starszego niż 25 lat zakończy się błędem:\nINSERT INTO StudenciMlodsi VALUES (1234, 'Jan', 'Kowalski', 30);\n-- ERROR: nie spełnia warunku widoku\n\n\n🔹 Widoki w praktyce – bezpieczeństwo danych\nPrzykład ograniczenia dostępu do poufnych danych:\nCREATE VIEW PracownicyPubliczni AS\nSELECT Imie, Nazwisko, Dzial\nFROM Pracownicy;\nUżytkownicy mogą zobaczyć tylko dane działowe, ale nie np. pensje.",
+    "crumbs": [
+      "Wykłady",
+      "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html",
+    "href": "lectures/wyklad1.html",
+    "title": "Od pliku do bazy danych",
+    "section": "",
+    "text": "W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.\nNa końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#cele-wykładu",
+    "href": "lectures/wyklad1.html#cele-wykładu",
+    "title": "Od pliku do bazy danych",
+    "section": "",
+    "text": "W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.\nNa końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#dane-informacja-baza-danych",
+    "href": "lectures/wyklad1.html#dane-informacja-baza-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "1️⃣ Dane, informacja, baza danych",
+    "text": "1️⃣ Dane, informacja, baza danych\n\n🔹 Dane\nNa początku warto zadać pytanie: czym właściwie są dane?\nDane to surowe fakty – liczby, teksty, symbole – które same w sobie nie mają znaczenia. Przykładowo, zapis:\n12345\nJan Kowalski\nBazy danych\nnie mówi nam jeszcze nic o tym, co oznacza. Może to być numer indeksu, nazwisko klienta albo temat zajęć.\n\n (np. piramida DIKW – Data, Information, Knowledge, Wisdom)\n\n\n\n🔹 Informacja\nInformacja powstaje wtedy, gdy dane zostaną zinterpretowane w określonym kontekście. Jeśli wiemy, że „12345” to numer indeksu studenta Jana Kowalskiego, który zapisał się na kurs Bazy danych, mamy już informację.\nW życiu codziennym często mamy mnóstwo danych (np. z mediów społecznościowych), ale niewiele z nich przekłada się na prawdziwą wiedzę.\n⸻\n\n\n🔹 Baza danych\nBaza danych (ang. database) to uporządkowany zbiór danych, przechowywany w sposób umożliwiający szybkie wyszukiwanie, aktualizację i kontrolę spójności. Można ją porównać do dobrze zorganizowanego archiwum, w którym każdy dokument ma swoje miejsce i jest łatwy do odnalezienia.\nWizualizacja bazy danych – zestaw powiązanych tabel w relacyjnym modelu danych.\n\n\n🔹 System zarządzania bazą danych (DBMS)\nSystem zarządzania bazą danych, czyli DBMS (Database Management System), to oprogramowanie pośredniczące między użytkownikiem a bazą danych.\nTo ono umożliwia:\n\ndefiniowanie struktur (np. tabel),\nprzechowywanie i wyszukiwanie danych,\nzapewnienie bezpieczeństwa i spójności,\nobsługę wielu użytkowników jednocześnie.\n\nDo najpopularniejszych DBMS należą: PostgreSQL, Oracle, MySQL, SQLite, MS SQL Server.",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#rodzaje-danych",
+    "href": "lectures/wyklad1.html#rodzaje-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "2️⃣ Rodzaje danych",
+    "text": "2️⃣ Rodzaje danych\nW informatyce dane występują w różnych formach. Można je podzielić według stopnia strukturyzacji.\n\n🔸 Dane ustrukturyzowane\nTo dane zapisane w tabelach – każda kolumna ma nazwę i określony typ. Znajdujemy je np. w arkuszach kalkulacyjnych lub relacyjnych bazach danych.\n\n\n\nID\nImię\nNazwisko\nMiasto\n\n\n\n\n1\nAnna\nNowak\nKraków\n\n\n2\nJan\nKowalski\nWarszawa\n\n\n\n\n\n\n🔸 Dane półustrukturyzowane\nMają pewną strukturę, ale nie tak sztywną jak dane tabelaryczne. Przykładem mogą być pliki JSON lub XML:\n{\n  \"imie\": \"Anna\",\n  \"miasto\": \"Kraków\",\n  \"zainteresowania\": [\"sport\", \"muzyka\"]\n}\n\n\n\n🔸 Dane nieustrukturyzowane\nTo dane, które nie mają jasno zdefiniowanej struktury — na przykład obrazy, pliki audio, wideo czy dokumenty PDF. Ich analiza wymaga specjalistycznych narzędzi (np. rozpoznawania obrazów lub przetwarzania języka naturalnego).\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#pliki-jako-forma-przechowywania-danych",
+    "href": "lectures/wyklad1.html#pliki-jako-forma-przechowywania-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "3️⃣ Pliki jako forma przechowywania danych",
+    "text": "3️⃣ Pliki jako forma przechowywania danych\nZanim powstały systemy baz danych, dane przechowywano w prostych plikach tekstowych.\nNa przykład w pliku CSV:\nID,Imię,Nazwisko,Miasto\n1,Anna,Nowak,Kraków\n2,Jan,Kowalski,Warszawa\n3,Piotr,Wiśniewski,Poznań\nChoć taki plik można łatwo otworzyć w Excelu, ma on liczne ograniczenia:\n\nbrak kontroli poprawności danych,\nbrak powiązań między plikami,\nbrak współbieżności przy edycji.\n\n\n## 4️⃣ Problemy pracy z plikami\nSystem plikowy działa poprawnie przy niewielkiej liczbie danych i prostych zastosowaniach. Wraz ze wzrostem ilości informacji i liczbą użytkowników pojawiają się jednak poważne ograniczenia, które utrudniają bezpieczne i efektywne zarządzanie danymi.\n\n⚠️ Typowe problemy\n\n\n\n\n\n\n\nProblem\nOpis\n\n\n\n\n🔁 Redundancja\nTe same dane pojawiają się w wielu miejscach (np. adres klienta powielony w każdym zamówieniu).\n\n\n⚠️ Niespójność\nRóżne wersje tej samej informacji w różnych plikach (np. inny numer telefonu u klienta w dwóch plikach).\n\n\n⛔ Brak współbieżności\nTrudności przy jednoczesnej edycji — ryzyko nadpisania zmian.\n\n\n❌ Brak kontroli dostępu\nBrak ról, uprawnień i mechanizmów audytu.\n\n\n🧩 Słaba integracja\nDane rozproszone po różnych formatach i miejscach, trudne do połączenia.\n\n\n\n\n Schemat: system plików z wieloma niespójnymi plikami vs. centralna baza danych\n\n\nPrzykład (plikowy):\nklienci.txt:\n1;Anna Nowak;Kraków\n2;Jan Kowalski;Warszawa\nzamowienia.txt:\n10;Laptop;1\n11;Monitor;2\n12;Kabel HDMI;1\nDziała to, ale jeśli zmienimy ID klienta lub nazwę produktu, powstaje trudność w utrzymaniu spójności.",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#od-pliku-do-bazy-danych",
+    "href": "lectures/wyklad1.html#od-pliku-do-bazy-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "5️⃣ Od pliku do bazy danych",
+    "text": "5️⃣ Od pliku do bazy danych\nAby rozwiązać problemy związane z plikami płaskimi, wprowadzono koncepcję systemu zarządzania bazą danych (DBMS). Główne idee to:\n\ncentralne repozytorium danych,\nkontrolowany dostęp i uprawnienia,\nmechanizmy zapewniające spójność i integralność,\nobsługa współbieżności i transakcji,\nmożliwość zapytań (np. SQL) zamiast pełnego skanowania plików.\n\n\nPorównanie: plik CSV vs baza danych (SQL)\n\n\n\n\n\n\n\n\nCecha\nPlik CSV\nBaza danych (SQL)\n\n\n\n\nStruktura danych\nTekstowa, dowolna\nŚciśle zdefiniowana (kolumny, typy)\n\n\nSpójność danych\nNie\nZapewniana przez DBMS\n\n\nWspółbieżność\nBrak\nObsługiwana\n\n\nWyszukiwanie\nPełne skanowanie\nZapytania, indeksy (mechanizm poznamy dokładnie na wykładzie 4)\n\n\nBezpieczeństwo\nBrak\nKontrola dostępu\n\n\n\n\n Diagram: „Od pliku do bazy” – ewolucja sposobu przechowywania danych",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#różnice-w-przetwarzaniu-danych-przykład-porównawczy",
+    "href": "lectures/wyklad1.html#różnice-w-przetwarzaniu-danych-przykład-porównawczy",
+    "title": "Od pliku do bazy danych",
+    "section": "6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy",
+    "text": "6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy\nRodzaj przetwarzania zależy od typu danych:\n\n\n\n\n\n\n\n\n\nTyp danych\nPrzykład\nNarzędzie przetwarzania\nTypowe operacje\n\n\n\n\nTabelaryczne\nsprzedaż, klienci\nSQL, Excel\nsortowanie, sumowanie, filtracja\n\n\nTekstowe\nartykuły, maile\nwyszukiwanie pełnotekstowe\nindeksowanie, analiza słów\n\n\nObraz\nzdjęcia, wideo\nbiblioteki CV, AI\nklasyfikacja, rozpoznawanie obiektów\n\n\nDźwięk\nnagrania, mowa\nDSP, ML\nfiltracja, transkrypcja\n\n\n\n\nPytanie do dyskusji: Dlaczego dane tabelaryczne łatwo ująć w relacje, a dźwięk czy obraz — już nie?\n\n\n Ilustracja: porównanie przetwarzania danych tabelarycznych i multimedialnych",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#architektura-systemów-baz-danych-ansisparc",
+    "href": "lectures/wyklad1.html#architektura-systemów-baz-danych-ansisparc",
+    "title": "Od pliku do bazy danych",
+    "section": "7️⃣ Architektura systemów baz danych (ANSI/SPARC)",
+    "text": "7️⃣ Architektura systemów baz danych (ANSI/SPARC)\nAby osiągnąć niezależność danych od aplikacji, wprowadzono model trójwarstwowy ANSI/SPARC:\n\n\n\n\n\n\n\n\nPoziom\nOpis\nPrzykład\n\n\n\n\nZewnętrzny\nWidok użytkownika — sposób, w jaki konkretni użytkownicy widzą dane\nWidok „Studenci z kierunku Informatyka”\n\n\nLogiczny (koncepcyjny)\nGlobalna struktura danych — tabele, relacje, ograniczenia\nSchemat bazy uczelni\n\n\nWewnętrzny (fizyczny)\nFizyczne przechowywanie danych na dysku\nIndeksy, pliki danych, metody dostępu\n\n\n\n\n Schemat trójwarstwowy ANSI/SPARC: użytkownicy ↔︎ DBMS ↔︎ fizyczne dane\n\nKorzyści:\n\nniezależność logiczna danych (zmiana schematu logicznego nie musi wymagać zmian w aplikacjach),\nniezależność fizyczna danych (zmiana sposobu przechowywania nie wpływa na logikę aplikacji).",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#typy-baz-danych",
+    "href": "lectures/wyklad1.html#typy-baz-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "8️⃣ Typy baz danych",
+    "text": "8️⃣ Typy baz danych\nW zależności od modelu danych i sposobu ich użycia wyróżniamy kilka typów baz:\n\n\n\n\n\n\n\n\nTyp bazy\nOpis\nPrzykład\n\n\n\n\nHierarchiczna\nDane ułożone w strukturę drzewa\nIMS (IBM)\n\n\nSieciowa\nRekordy połączone są w złożone grafy\nIDMS\n\n\nRelacyjna\nDane w tabelach, związki przez klucze\nPostgreSQL, MySQL\n\n\nObiektowa\nDane jako obiekty z metodami\nObjectDB\n\n\nDokumentowa (NoSQL)\nDane w formacie dokumentów (JSON)\nMongoDB, CouchDB\n\n\nGrafowa\nModele relacji jako węzły i krawędzie\nNeo4j\n\n\n\n\n Grafika: schematy — drzewo, sieć, tabela, graf\n\nUwaga: Model relacyjny jest najpowszechniej stosowany z uwagi na prostotę i solidne podstawy teoretyczne (algebra relacji).",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#historia-i-ewolucja-baz-danych",
+    "href": "lectures/wyklad1.html#historia-i-ewolucja-baz-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "9️⃣ Historia i ewolucja baz danych",
+    "text": "9️⃣ Historia i ewolucja baz danych\nKrótka oś czasu najważniejszych etapów:\n\nSystemy plikowe (lata 50–60) — proste pliki, brak centralnej kontroli.\nPierwsze DBMS (lata 60–70) — centralizacja, lepsze zarządzanie danymi.\nModele hierarchiczne i sieciowe — stosowane w dużych organizacjach, lecz trudne w utrzymaniu.\nModel relacyjny (E. F. Codd, 1970) — rewolucja: tabele, relacje i algebra relacji.\nSQL i standaryzacja — język pozwalający na zdefiniowanie i manipulację danymi.\nNoSQL i chmura (XXI wiek) — elastyczność, skalowalność, nowe modele danych.\n\n\n Oś czasu: rozwój baz danych od plików do NoSQL i rozwiązań chmurowych",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#zalety-podejścia-relacyjnego",
+    "href": "lectures/wyklad1.html#zalety-podejścia-relacyjnego",
+    "title": "Od pliku do bazy danych",
+    "section": "🔟 Zalety podejścia relacyjnego",
+    "text": "🔟 Zalety podejścia relacyjnego\n\nredukcja redundancji poprzez normalizację i klucze,\nłatwość łączenia danych (JOINy),\nkontrola integralności (ograniczenia, klucze obce),\nmechanizmy bezpieczeństwa i wielodostępności,\nprzewidywalność i zgodność z formalnymi podstawami matematycznymi.\n\n\n Schemat relacji między tabelami: STUDENT → ZAPISY → KURS",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#wprowadzenie-do-języka-sql",
+    "href": "lectures/wyklad1.html#wprowadzenie-do-języka-sql",
+    "title": "Od pliku do bazy danych",
+    "section": "1️⃣1️⃣ Wprowadzenie do języka SQL",
+    "text": "1️⃣1️⃣ Wprowadzenie do języka SQL\nSQL (Structured Query Language) to standardowy język do komunikacji z relacyjnymi bazami danych. Dzieli się na kilka części:\n\nDDL (Data Definition Language) — definiowanie struktur (CREATE, ALTER, DROP),\nDML (Data Manipulation Language) — operacje na danych (SELECT, INSERT, UPDATE, DELETE),\nDCL (Data Control Language) — kontrola dostępu (GRANT, REVOKE),\nTCL (Transaction Control Language) — kontrola transakcji (COMMIT, ROLLBACK).",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html",
+    "href": "lectures/wyklad2.html",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "Dane przechowywane są w tabelach (ang. relations).\nKażdy wiersz (row) to rekord / krotka.\nKażda kolumna (column) to atrybut.\nDziedzina (domain) to zbiór dopuszczalnych wartości w danej kolumnie.\n\nPrzykład relacji STUDENT:\n\n\n\nid\nimie\nnazwisko\nrok_urodzenia\n\n\n\n\n1\nAdam\nMickiewicz\n1798\n\n\n2\nHenryk\nSienkiewicz\n1846\n\n\n\n\n Schemat relacji: tabela STUDENT z kolumnami i wierszami\n\n\n\n\n\n\n\n\n\nUnikalnie identyfikuje każdy wiersz w tabeli.\nNie może przyjmować wartości NULL.\nW tabeli może występować tylko jeden klucz główny.\n\n\n\n\n\nTworzy powiązanie z inną tabelą.\nWymusza spójność danych – nie można wprowadzić wartości, której nie ma w tabeli nadrzędnej.\n\n\n\n\n\nUNIQUE – zapewnia unikalność wartości w kolumnie.\nNOT NULL – kolumna nie może przyjmować wartości pustych.\nCHECK – sprawdza warunek logiczny (np. wiek &gt; 0).\n\n\n\n\n\n\n\n\n\nRodzaj klucza\nOpis\nPrzykład\n\n\n\n\nKlucz główny (Primary Key)\njednoznacznie identyfikuje rekord\nNrIndeksu w STUDENT\n\n\nKlucz obcy (Foreign Key)\ntworzy powiązanie między tabelami\nKursID w tabeli ZAPIS\n\n\nKlucz kandydujący (Candidate Key)\natrybut, który może być kluczem głównym\nPESEL, NrIndeksu\n\n\nKlucz złożony (Composite Key)\nskłada się z kilku kolumn\n(StudentID, KursID)\n\n\n\n\n Schemat: klucz główny i klucz obcy między tabelami STUDENT, KURS, ZAPIS\n\n\n\n\nKlucz złożony (composite key) deklarujemy jako PRIMARY KEY obejmujący kilka kolumn naraz — żadna z nich osobno nie musi być unikalna, unikalna musi być dopiero ich kombinacja.\nCREATE TABLE Zapis (\n    NrIndeksu   INTEGER,\n    KursID      INTEGER,\n    DataZapisu  DATE,\n    PRIMARY KEY (NrIndeksu, KursID),\n    FOREIGN KEY (NrIndeksu) REFERENCES Student(NrIndeksu),\n    FOREIGN KEY (KursID) REFERENCES Kurs(KursID)\n);\nTen sam student (NrIndeksu) może wystąpić wielokrotnie (na różnych kursach), ten sam kurs (KursID) też — ale para (NrIndeksu, KursID) musi być unikalna: nie da się zapisać dwa razy na ten sam kurs.\n\n\n\nSam FOREIGN KEY mówi tylko, że wartość musi istnieć w tabeli nadrzędnej. Nie mówi, co zrobić, gdy ktoś spróbuje usunąć wiersz nadrzędny, do którego wciąż odwołują się wiersze podrzędne. To ustala klauzula ON DELETE:\n\n\n\n\n\n\n\nOpcja\nZachowanie przy DELETE rodzica\n\n\n\n\n(brak, domyślnie) NO ACTION / RESTRICT\nBaza odrzuca usunięcie, dopóki istnieją powiązane wiersze podrzędne.\n\n\nON DELETE CASCADE\nUsunięcie rodzica automatycznie usuwa powiązane wiersze podrzędne.\n\n\nON DELETE SET NULL\nPowiązane wiersze podrzędne dostają NULL w kolumnie klucza obcego.\n\n\n\nFOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) ON DELETE CASCADE\nJeśli klauzuli ON DELETE nie podamy w ogóle (tak jak w przykładzie Ksiazki poniżej), obowiązuje domyślne zachowanie restrykcyjne — baza nie pozwoli usunąć autora, który ma jeszcze książki.\n\n\n\n\n\nW relacyjnych bazach danych tabele łączy się przez klucze obce. Na tej podstawie tworzą się różne typy relacji:\n\n\n\n\n\n\n\n\nTyp relacji\nOpis\nPrzykład\n\n\n\n\n1:1 (jeden do jednego)\njeden rekord w tabeli A odpowiada dokładnie jednemu rekordowi w tabeli B\nStudent ↔︎️ Legitymacja\n\n\n1:N (jeden do wielu)\njeden rekord w tabeli A może być powiązany z wieloma rekordami w tabeli B\nWykładowca ↔︎️ Kursy\n\n\nN:M (wielu do wielu)\nwiele rekordów w A może być powiązanych z wieloma w B\nStudenci ↔︎️ Kursy\n\n\n\nRelację N:M realizuje się przez tabelę pośredniczącą, np.:\nSTUDENT (NrIndeksu, Imie, Nazwisko)\nKURS (KursID, Nazwa)\nZAPIS (NrIndeksu, KursID, DataZapisu)\nTabela ZAPIS zawiera klucze obce wskazujące na STUDENT i KURS.\n\n## 4️⃣ Wprowadzenie do języka SQL (Structured Query Language)\nSQL to standardowy język do definiowania, modyfikowania i pobierania danych w relacyjnych bazach danych. Przypomnienie z wykładu 1 — SQL dzieli się na cztery podjęzyki: DDL, DML, DCL, TCL. Dziś skupiamy się głównie na DDL i DML.\n\n\n\nPolecenie CREATE TABLE służy do utworzenia nowej tabeli w bazie danych. W tym poleceniu definiujemy nazwy kolumn, ich typy danych oraz różne więzy integralności, takie jak PRIMARY KEY, NOT NULL czy FOREIGN KEY.\nKażda tabela powinna mieć kolumnę, która jednoznacznie identyfikuje każdy wiersz – to właśnie klucz główny.\nW przykładzie poniżej tworzymy dwie tabele: Autorzy i Ksiazki, które będą ze sobą powiązane relacją klucz główny–klucz obcy.\n\n\n\n\nCREATE TABLE Autorzy (\n    autor_id     INTEGER PRIMARY KEY,         -- w SQLite automatycznie AUTOINCREMENT\n    imie         TEXT NOT NULL,\n    nazwisko     TEXT NOT NULL\n);\n\nCREATE TABLE Ksiazki (\n    ksiazka_id   SERIAL PRIMARY KEY,          -- PostgreSQL: automatyczna numeracja\n    tytul        VARCHAR(200) NOT NULL,\n    rok          INTEGER CHECK (rok &gt; 0),\n    autor_id     INTEGER,\n    FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)\n);\n\nW SQLite INTEGER PRIMARY KEY = alias dla AUTOINCREMENT.\nW PostgreSQL używamy SERIAL lub GENERATED ALWAYS AS IDENTITY.\n\nW powyższym przykładzie:\n\ntabela Autorzy przechowuje dane o autorach,\ntabela Ksiazki przechowuje dane o książkach,\nkolumna autor_id w Ksiazki to klucz obcy, który wskazuje autora.\n\nDzięki więzom integralności baza pilnuje, by każda książka miała poprawnego autora. Takie powiązania są podstawą modelu relacyjnego.\n\n⚠️ Zwróć uwagę: FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) powyżej nie ma klauzuli ON DELETE — patrz sekcja 2 wyżej, co to oznacza w praktyce.\n\n\n\n\n\n\n\nALTER TABLE Ksiazki ADD COLUMN gatunek TEXT;\n\n\n\nALTER TABLE STUDENT ALTER COLUMN Kierunek TYPE VARCHAR(100);\n\n\n\nALTER TABLE STUDENT DROP COLUMN Email;\n\n\n\nDROP TABLE Ksiazki;\n\n\n\n\nPolecenie INSERT INTO służy do wprowadzania nowych wierszy (rekordów) do tabeli. Wartości muszą być zgodne z typami kolumn oraz ograniczeniami (NOT NULL, CHECK, itp.).\nMożna dodać jeden lub wiele rekordów w jednym poleceniu.\nINSERT INTO Autorzy (imie, nazwisko) VALUES\n('Adam', 'Mickiewicz'),\n('Henryk', 'Sienkiewicz'),\n('Bolesław', 'Prus');\n\nINSERT INTO Ksiazki (tytul, rok, autor_id) VALUES\n('Pan Tadeusz', 1834, 1),\n('Quo Vadis', 1896, 2),\n('Lalka', 1890, 3);\nKażdy rekord reprezentuje jedną pozycję w tabeli. Polecenie INSERT wymaga podania wartości w tej samej kolejności, w jakiej wymieniono kolumny. Jeśli nie podamy jakiejś kolumny, a ma ona zdefiniowaną wartość domyślną (DEFAULT), baza wstawi ją automatycznie.\n\n\n\n\n\nSELECT * FROM Autorzy;\nPowyższe zapytanie zwraca wszystkich autorów z tabeli Autorzy.\n\n\n\n\nSELECT imie, nazwisko FROM Autorzy;\n\n\n\nSELECT imie AS \"Imię\", nazwisko AS \"Nazwisko\" FROM Autorzy;\nAlias (AS) pozwala nadać kolumnom bardziej opisowe nazwy w wynikach.\n\n\n\n\nSELECT * FROM Ksiazki\nWHERE rok &gt; 1850;\n\n\n\n= , &lt;&gt;, &lt;, &gt;, &lt;=, &gt;=\nLIKE ‘Q%’ → zaczyna się na Q\nIN (…)\nBETWEEN 1800 AND 1900\nIS NULL, IS NOT NULL\n\nPrzykład wyszukiwania książek zawierających literę “a” w tytule:\nSELECT tytul FROM Ksiazki WHERE tytul LIKE '%a%';\n\n\n\nNULL oznacza „wartość nieznana”, więc nie porównujemy go operatorem =.\n-- ŹLE — nigdy nie zwróci wierszy, nawet jeśli autor_id jest puste:\nSELECT * FROM Ksiazki WHERE autor_id = NULL;\n\n-- DOBRZE:\nSELECT * FROM Ksiazki WHERE autor_id IS NULL;\nautor_id = NULL nie daje ani TRUE, ani FALSE, tylko UNKNOWN — a WHERE odrzuca wiersze, dla których warunek nie jest jednoznacznie TRUE. Ten sam problem dotyczy &lt;&gt; — autor_id &lt;&gt; NULL też nic nie zwróci, trzeba użyć IS NOT NULL.\n\n\n\n\nSELECT * FROM Ksiazki ORDER BY rok DESC;\nSortowanie wyników można wykonać według dowolnej kolumny. Domyślnie ORDER BY sortuje rosnąco (ASC). Dla kilku kolumn można napisać np.:\nSELECT * FROM Ksiazki ORDER BY autor_id ASC, rok DESC;\n\n\n\nSELECT autor_id, COUNT(*) AS liczba_ksiazek\nFROM Ksiazki\nGROUP BY autor_id\nHAVING COUNT(*) &gt; 1;\nKlauzula GROUP BY grupuje dane, a HAVING filtruje grupy po agregacji. Funkcje agregujące: COUNT(), SUM(), AVG(), MIN(), MAX().\n\n\nWHERE filtruje pojedyncze wiersze, zanim zostaną zgrupowane — w momencie jego działania COUNT(*) jeszcze nie istnieje. HAVING filtruje gotowe grupy, już po agregacji. Dlatego WHERE COUNT(*) &gt; 1 jest błędem składniowym, a HAVING COUNT(*) &gt; 1 — poprawne.\nSilnik SQL wykonuje zapytanie w innej kolejności logicznej, niż je piszemy:\nFROM  →  WHERE  →  GROUP BY  →  HAVING  →  SELECT  →  ORDER BY\nCzyli mimo że SELECT piszemy na początku, jest wykonywany niemal na końcu — dlatego alias nadany w SELECT ... AS liczba_ksiazek nie jest jeszcze dostępny w WHERE, ale można go użyć w ORDER BY.\n\n\n\n\n\n\nSELECT k.tytul, a.imie, a.nazwisko\nFROM Ksiazki k\nJOIN Autorzy a ON k.autor_id = a.autor_id;\n\n\n\nSELECT k.tytul, a.imie, a.nazwisko\nFROM Ksiazki k\nLEFT JOIN Autorzy a ON k.autor_id = a.autor_id;\nINNER JOIN zwraca tylko dopasowane rekordy, LEFT JOIN – wszystkie rekordy z lewej tabeli (nawet bez dopasowania).\n\n\n\n\n\n\nUPDATE Ksiazki SET rok = 1836 WHERE tytul = 'Pan Tadeusz';\n\n\n\nDELETE FROM Ksiazki WHERE rok &lt; 1850;\nZawsze należy używać WHERE, aby nie zmodyfikować lub nie usunąć wszystkich rekordów.\n\n\n\n\nSQL jest językiem deklaratywnym – opisujemy co chcemy uzyskać, a nie jak to zrobić. Dzięki temu użytkownik nie musi znać szczegółów działania bazy danych.\nPoznane dziś polecenia:\nCREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY\nto fundament pracy z bazami danych. Opanowanie ich pozwala budować i analizować nawet bardzo złożone systemy informacyjne.\n⸻\n\n\n\n•   Dokumentacja SQLite\n•   Dokumentacja PostgreSQL\n•   A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#model-relacyjny-przypomnienie-i-pojęcia-podstawowe",
+    "href": "lectures/wyklad2.html#model-relacyjny-przypomnienie-i-pojęcia-podstawowe",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "Dane przechowywane są w tabelach (ang. relations).\nKażdy wiersz (row) to rekord / krotka.\nKażda kolumna (column) to atrybut.\nDziedzina (domain) to zbiór dopuszczalnych wartości w danej kolumnie.\n\nPrzykład relacji STUDENT:\n\n\n\nid\nimie\nnazwisko\nrok_urodzenia\n\n\n\n\n1\nAdam\nMickiewicz\n1798\n\n\n2\nHenryk\nSienkiewicz\n1846\n\n\n\n\n Schemat relacji: tabela STUDENT z kolumnami i wierszami",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#klucze-i-więzy-integralności",
+    "href": "lectures/wyklad2.html#klucze-i-więzy-integralności",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "Unikalnie identyfikuje każdy wiersz w tabeli.\nNie może przyjmować wartości NULL.\nW tabeli może występować tylko jeden klucz główny.\n\n\n\n\n\nTworzy powiązanie z inną tabelą.\nWymusza spójność danych – nie można wprowadzić wartości, której nie ma w tabeli nadrzędnej.\n\n\n\n\n\nUNIQUE – zapewnia unikalność wartości w kolumnie.\nNOT NULL – kolumna nie może przyjmować wartości pustych.\nCHECK – sprawdza warunek logiczny (np. wiek &gt; 0).\n\n\n\n\n\n\n\n\n\nRodzaj klucza\nOpis\nPrzykład\n\n\n\n\nKlucz główny (Primary Key)\njednoznacznie identyfikuje rekord\nNrIndeksu w STUDENT\n\n\nKlucz obcy (Foreign Key)\ntworzy powiązanie między tabelami\nKursID w tabeli ZAPIS\n\n\nKlucz kandydujący (Candidate Key)\natrybut, który może być kluczem głównym\nPESEL, NrIndeksu\n\n\nKlucz złożony (Composite Key)\nskłada się z kilku kolumn\n(StudentID, KursID)\n\n\n\n\n Schemat: klucz główny i klucz obcy między tabelami STUDENT, KURS, ZAPIS\n\n\n\n\nKlucz złożony (composite key) deklarujemy jako PRIMARY KEY obejmujący kilka kolumn naraz — żadna z nich osobno nie musi być unikalna, unikalna musi być dopiero ich kombinacja.\nCREATE TABLE Zapis (\n    NrIndeksu   INTEGER,\n    KursID      INTEGER,\n    DataZapisu  DATE,\n    PRIMARY KEY (NrIndeksu, KursID),\n    FOREIGN KEY (NrIndeksu) REFERENCES Student(NrIndeksu),\n    FOREIGN KEY (KursID) REFERENCES Kurs(KursID)\n);\nTen sam student (NrIndeksu) może wystąpić wielokrotnie (na różnych kursach), ten sam kurs (KursID) też — ale para (NrIndeksu, KursID) musi być unikalna: nie da się zapisać dwa razy na ten sam kurs.\n\n\n\nSam FOREIGN KEY mówi tylko, że wartość musi istnieć w tabeli nadrzędnej. Nie mówi, co zrobić, gdy ktoś spróbuje usunąć wiersz nadrzędny, do którego wciąż odwołują się wiersze podrzędne. To ustala klauzula ON DELETE:\n\n\n\n\n\n\n\nOpcja\nZachowanie przy DELETE rodzica\n\n\n\n\n(brak, domyślnie) NO ACTION / RESTRICT\nBaza odrzuca usunięcie, dopóki istnieją powiązane wiersze podrzędne.\n\n\nON DELETE CASCADE\nUsunięcie rodzica automatycznie usuwa powiązane wiersze podrzędne.\n\n\nON DELETE SET NULL\nPowiązane wiersze podrzędne dostają NULL w kolumnie klucza obcego.\n\n\n\nFOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) ON DELETE CASCADE\nJeśli klauzuli ON DELETE nie podamy w ogóle (tak jak w przykładzie Ksiazki poniżej), obowiązuje domyślne zachowanie restrykcyjne — baza nie pozwoli usunąć autora, który ma jeszcze książki.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#rodzaje-związków-relacji-między-tabelami",
+    "href": "lectures/wyklad2.html#rodzaje-związków-relacji-między-tabelami",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "W relacyjnych bazach danych tabele łączy się przez klucze obce. Na tej podstawie tworzą się różne typy relacji:\n\n\n\n\n\n\n\n\nTyp relacji\nOpis\nPrzykład\n\n\n\n\n1:1 (jeden do jednego)\njeden rekord w tabeli A odpowiada dokładnie jednemu rekordowi w tabeli B\nStudent ↔︎️ Legitymacja\n\n\n1:N (jeden do wielu)\njeden rekord w tabeli A może być powiązany z wieloma rekordami w tabeli B\nWykładowca ↔︎️ Kursy\n\n\nN:M (wielu do wielu)\nwiele rekordów w A może być powiązanych z wieloma w B\nStudenci ↔︎️ Kursy\n\n\n\nRelację N:M realizuje się przez tabelę pośredniczącą, np.:\nSTUDENT (NrIndeksu, Imie, Nazwisko)\nKURS (KursID, Nazwa)\nZAPIS (NrIndeksu, KursID, DataZapisu)\nTabela ZAPIS zawiera klucze obce wskazujące na STUDENT i KURS.\n\n## 4️⃣ Wprowadzenie do języka SQL (Structured Query Language)\nSQL to standardowy język do definiowania, modyfikowania i pobierania danych w relacyjnych bazach danych. Przypomnienie z wykładu 1 — SQL dzieli się na cztery podjęzyki: DDL, DML, DCL, TCL. Dziś skupiamy się głównie na DDL i DML.\n\n\n\nPolecenie CREATE TABLE służy do utworzenia nowej tabeli w bazie danych. W tym poleceniu definiujemy nazwy kolumn, ich typy danych oraz różne więzy integralności, takie jak PRIMARY KEY, NOT NULL czy FOREIGN KEY.\nKażda tabela powinna mieć kolumnę, która jednoznacznie identyfikuje każdy wiersz – to właśnie klucz główny.\nW przykładzie poniżej tworzymy dwie tabele: Autorzy i Ksiazki, które będą ze sobą powiązane relacją klucz główny–klucz obcy.\n\n\n\n\nCREATE TABLE Autorzy (\n    autor_id     INTEGER PRIMARY KEY,         -- w SQLite automatycznie AUTOINCREMENT\n    imie         TEXT NOT NULL,\n    nazwisko     TEXT NOT NULL\n);\n\nCREATE TABLE Ksiazki (\n    ksiazka_id   SERIAL PRIMARY KEY,          -- PostgreSQL: automatyczna numeracja\n    tytul        VARCHAR(200) NOT NULL,\n    rok          INTEGER CHECK (rok &gt; 0),\n    autor_id     INTEGER,\n    FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)\n);\n\nW SQLite INTEGER PRIMARY KEY = alias dla AUTOINCREMENT.\nW PostgreSQL używamy SERIAL lub GENERATED ALWAYS AS IDENTITY.\n\nW powyższym przykładzie:\n\ntabela Autorzy przechowuje dane o autorach,\ntabela Ksiazki przechowuje dane o książkach,\nkolumna autor_id w Ksiazki to klucz obcy, który wskazuje autora.\n\nDzięki więzom integralności baza pilnuje, by każda książka miała poprawnego autora. Takie powiązania są podstawą modelu relacyjnego.\n\n⚠️ Zwróć uwagę: FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) powyżej nie ma klauzuli ON DELETE — patrz sekcja 2 wyżej, co to oznacza w praktyce.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#modyfikacja-i-usuwanie-tabel",
+    "href": "lectures/wyklad2.html#modyfikacja-i-usuwanie-tabel",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "ALTER TABLE Ksiazki ADD COLUMN gatunek TEXT;\n\n\n\nALTER TABLE STUDENT ALTER COLUMN Kierunek TYPE VARCHAR(100);\n\n\n\nALTER TABLE STUDENT DROP COLUMN Email;\n\n\n\nDROP TABLE Ksiazki;",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#wstawianie-danych-dml-data-manipulation-language",
+    "href": "lectures/wyklad2.html#wstawianie-danych-dml-data-manipulation-language",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "Polecenie INSERT INTO służy do wprowadzania nowych wierszy (rekordów) do tabeli. Wartości muszą być zgodne z typami kolumn oraz ograniczeniami (NOT NULL, CHECK, itp.).\nMożna dodać jeden lub wiele rekordów w jednym poleceniu.\nINSERT INTO Autorzy (imie, nazwisko) VALUES\n('Adam', 'Mickiewicz'),\n('Henryk', 'Sienkiewicz'),\n('Bolesław', 'Prus');\n\nINSERT INTO Ksiazki (tytul, rok, autor_id) VALUES\n('Pan Tadeusz', 1834, 1),\n('Quo Vadis', 1896, 2),\n('Lalka', 1890, 3);\nKażdy rekord reprezentuje jedną pozycję w tabeli. Polecenie INSERT wymaga podania wartości w tej samej kolejności, w jakiej wymieniono kolumny. Jeśli nie podamy jakiejś kolumny, a ma ona zdefiniowaną wartość domyślną (DEFAULT), baza wstawi ją automatycznie.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#wybieranie-danych-select",
+    "href": "lectures/wyklad2.html#wybieranie-danych-select",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "SELECT * FROM Autorzy;\nPowyższe zapytanie zwraca wszystkich autorów z tabeli Autorzy.\n\n\n\n\nSELECT imie, nazwisko FROM Autorzy;\n\n\n\nSELECT imie AS \"Imię\", nazwisko AS \"Nazwisko\" FROM Autorzy;\nAlias (AS) pozwala nadać kolumnom bardziej opisowe nazwy w wynikach.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#filtrowanie-where",
+    "href": "lectures/wyklad2.html#filtrowanie-where",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "SELECT * FROM Ksiazki\nWHERE rok &gt; 1850;\n\n\n\n= , &lt;&gt;, &lt;, &gt;, &lt;=, &gt;=\nLIKE ‘Q%’ → zaczyna się na Q\nIN (…)\nBETWEEN 1800 AND 1900\nIS NULL, IS NOT NULL\n\nPrzykład wyszukiwania książek zawierających literę “a” w tytule:\nSELECT tytul FROM Ksiazki WHERE tytul LIKE '%a%';\n\n\n\nNULL oznacza „wartość nieznana”, więc nie porównujemy go operatorem =.\n-- ŹLE — nigdy nie zwróci wierszy, nawet jeśli autor_id jest puste:\nSELECT * FROM Ksiazki WHERE autor_id = NULL;\n\n-- DOBRZE:\nSELECT * FROM Ksiazki WHERE autor_id IS NULL;\nautor_id = NULL nie daje ani TRUE, ani FALSE, tylko UNKNOWN — a WHERE odrzuca wiersze, dla których warunek nie jest jednoznacznie TRUE. Ten sam problem dotyczy &lt;&gt; — autor_id &lt;&gt; NULL też nic nie zwróci, trzeba użyć IS NOT NULL.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#sortowanie-order-by",
+    "href": "lectures/wyklad2.html#sortowanie-order-by",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "SELECT * FROM Ksiazki ORDER BY rok DESC;\nSortowanie wyników można wykonać według dowolnej kolumny. Domyślnie ORDER BY sortuje rosnąco (ASC). Dla kilku kolumn można napisać np.:\nSELECT * FROM Ksiazki ORDER BY autor_id ASC, rok DESC;",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#grupowanie-i-agregacja-group-by-having",
+    "href": "lectures/wyklad2.html#grupowanie-i-agregacja-group-by-having",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "SELECT autor_id, COUNT(*) AS liczba_ksiazek\nFROM Ksiazki\nGROUP BY autor_id\nHAVING COUNT(*) &gt; 1;\nKlauzula GROUP BY grupuje dane, a HAVING filtruje grupy po agregacji. Funkcje agregujące: COUNT(), SUM(), AVG(), MIN(), MAX().\n\n\nWHERE filtruje pojedyncze wiersze, zanim zostaną zgrupowane — w momencie jego działania COUNT(*) jeszcze nie istnieje. HAVING filtruje gotowe grupy, już po agregacji. Dlatego WHERE COUNT(*) &gt; 1 jest błędem składniowym, a HAVING COUNT(*) &gt; 1 — poprawne.\nSilnik SQL wykonuje zapytanie w innej kolejności logicznej, niż je piszemy:\nFROM  →  WHERE  →  GROUP BY  →  HAVING  →  SELECT  →  ORDER BY\nCzyli mimo że SELECT piszemy na początku, jest wykonywany niemal na końcu — dlatego alias nadany w SELECT ... AS liczba_ksiazek nie jest jeszcze dostępny w WHERE, ale można go użyć w ORDER BY.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#łączenie-tabel-join",
+    "href": "lectures/wyklad2.html#łączenie-tabel-join",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "SELECT k.tytul, a.imie, a.nazwisko\nFROM Ksiazki k\nJOIN Autorzy a ON k.autor_id = a.autor_id;\n\n\n\nSELECT k.tytul, a.imie, a.nazwisko\nFROM Ksiazki k\nLEFT JOIN Autorzy a ON k.autor_id = a.autor_id;\nINNER JOIN zwraca tylko dopasowane rekordy, LEFT JOIN – wszystkie rekordy z lewej tabeli (nawet bez dopasowania).",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#aktualizacja-i-usuwanie-danych",
+    "href": "lectures/wyklad2.html#aktualizacja-i-usuwanie-danych",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "UPDATE Ksiazki SET rok = 1836 WHERE tytul = 'Pan Tadeusz';\n\n\n\nDELETE FROM Ksiazki WHERE rok &lt; 1850;\nZawsze należy używać WHERE, aby nie zmodyfikować lub nie usunąć wszystkich rekordów.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#podsumowanie",
+    "href": "lectures/wyklad2.html#podsumowanie",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "SQL jest językiem deklaratywnym – opisujemy co chcemy uzyskać, a nie jak to zrobić. Dzięki temu użytkownik nie musi znać szczegółów działania bazy danych.\nPoznane dziś polecenia:\nCREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY\nto fundament pracy z bazami danych. Opanowanie ich pozwala budować i analizować nawet bardzo złożone systemy informacyjne.\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#źródła-i-literatura",
+    "href": "lectures/wyklad2.html#źródła-i-literatura",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "",
+    "text": "•   Dokumentacja SQLite\n•   Dokumentacja PostgreSQL\n•   A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Informacje ogólne",
@@ -27,6 +445,270 @@
     "text": "Kalendarz\n\n\nWykład dla grup:\n\nTODO: dzień tygodnia, godzina, sala\n\n\n\nLaboratorium dla grup:\n\nTODO: dzień tygodnia, godzina, sala",
     "crumbs": [
       "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html",
+    "href": "lectures/wyklad3.html",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "",
+    "text": "Celem wykładu jest pokazanie, jak unikać błędów podczas projektowania relacyjnych baz danych poprzez stosowanie zasad normalizacji, zrozumienie zależności funkcjonalnych oraz wykorzystanie diagramów ERD (Entity–Relationship Diagram).",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#temat-jak-uniknąć-błędów-w-projektowaniu",
+    "href": "lectures/wyklad3.html#temat-jak-uniknąć-błędów-w-projektowaniu",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "",
+    "text": "Celem wykładu jest pokazanie, jak unikać błędów podczas projektowania relacyjnych baz danych poprzez stosowanie zasad normalizacji, zrozumienie zależności funkcjonalnych oraz wykorzystanie diagramów ERD (Entity–Relationship Diagram).",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#cele-wykładu",
+    "href": "lectures/wyklad3.html#cele-wykładu",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "🧠 Cele wykładu",
+    "text": "🧠 Cele wykładu\n\nnauczenie zasad normalizacji relacyjnych baz danych,\n\nzrozumienie pojęcia zależności funkcjonalnych,\n\nwprowadzenie do diagramów ERD jako narzędzia modelowania danych.",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#problemy-złego-projektu-bazy-danych",
+    "href": "lectures/wyklad3.html#problemy-złego-projektu-bazy-danych",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "1. Problemy złego projektu bazy danych",
+    "text": "1. Problemy złego projektu bazy danych\nZłe zaprojektowanie struktury bazy danych prowadzi do wielu problemów:\n\n🔹 Redundancja danych\nTo powielanie tych samych informacji w różnych miejscach bazy.\nPrzykład: jeśli w każdej tabeli z zamówieniami przechowujemy pełne dane klienta, to zmiana jego adresu wymaga aktualizacji wielu rekordów.\n\n\n🔹 Anomalie danych\nBłędy i niekonsekwencje wynikające z nadmiarowej struktury danych.\n\nAnomalia aktualizacji – zmiana jednej informacji wymaga wielu modyfikacji.\nNp. zmiana nazwiska wykładowcy w kilku wierszach tabeli.\nAnomalia wstawiania – brak możliwości dodania danych bez istnienia innych.\nNp. nie można dodać nowego kursu, dopóki nie zapisze się na niego student.\nAnomalia usuwania – usunięcie rekordu powoduje utratę innych informacji.\nNp. usunięcie ostatniego studenta z kursu powoduje utratę danych o samym kursie.\n\n👉 Wniosek: błędy projektowe utrudniają utrzymanie spójności danych.",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#zależności-funkcjonalne",
+    "href": "lectures/wyklad3.html#zależności-funkcjonalne",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "2. Zależności funkcjonalne",
+    "text": "2. Zależności funkcjonalne\n\n🔹 Definicja\nZależność funkcjonalna (ang. functional dependency) opisuje relację między atrybutami w tabeli.\nMówimy, że atrybut B jest funkcyjnie zależny od atrybutu A (zapis:\nA → B), jeśli każdej wartości A odpowiada dokładnie jedna wartość B.\n\n\n🔹 Przykłady\n\nNrIndeksu → Imię, Nazwisko, Kierunek\n(każdy numer indeksu jednoznacznie identyfikuje studenta)\nKurs → Sala, Prowadzący\n(dany kurs odbywa się zawsze w tej samej sali, prowadzony przez tę samą osobę)\n\n\n\n🔹 Klucze\n\nKlucz główny (primary key) – jednoznacznie identyfikuje wiersz tabeli.\n\nKlucz kandydujący (candidate key) – minimalny zestaw atrybutów, który może być kluczem.\n\nKlucz obcy (foreign key) – wskazuje na klucz główny w innej tabeli i tworzy powiązanie między tabelami.\n\n\n\n🔹 Typy zależności\n\nZależność pełna – atrybut zależy od całego klucza złożonego.\n\nZależność częściowa – atrybut zależy tylko od części klucza.\n\nZależność przechodnia – atrybut zależy pośrednio od klucza (A → B → C).",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#formy-normalne-1nf-3nf-bcnf",
+    "href": "lectures/wyklad3.html#formy-normalne-1nf-3nf-bcnf",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "3. Formy normalne (1NF – 3NF, BCNF)",
+    "text": "3. Formy normalne (1NF – 3NF, BCNF)\nNormalizacja to proces przekształcania tabel w taki sposób, aby usunąć redundancję i zapobiec anomaliom.\n\n🧩 Pierwsza postać normalna (1NF)\n\nWszystkie wartości w tabeli są atomowe (niepodzielne).\n\nBrak list, zbiorów lub kolumn powtarzających się.\n\n✅ Każda kolumna ma jedną wartość w komórce.\nPrzykład (naruszenie 1NF):\n\n\n\nStudent\nNrIndeksu\nKursy\n\n\n\n\nJan Nowak\n12345\nBazy danych, Programowanie\n\n\n\n✅ Poprawnie:\nTworzymy osobną tabelę STUDENT_KURS, gdzie każdy kurs to osobny rekord.\n\n\n\n🧩 Druga postać normalna (2NF)\n\nTabela jest w 1NF i wszystkie atrybuty niekluczowe zależą w pełni od całego klucza głównego.\n\nDotyczy tabel z kluczem złożonym.\n\nPrzykład:\nTabela ZAPISY(StudentID, KursID, Sala)\n→ atrybut Sala zależy tylko od KursID, a nie od całego klucza (StudentID, KursID).\nRozwiązanie: wydziel tabelę KURS(KursID, Sala).\n\n\n\n🧩 Trzecia postać normalna (3NF)\n\nTabela jest w 2NF i nie zawiera zależności przechodnich.\n\nKażdy atrybut niekluczowy zależy bezpośrednio od klucza głównego.\n\nPrzykład:\nNrIndeksu → Kierunek, Kierunek → Dziekan\n➡️ Dziekan zależy pośrednio od NrIndeksu.\nRozwiązanie: osobna tabela KIERUNEK(Dziekan, Kierunek).",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#diagramy-erd-entityrelationship-diagram",
+    "href": "lectures/wyklad3.html#diagramy-erd-entityrelationship-diagram",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "4. Diagramy ERD (Entity–Relationship Diagram)",
+    "text": "4. Diagramy ERD (Entity–Relationship Diagram)\nDiagram ERD jest graficznym sposobem przedstawienia modelu konceptualnego bazy danych.\n\n🔹 Główne elementy ERD\n\nEncja (Entity) – obiekt, o którym przechowujemy dane (np. Student, Kurs).\n\nAtrybut (Attribute) – właściwość encji (np. Imię, Nazwisko, NrIndeksu).\n\nRelacja (Relationship) – powiązanie między encjami (np. Student zapisuje się na Kurs).\n\nKardynalność (Cardinality) – określa liczność relacji:\n\n1:1 (jeden do jednego)\n\n1:N (jeden do wielu)\n\nN:M (wielu do wielu)\n\n\nIdentyfikator (Primary Key) – atrybut jednoznacznie identyfikujący encję.\n\n\n\n🔹 Przykład:\nSTUDENT (NrIndeksu, Imię, Nazwisko, Kierunek)\nKURS (KursID, Nazwa, Prowadzący)\nZAPIS (NrIndeksu, KursID, DataZapisu)\nRelacja między STUDENT a KURS: N:M poprzez encję pośredniczącą ZAPIS.",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#proces-projektowania-bazy-danych",
+    "href": "lectures/wyklad3.html#proces-projektowania-bazy-danych",
+    "title": "Normalizacja i projektowanie baz danych",
+    "section": "5. Proces projektowania bazy danych",
+    "text": "5. Proces projektowania bazy danych\nProjektowanie bazy to proces etapowy:\n\nAnaliza wymagań – zrozumienie, jakie dane są potrzebne i jakie operacje będą wykonywane.\n\nModel konceptualny – opis danych w postaci ERD.\n\nModel logiczny – zamiana modelu ERD na relacyjny schemat tabel.\n\nModel fizyczny – implementacja w konkretnym systemie DBMS (np. PostgreSQL, MySQL).",
+    "crumbs": [
+      "Wykłady",
+      "Normalizacja i projektowanie baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html",
+    "href": "lectures/wyklad4.html",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "",
+    "text": "PL/SQL to proceduralny język rozszerzający SQL w systemach Oracle i kompatybilnych.\n\nUmożliwia użycie instrukcji warunkowych, pętli, zmiennych i procedur, czego SQL nie oferuje w formie deklaratywnej.\n\nPrzykład prostego bloku PL/SQL:\nBEGIN\n    DBMS_OUTPUT.PUT_LINE('Witaj w świecie PL/SQL!');\nEND;\n/\nKod ten uruchamia blok proceduralny, który wypisuje komunikat.\nBEGIN rozpoczyna blok, END; kończy, a / uruchamia go w SQL*Plus.\n\n\n\nPL/SQL pozwala tworzyć zmienne i przypisywać im wartości.\nDECLARE\n    v_imie VARCHAR2(50);\n    v_wiek NUMBER;\nBEGIN\n    v_imie := 'Jan';\n    v_wiek := 25;\n    DBMS_OUTPUT.PUT_LINE('Student: ' || v_imie || ', wiek: ' || v_wiek);\nEND;\n/\nZmienne umożliwiają przechowywanie danych tymczasowo w trakcie wykonywania programu.\n\n\n\nPL/SQL pozwala na użycie:\n\nIF…THEN…ELSE:\n\nIF v_wiek &gt;= 18 THEN\n    DBMS_OUTPUT.PUT_LINE('Pełnoletni');\nELSE\n    DBMS_OUTPUT.PUT_LINE('Niepełnoletni');\nEND IF;\n\nLOOP, WHILE, FOR – do powtarzania operacji:\n\nFOR i IN 1..5 LOOP\n    DBMS_OUTPUT.PUT_LINE('Liczba: ' || i);\nEND LOOP;\nInstrukcje warunkowe i pętle pozwalają w pełni programować logikę w bazie danych.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#wprowadzenie-do-plsql",
+    "href": "lectures/wyklad4.html#wprowadzenie-do-plsql",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "",
+    "text": "PL/SQL to proceduralny język rozszerzający SQL w systemach Oracle i kompatybilnych.\n\nUmożliwia użycie instrukcji warunkowych, pętli, zmiennych i procedur, czego SQL nie oferuje w formie deklaratywnej.\n\nPrzykład prostego bloku PL/SQL:\nBEGIN\n    DBMS_OUTPUT.PUT_LINE('Witaj w świecie PL/SQL!');\nEND;\n/\nKod ten uruchamia blok proceduralny, który wypisuje komunikat.\nBEGIN rozpoczyna blok, END; kończy, a / uruchamia go w SQL*Plus.\n\n\n\nPL/SQL pozwala tworzyć zmienne i przypisywać im wartości.\nDECLARE\n    v_imie VARCHAR2(50);\n    v_wiek NUMBER;\nBEGIN\n    v_imie := 'Jan';\n    v_wiek := 25;\n    DBMS_OUTPUT.PUT_LINE('Student: ' || v_imie || ', wiek: ' || v_wiek);\nEND;\n/\nZmienne umożliwiają przechowywanie danych tymczasowo w trakcie wykonywania programu.\n\n\n\nPL/SQL pozwala na użycie:\n\nIF…THEN…ELSE:\n\nIF v_wiek &gt;= 18 THEN\n    DBMS_OUTPUT.PUT_LINE('Pełnoletni');\nELSE\n    DBMS_OUTPUT.PUT_LINE('Niepełnoletni');\nEND IF;\n\nLOOP, WHILE, FOR – do powtarzania operacji:\n\nFOR i IN 1..5 LOOP\n    DBMS_OUTPUT.PUT_LINE('Liczba: ' || i);\nEND LOOP;\nInstrukcje warunkowe i pętle pozwalają w pełni programować logikę w bazie danych.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#operacje-na-danych-w-plsql",
+    "href": "lectures/wyklad4.html#operacje-na-danych-w-plsql",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "2️⃣ Operacje na danych w PL/SQL",
+    "text": "2️⃣ Operacje na danych w PL/SQL\nPL/SQL umożliwia wykonywanie standardowych operacji SQL:\n\nINSERT, UPDATE, DELETE – bezpośrednio w blokach proceduralnych.\n\nPrzykład aktualizacji danych:\nBEGIN\n    UPDATE Studenci\n    SET Wiek = 26\n    WHERE NrIndeksu = 12345;\nEND;\n/\nmożna grupować wiele operacji w jednym bloku, co ułatwia zarządzanie spójnością danych.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#dlaczego-optymalizacja-jest-ważna",
+    "href": "lectures/wyklad4.html#dlaczego-optymalizacja-jest-ważna",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "💡 Dlaczego optymalizacja jest ważna?",
+    "text": "💡 Dlaczego optymalizacja jest ważna?\nOptymalizacja zapytań SQL to jeden z najważniejszych elementów pracy z bazami danych.\nDotyczy zarówno programistów aplikacji, jak i administratorów baz danych (DBA).\nCelem jest takie przygotowanie zapytań, struktur danych i indeksów, aby uzyskać maksymalną wydajność przy minimalnym obciążeniu systemu.\nKażde zapytanie SQL, nawet najprostsze, wymaga od silnika bazy danych wykonania określonych operacji: odczytu danych z dysku, przetworzenia warunków WHERE, wykonania JOIN, GROUP BY, ORDER BY, a następnie zwrócenia wyników użytkownikowi.\nJeśli baza danych zawiera miliony rekordów, to nawet niewielkie różnice w sposobie wykonania zapytania mogą oznaczać:\n\nróżnicę między milisekundami a sekundami,\n\nobciążenie jednego wątku zamiast całego serwera,\n\nlub zużycie gigabajtów pamięci i I/O bez potrzeby.\n\n\n🧠 „Optymalizacja zapytań SQL to nie sztuka pisania krótszego kodu,\nlecz umiejętność zmuszenia silnika bazy danych do pracy mądrze, a nie ciężko.”",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#jak-działa-zapytanie-w-silniku-bazy-danych",
+    "href": "lectures/wyklad4.html#jak-działa-zapytanie-w-silniku-bazy-danych",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "⚙️ Jak działa zapytanie w silniku bazy danych?",
+    "text": "⚙️ Jak działa zapytanie w silniku bazy danych?\nAby zrozumieć optymalizację, musimy wiedzieć, co dzieje się z zapytaniem od momentu jego wysłania do bazy danych.\nSilnik SQL analizuje składnię zapytania, przepisuje je logicznie, wybiera najtańszy plan wykonania i dopiero wtedy odczytuje dane.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#co-wpływa-na-wydajność-zapytań-sql",
+    "href": "lectures/wyklad4.html#co-wpływa-na-wydajność-zapytań-sql",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "🧩 Co wpływa na wydajność zapytań SQL?",
+    "text": "🧩 Co wpływa na wydajność zapytań SQL?\nWydajność zapytań zależy zarówno od tego, jak zapytanie jest napisane, jak i od tego, jak zorganizowane są dane w bazie:\n\n🔹 Struktura zapytania\n\nZłożoność klauzul WHERE, JOIN, ORDER BY\nZagnieżdżone podzapytania (subqueries)\nUżycie funkcji agregujących (COUNT, SUM, AVG)\n\n\n\n🔹 Architektura danych\n\nIlość danych w tabelach\n\nIndeksy (ich liczba, rodzaj i aktualność)\n\nKlucze główne i obce (PRIMARY KEY, FOREIGN KEY)\n\nStopień normalizacji lub denormalizacji danych\n\n\n\n🔹 Stan środowiska bazy\n\nDostępna pamięć RAM\n\nBuforowanie i cache dyskowy\n\nStatystyki tabel (ANALYZE, UPDATE STATISTICS)\n\nObciążenie serwera (inne procesy, sesje, transakcje)",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#przykład-znaczenia-optymalizacji",
+    "href": "lectures/wyklad4.html#przykład-znaczenia-optymalizacji",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "📊 Przykład znaczenia optymalizacji",
+    "text": "📊 Przykład znaczenia optymalizacji\nWyobraźmy sobie tabelę orders z 10 milionami zamówień.\nChcemy znaleźć wszystkie zamówienia z ostatnich 30 dni:\nSELECT * FROM orders WHERE order_date &gt;= CURRENT_DATE - INTERVAL '30 days';\n\nScenariusz A – brak indeksu\nSilnik musi przeskanować całą tabelę (tzw. Seq Scan). Każdy wiersz jest sprawdzany, czy spełnia warunek order_date &gt;= ....\n\n⏱️ Czas wykonania: ~3.2 s\n\n💾 Operacje I/O: wysokie\n\n\n\nScenariusz B – z indeksem\nDodajemy indeks:\nCREATE INDEX idx_orders_date ON orders(order_date);\nSilnik teraz korzysta z Index Scan, czyli odczytu tylko fragmentu danych pasujących do warunku.\n\n⏱️ Czas wykonania: ~0.03 s\n\n💾 Operacje I/O: minimalne\n\n➡️ 100× szybsze zapytanie – bez zmiany jednej linijki logiki, tylko dzięki optymalizacji struktury danych.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#jak-działa-optymalizator-zapytań-sql",
+    "href": "lectures/wyklad4.html#jak-działa-optymalizator-zapytań-sql",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "⚙️ Jak działa optymalizator zapytań SQL",
+    "text": "⚙️ Jak działa optymalizator zapytań SQL\nKażde zapytanie SQL, które wysyłasz do bazy danych, przechodzi proces planowania i wykonania.\nSilnik SQL nie wykonuje zapytania dokładnie tak, jak je napisałeś — najpierw szuka najbardziej efektywnego sposobu uzyskania tego samego wyniku.\nTym właśnie zajmuje się optymalizator zapytań (Query Optimizer).",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#czym-jest-optymalizator-zapytań",
+    "href": "lectures/wyklad4.html#czym-jest-optymalizator-zapytań",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "🧠 Czym jest optymalizator zapytań?",
+    "text": "🧠 Czym jest optymalizator zapytań?\nOptymalizator analizuje zapytanie i decyduje, w jaki sposób najlepiej pobrać dane.\nNie zmienia logiki zapytania, ale może całkowicie zmienić:\n\nkolejność operacji,\n\nsposób łączenia tabel (JOIN order),\n\nwybór indeksów,\n\nmetodę sortowania lub agregacji.\n\n\n💡 Optymalizator to planista — nie wykonuje zapytania sam,\nale układa plan działania tak, by wynik uzyskać jak najszybciej i najtaniej.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#etapy-przetwarzania-zapytania",
+    "href": "lectures/wyklad4.html#etapy-przetwarzania-zapytania",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "🔄 Etapy przetwarzania zapytania",
+    "text": "🔄 Etapy przetwarzania zapytania\nDla przykładu:\nSELECT name, salary \nFROM employees \nWHERE department_id = 10 AND salary &gt; 5000;\nSilnik przechodzi przez kilka logicznych etapów:\n\n1. Parsing (analiza składniowa)\n\nsprawdza poprawność składni SQL,\n\nweryfikuje istnienie tabel i kolumn,\n\ntworzy drzewo zapytania (parse tree).\n\n\n\n2. Rewriting (przepisanie logiczne)\n\nupraszcza warunki (WHERE TRUE, podwójne filtry),\n\nzamienia IN na EXISTS,\n\nłączy filtry logiczne (AND, OR),\n\nmoże przenosić warunki do podzapytań (predicate pushdown).\n\n\n\n3. Optimization (planowanie kosztowe)\nOptymalizator analizuje różne plany wykonania:\n\nktóry indeks użyć,\n\nw jakiej kolejności łączyć tabele,\n\njakiego algorytmu użyć (hash join, merge join, nested loop).\n\nKażdy plan ma przypisany koszt (cost estimate) oparty na:\n\nliczbie wierszy,\n\nselektywności warunków,\n\ndostępnych indeksach,\n\nstatystykach i kosztach I/O oraz CPU.\n\n\n🧮 Optymalizator nie wykonuje zapytań — symuluje scenariusze i wybiera ten o najniższym koszcie.\n\n\n\n4. Execution Plan (plan wykonania)\nPo wyborze najlepszego planu, optymalizator przekazuje go do modułu wykonawczego.\nPlan opisuje krok po kroku, jak dane zostaną pobrane i przetworzone.\nMożemy go podejrzeć poleceniem:\nEXPLAIN SELECT ...\nlub\nEXPLAIN ANALYZE SELECT ...",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#co-to-jest-plan-zapytania",
+    "href": "lectures/wyklad4.html#co-to-jest-plan-zapytania",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "⚙️ Co to jest plan zapytania?",
+    "text": "⚙️ Co to jest plan zapytania?\nPlan zapytania to opis kroków, jakie silnik bazy danych musi wykonać, by uzyskać wynik.\nKażdy krok reprezentuje konkretną operację — np.:\n\nScan (odczyt danych z tabeli lub indeksu),\nJoin (łączenie danych z kilku tabel),\nSort (sortowanie wyników),\nAggregate (sumowanie, grupowanie, liczenie).\n\nKażdy z tych kroków ma przypisany szacowany koszt — liczbową wartość określającą, ile operacji CPU, I/O lub pamięci wymaga jego wykonanie.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#składnia-polecenia-explain",
+    "href": "lectures/wyklad4.html#składnia-polecenia-explain",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "🧩 Składnia polecenia EXPLAIN",
+    "text": "🧩 Składnia polecenia EXPLAIN\nW większości systemów baz danych można użyć EXPLAIN na początku dowolnego zapytania:\nEXPLAIN SELECT * FROM employees WHERE department_id = 10;\nAby uzyskać więcej szczegółów, można dodać:\nEXPLAIN ANALYZE SELECT * FROM employees WHERE department_id = 10;\n📊 Różnica:\n\nEXPLAIN — pokazuje plan teoretyczny (na podstawie statystyk i kosztów),\nEXPLAIN ANALYZE — faktycznie wykonuje zapytanie i pokazuje rzeczywisty czas oraz liczbę przetworzonych wierszy.\n\n\n🧠 Przykład w PostgreSQL\nZałóżmy, że mamy tabelę:\nCREATE TABLE orders (\n  id SERIAL PRIMARY KEY,\n  customer_id INTEGER,\n  order_date DATE,\n  total DECIMAL\n);\n\nCREATE INDEX idx_orders_customer ON orders(customer_id);\ni wykonujemy zapytanie:\nEXPLAIN ANALYZE\nSELECT * FROM orders WHERE customer_id = 42;\n\n\n🔹 Wynik (plan zapytania):\nIndex Scan using idx_orders_customer on orders  (cost=0.29..8.50 rows=3 width=48)\n  Index Cond: (customer_id = 42)\nPlanning Time: 0.100 ms\nExecution Time: 0.030 ms\n\n\n\n\n\n\n\nElement\nZnaczenie\n\n\n\n\nIndex Scan\nBaza odczytuje dane przy użyciu indeksu (nie pełny skan tabeli).\n\n\nidx_orders_customer\nNazwa użytego indeksu.\n\n\ncost=0.29..8.50\nSzacowany koszt (startowy i całkowity). Im mniejszy, tym lepiej.\n\n\nrows=3\nSzacowana liczba wierszy, które spełnią warunek.\n\n\nwidth=48\nŚredni rozmiar jednego wiersza (w bajtach).\n\n\nIndex Cond\nWarunek, który został użyty do przeszukania indeksu.\n\n\nExecution Time\nFaktyczny czas wykonania (tylko w EXPLAIN ANALYZE).\n\n\n\n\n\n🔎 Porównanie: brak indeksu\nJeśli usuniemy indeks i uruchomimy to samo zapytanie:\nEXPLAIN ANALYZE\nSELECT * FROM orders WHERE customer_id = 42;\notrzymamy:\nSeq Scan on orders  (cost=0.00..450.00 rows=3 width=48)\n  Filter: (customer_id = 42)\nExecution Time: 22.5 ms\n📉 Różnica:\n\nBaza musi przeskanować całą tabelę (Seq Scan),\nPomimo tego, że wynik jest ten sam, wykonanie jest znacznie wolniejsze.\n\n💬 EXPLAIN pokazuje, że problemem nie jest zapytanie, lecz brak indeksu.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#jak-korzystać-z-explain-w-praktyce",
+    "href": "lectures/wyklad4.html#jak-korzystać-z-explain-w-praktyce",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "🧮 Jak korzystać z EXPLAIN w praktyce",
+    "text": "🧮 Jak korzystać z EXPLAIN w praktyce\n\nSprawdzaj, czy używany jest indeks\n\nJeśli widzisz Seq Scan lub SCAN TABLE, to znak, że indeks nie jest wykorzystywany.\n\nZwracaj uwagę na kolejność JOINów\n\nCzasami odwrócenie kolejności tabel w zapytaniu może dać inny plan i lepszy czas.\n\nAnalizuj koszty (cost=…)\n\nPorównuj plany z różnymi indeksami i filtrami — wybieraj ten o niższym koszcie.\n\nUżywaj EXPLAIN ANALYZE tylko testowo\n\nW środowisku produkcyjnym EXPLAIN ANALYZE faktycznie wykonuje zapytanie, więc może być kosztowne.\n\nPorównuj teoretyczny i rzeczywisty plan\n\nJeśli szacunki (rows, cost) mocno różnią się od rzeczywistego czasu, oznacza to:\n\nbrak aktualnych statystyk,\nzły indeks,\nlub błędne założenia optymalizatora.",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#indeksy-w-sql",
+    "href": "lectures/wyklad4.html#indeksy-w-sql",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "🗂️ Indeksy w SQL",
+    "text": "🗂️ Indeksy w SQL\nIndeksy to podstawowe narzędzie optymalizacji zapytań, które pozwala bazie danych szybko znaleźć potrzebne wiersze, bez konieczności skanowania całej tabeli.\nMożna je porównać do spisu treści w książce — zamiast czytać każdy rozdział, patrzymy od razu na właściwą stronę.\n\n🔹 Dlaczego indeksy są ważne?\nBez indeksu baza danych musi sprawdzić każdy wiersz tabeli, by znaleźć pasujące rekordy (sequential scan).\nZ indeksem, silnik może odczytać tylko te dane, które spełniają warunek — znacznie szybciej i przy mniejszym zużyciu zasobów.\nKorzyści z indeksów:\n\n⏱️ Szybsze wyszukiwanie danych, szczególnie w dużych tabelach\n\n💾 Ograniczenie operacji I/O, bo baza czyta mniej bloków z dysku\n\n🔄 Przyspieszenie sortowania i łączenia tabel (JOIN), jeśli indeks obejmuje kolumny używane w warunkach\n\n\n\n🔹 Rodzaje indeksów\nNajczęściej spotykane:\n\nB-Tree (balanced tree) – najpopularniejszy typ, sprawdza się w większości wyszukiwań, zakresów i sortowań\n\nHash – szybki dostęp po dokładnej wartości (nie obsługuje zakresów)\n\nBitmap – efektywny dla kolumn o małej liczbie unikalnych wartości, np. płeć lub status\n\nKompozytowe – obejmują kilka kolumn, przydatne przy filtrach i sortowaniach wielokolumnowych\n\n\n\n🔹 Co indeksuje?\n\nKolumny używane w WHERE – aby szybciej wyszukać dane\n\nKolumny używane w JOIN – przyspiesza łączenie tabel\n\nKolumny w ORDER BY lub GROUP BY – pomaga szybciej sortować i grupować wyniki\n\nKolumny unikalne lub klucze główne – zapewnia integralność danych i przyspiesza wyszukiwanie\n\n\n\n🔹 Wady nadmiaru indeksów\nIndeksy przyspieszają odczyt, ale mają też koszty:\n\n🔄 Spowolnienie operacji INSERT/UPDATE/DELETE, bo indeksy trzeba aktualizować\n\n💾 Zwiększone zużycie pamięci i przestrzeni dyskowej\n\n⚖️ Trzeba wybrać optymalny zestaw indeksów, żeby nie pogorszyć ogólnej wydajności",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#praktyczne-aspekty-użycia-indeksów",
+    "href": "lectures/wyklad4.html#praktyczne-aspekty-użycia-indeksów",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "Praktyczne aspekty użycia indeksów",
+    "text": "Praktyczne aspekty użycia indeksów\nW tej sekcji rozszerzamy temat indeksów, unikając powtórzenia wcześniejszych przykładów z SELECT po customer_id.\nPrzy łączeniu tabel indeksy znacząco przyspieszają zapytania:\nSELECT o.id, c.name\nFROM orders o\nJOIN customers c ON o.customer_id = c.id\nWHERE c.region = 'Europe';\n\nIndeks na customers.id i orders.customer_id przyspiesza JOIN\nIndeks na customers.region przyspiesza filtrowanie po regionie",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad4.html#indeksy-a-sortowanie-i-grupowanie",
+    "href": "lectures/wyklad4.html#indeksy-a-sortowanie-i-grupowanie",
+    "title": "Podstawy PL/SQL, optymalizacja zapytań i indeksy",
+    "section": "Indeksy a sortowanie i grupowanie",
+    "text": "Indeksy a sortowanie i grupowanie\nIndeksy na kolumnach używanych w ORDER BY lub GROUP BY pozwalają uniknąć kosztownych operacji sortowania w pamięci:\nSELECT customer_id, SUM(total) \nFROM orders \nGROUP BY customer_id \nORDER BY SUM(total) DESC;\n\nIndeks na customer_id może przyspieszyć agregację\nIndeks kompozytowy z kolumną używaną w ORDER BY może wyeliminować dodatkowe sortowanie\n\n\n🔹 Wpływ indeksów na modyfikacje danych\n\nOperacje INSERT, UPDATE, DELETE wymagają aktualizacji indeksów\nZbyt wiele indeksów może spowolnić zapis danych\nW praktyce wybieramy najbardziej potrzebne indeksy i monitorujemy ich wpływ\n\n\n\n🔹 Wskazówki praktyczne\n\nTwórz indeksy tylko na kolumnach często filtrowanych lub sortowanych\nAnalizuj plany wykonania (EXPLAIN, EXPLAIN ANALYZE)\nZwracaj uwagę na koszt operacji (cost=…) i liczbę wierszy (rows=…)\nRównoważ czas odczytu i zapis danych – nie każdy indeks jest opłacalny",
+    "crumbs": [
+      "Wykłady",
+      "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
     ]
   }
 ]

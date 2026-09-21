@@ -1,0 +1,269 @@
+---
+title: " Od pliku do bazy danych"
+---
+
+## 🧠 Cele wykładu
+
+W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.
+
+Na końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.
+
+⸻
+
+## 1️⃣ Dane, informacja, baza danych
+
+### 🔹 Dane
+
+Na początku warto zadać pytanie: czym właściwie są dane?
+
+Dane to surowe fakty – liczby, teksty, symbole – które same w sobie nie mają znaczenia.
+Przykładowo, zapis:
+```csv
+12345
+Jan Kowalski
+Bazy danych
+```
+
+nie mówi nam jeszcze nic o tym, co oznacza. Może to być numer indeksu, nazwisko klienta albo temat zajęć.
+
+> <img alt="Schemat przedstawiający przejście: ,Dane $\to$ Informacja $\to$ Wiedza'">
+> (np. piramida DIKW – Data, Information, Knowledge, Wisdom)
+
+### 🔹 Informacja
+
+Informacja powstaje wtedy, gdy dane zostaną zinterpretowane w określonym kontekście.
+Jeśli wiemy, że „12345” to numer indeksu studenta Jana Kowalskiego, który zapisał się na kurs Bazy danych, mamy już informację.
+
+W życiu codziennym często mamy mnóstwo danych (np. z mediów społecznościowych), ale niewiele z nich przekłada się na prawdziwą wiedzę.
+
+⸻
+
+### 🔹 Baza danych
+
+Baza danych (ang. database) to uporządkowany zbiór danych, przechowywany w sposób umożliwiający szybkie wyszukiwanie, aktualizację i kontrolę spójności.
+Można ją porównać do dobrze zorganizowanego archiwum, w którym każdy dokument ma swoje miejsce i jest łatwy do odnalezienia.
+
+ Wizualizacja bazy danych – zestaw powiązanych tabel w relacyjnym modelu danych.
+
+### 🔹  System zarządzania bazą danych (DBMS)
+
+System zarządzania bazą danych, czyli DBMS (Database Management System), to oprogramowanie pośredniczące między użytkownikiem a bazą danych.
+
+To ono umożliwia:
+
+- definiowanie struktur (np. tabel),
+- przechowywanie i wyszukiwanie danych,
+- zapewnienie bezpieczeństwa i spójności,
+- obsługę wielu użytkowników jednocześnie.
+
+Do najpopularniejszych DBMS należą: **PostgreSQL, Oracle, MySQL, SQLite, MS SQL Server**.
+
+
+## 2️⃣ Rodzaje danych
+
+W informatyce dane występują w różnych formach. Można je podzielić według stopnia strukturyzacji.
+
+### 🔸 Dane ustrukturyzowane
+
+To dane zapisane w tabelach – każda kolumna ma nazwę i określony typ.
+Znajdujemy je np. w arkuszach kalkulacyjnych lub relacyjnych bazach danych.
+
+
+| ID | Imię | Nazwisko | Miasto  |
+|----|------|----------|---------|
+| 1  | Anna | Nowak    | Kraków  |
+| 2  | Jan  | Kowalski | Warszawa|
+
+<img alt="Grafika pokazująca dane tabelaryczne (np. tabela klientów w SQL lub Excelu)">
+
+
+
+### 🔸 Dane półustrukturyzowane
+
+Mają pewną strukturę, ale nie tak sztywną jak dane tabelaryczne.
+Przykładem mogą być pliki **JSON** lub **XML**:
+
+```json
+{
+  "imie": "Anna",
+  "miasto": "Kraków",
+  "zainteresowania": ["sport", "muzyka"]
+}
+```
+
+<img alt=" Ilustracja: porównanie danych JSON i tabeli SQL (elastyczna struktura vs. sztywna)">
+
+### 🔸 Dane nieustrukturyzowane
+
+To dane, które nie mają jasno zdefiniowanej struktury — na przykład obrazy, pliki audio, wideo czy dokumenty PDF.
+Ich analiza wymaga specjalistycznych narzędzi (np. rozpoznawania obrazów lub przetwarzania języka naturalnego).
+
+⸻
+
+## 3️⃣ Pliki jako forma przechowywania danych
+
+Zanim powstały systemy baz danych, dane przechowywano w prostych plikach tekstowych.
+
+Na przykład w pliku CSV:
+```csv
+ID,Imię,Nazwisko,Miasto
+1,Anna,Nowak,Kraków
+2,Jan,Kowalski,Warszawa
+3,Piotr,Wiśniewski,Poznań
+```
+
+Choć taki plik można łatwo otworzyć w Excelu, ma on liczne ograniczenia:
+
+- brak kontroli poprawności danych,
+- brak powiązań między plikami,
+- brak współbieżności przy edycji.
+
+ <img alt="Grafika: dwa pliki CSV (klienci i zamówienia) – brak relacji między nimi">
+
+ ## 4️⃣ Problemy pracy z plikami
+
+System plikowy działa poprawnie przy niewielkiej liczbie danych i prostych zastosowaniach. Wraz ze wzrostem ilości informacji i liczbą użytkowników pojawiają się jednak poważne ograniczenia, które utrudniają bezpieczne i efektywne zarządzanie danymi.
+
+### ⚠️ Typowe problemy
+
+| Problem | Opis |
+|---------|------|
+| 🔁 Redundancja | Te same dane pojawiają się w wielu miejscach (np. adres klienta powielony w każdym zamówieniu). |
+| ⚠️ Niespójność | Różne wersje tej samej informacji w różnych plikach (np. inny numer telefonu u klienta w dwóch plikach). |
+| ⛔ Brak współbieżności | Trudności przy jednoczesnej edycji — ryzyko nadpisania zmian. |
+| ❌ Brak kontroli dostępu | Brak ról, uprawnień i mechanizmów audytu. |
+| 🧩 Słaba integracja | Dane rozproszone po różnych formatach i miejscach, trudne do połączenia. |
+
+> <img> Schemat: system plików z wieloma niespójnymi plikami vs. centralna baza danych
+
+#### Przykład (plikowy):
+`klienci.txt`:
+
+```txt
+1;Anna Nowak;Kraków
+2;Jan Kowalski;Warszawa
+```
+`zamowienia.txt`:
+```txt
+10;Laptop;1
+11;Monitor;2
+12;Kabel HDMI;1
+```
+Działa to, ale jeśli zmienimy ID klienta lub nazwę produktu, powstaje trudność w utrzymaniu spójności.
+
+---
+
+## 5️⃣ Od pliku do bazy danych
+
+Aby rozwiązać problemy związane z plikami płaskimi, wprowadzono koncepcję systemu zarządzania bazą danych (DBMS). Główne idee to:
+
+- centralne repozytorium danych,
+- kontrolowany dostęp i uprawnienia,
+- mechanizmy zapewniające spójność i integralność,
+- obsługa współbieżności i transakcji,
+- możliwość zapytań (np. SQL) zamiast pełnego skanowania plików.
+
+### Porównanie: plik CSV vs baza danych (SQL)
+
+| Cecha            | Plik CSV          | Baza danych (SQL)                   |
+| ---------------- | ----------------- | ------------------------------------ |
+| Struktura danych | Tekstowa, dowolna | Ściśle zdefiniowana (kolumny, typy) |
+| Spójność danych  | Nie               | Zapewniana przez DBMS               |
+| Współbieżność    | Brak              | Obsługiwana                         |
+| Wyszukiwanie     | Pełne skanowanie  | Zapytania, **indeksy** (mechanizm poznamy dokładnie na wykładzie 4) |
+| Bezpieczeństwo   | Brak              | Kontrola dostępu                    |
+
+> <img> Diagram: „Od pliku do bazy” – ewolucja sposobu przechowywania danych
+
+---
+
+## 6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy
+
+Rodzaj przetwarzania zależy od typu danych:
+
+| Typ danych   | Przykład          | Narzędzie przetwarzania    | Typowe operacje                      |
+| ------------ | ----------------- | --------------------------- | ------------------------------------- |
+| Tabelaryczne | sprzedaż, klienci | SQL, Excel                 | sortowanie, sumowanie, filtracja     |
+| Tekstowe     | artykuły, maile   | wyszukiwanie pełnotekstowe | indeksowanie, analiza słów           |
+| Obraz        | zdjęcia, wideo    | biblioteki CV, AI          | klasyfikacja, rozpoznawanie obiektów |
+| Dźwięk       | nagrania, mowa    | DSP, ML                    | filtracja, transkrypcja              |
+
+> **Pytanie do dyskusji:** Dlaczego dane tabelaryczne łatwo ująć w relacje, a dźwięk czy obraz — już nie?
+
+> <img> Ilustracja: porównanie przetwarzania danych tabelarycznych i multimedialnych
+
+---
+
+## 7️⃣ Architektura systemów baz danych (ANSI/SPARC)
+
+Aby osiągnąć niezależność danych od aplikacji, wprowadzono model trójwarstwowy ANSI/SPARC:
+
+| Poziom | Opis | Przykład |
+|--------|------|----------|
+| **Zewnętrzny** | Widok użytkownika — sposób, w jaki konkretni użytkownicy widzą dane | Widok „Studenci z kierunku Informatyka” |
+| **Logiczny (koncepcyjny)** | Globalna struktura danych — tabele, relacje, ograniczenia | Schemat bazy uczelni |
+| **Wewnętrzny (fizyczny)** | Fizyczne przechowywanie danych na dysku | Indeksy, pliki danych, metody dostępu |
+
+> <img> Schemat trójwarstwowy ANSI/SPARC: użytkownicy ↔ DBMS ↔ fizyczne dane
+
+**Korzyści:**
+
+- niezależność logiczna danych (zmiana schematu logicznego nie musi wymagać zmian w aplikacjach),
+- niezależność fizyczna danych (zmiana sposobu przechowywania nie wpływa na logikę aplikacji).
+
+---
+
+## 8️⃣ Typy baz danych
+
+W zależności od modelu danych i sposobu ich użycia wyróżniamy kilka typów baz:
+
+| Typ bazy | Opis | Przykład |
+|----------|------|----------|
+| Hierarchiczna | Dane ułożone w strukturę drzewa | IMS (IBM) |
+| Sieciowa | Rekordy połączone są w złożone grafy | IDMS |
+| Relacyjna | Dane w tabelach, związki przez klucze | PostgreSQL, MySQL |
+| Obiektowa | Dane jako obiekty z metodami | ObjectDB |
+| Dokumentowa (NoSQL) | Dane w formacie dokumentów (JSON) | MongoDB, CouchDB |
+| Grafowa | Modele relacji jako węzły i krawędzie | Neo4j |
+
+> <img> Grafika: schematy — drzewo, sieć, tabela, graf
+
+**Uwaga:** Model relacyjny jest najpowszechniej stosowany z uwagi na prostotę i solidne podstawy teoretyczne (algebra relacji).
+
+---
+
+## 9️⃣ Historia i ewolucja baz danych
+
+Krótka oś czasu najważniejszych etapów:
+
+1. **Systemy plikowe (lata 50–60)** — proste pliki, brak centralnej kontroli.
+2. **Pierwsze DBMS (lata 60–70)** — centralizacja, lepsze zarządzanie danymi.
+3. **Modele hierarchiczne i sieciowe** — stosowane w dużych organizacjach, lecz trudne w utrzymaniu.
+4. **Model relacyjny (E. F. Codd, 1970)** — rewolucja: tabele, relacje i algebra relacji.
+5. **SQL i standaryzacja** — język pozwalający na zdefiniowanie i manipulację danymi.
+6. **NoSQL i chmura (XXI wiek)** — elastyczność, skalowalność, nowe modele danych.
+
+> <img> Oś czasu: rozwój baz danych od plików do NoSQL i rozwiązań chmurowych
+
+---
+
+## 🔟 Zalety podejścia relacyjnego
+
+- redukcja redundancji poprzez normalizację i klucze,
+- łatwość łączenia danych (JOINy),
+- kontrola integralności (ograniczenia, klucze obce),
+- mechanizmy bezpieczeństwa i wielodostępności,
+- przewidywalność i zgodność z formalnymi podstawami matematycznymi.
+
+> <img> Schemat relacji między tabelami: STUDENT → ZAPISY → KURS
+
+---
+
+## 1️⃣1️⃣ Wprowadzenie do języka SQL
+
+**SQL (Structured Query Language)** to standardowy język do komunikacji z relacyjnymi bazami danych. Dzieli się na kilka części:
+
+- **DDL (Data Definition Language)** — definiowanie struktur (CREATE, ALTER, DROP),
+- **DML (Data Manipulation Language)** — operacje na danych (SELECT, INSERT, UPDATE, DELETE),
+- **DCL (Data Control Language)** — kontrola dostępu (GRANT, REVOKE),
+- **TCL (Transaction Control Language)** — kontrola transakcji (COMMIT, ROLLBACK).

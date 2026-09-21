@@ -1,0 +1,375 @@
+---
+title: "Model relacyjny i podstawy SQL"
+---
+
+# 💾 Model relacyjny i podstawy SQL
+
+---
+
+## 1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe
+
+### 🔹 Relacja = tabela
+
+- Dane przechowywane są w **tabelach** (ang. *relations*).
+- Każdy **wiersz (row)** to rekord / krotka.
+- Każda **kolumna (column)** to atrybut.
+- **Dziedzina (domain)** to zbiór dopuszczalnych wartości w danej kolumnie.
+
+Przykład relacji **STUDENT**:
+
+| id | imie | nazwisko | rok_urodzenia |
+|----|------|-----------|---------------|
+| 1  | Adam | Mickiewicz | 1798 |
+| 2  | Henryk | Sienkiewicz | 1846 |
+
+> <img> Schemat relacji: tabela STUDENT z kolumnami i wierszami
+
+---
+
+## 2️⃣ Klucze i więzy integralności
+
+### 🔸 Klucz główny (PRIMARY KEY)
+- Unikalnie identyfikuje każdy wiersz w tabeli.
+- Nie może przyjmować wartości `NULL`.
+- W tabeli może występować tylko jeden klucz główny.
+
+### 🔸 Klucz obcy (FOREIGN KEY)
+- Tworzy powiązanie z inną tabelą.
+- Wymusza spójność danych – nie można wprowadzić wartości, której nie ma w tabeli nadrzędnej.
+
+### 🔸 Inne więzy integralności
+- `UNIQUE` – zapewnia unikalność wartości w kolumnie.
+- `NOT NULL` – kolumna nie może przyjmować wartości pustych.
+- `CHECK` – sprawdza warunek logiczny (np. `wiek > 0`).
+
+| Rodzaj klucza | Opis | Przykład |
+|----------------|------|----------|
+| **Klucz główny (Primary Key)** | jednoznacznie identyfikuje rekord | `NrIndeksu` w `STUDENT` |
+| **Klucz obcy (Foreign Key)** | tworzy powiązanie między tabelami | `KursID` w tabeli `ZAPIS` |
+| **Klucz kandydujący (Candidate Key)** | atrybut, który może być kluczem głównym | `PESEL`, `NrIndeksu` |
+| **Klucz złożony (Composite Key)** | składa się z kilku kolumn | `(StudentID, KursID)` |
+
+> <img> Schemat: klucz główny i klucz obcy między tabelami STUDENT, KURS, ZAPIS
+
+### 🔹 Klucz złożony w praktyce
+
+Klucz złożony (composite key) deklarujemy jako `PRIMARY KEY` obejmujący kilka kolumn naraz — żadna z nich osobno nie musi być unikalna, unikalna musi być dopiero ich **kombinacja**.
+
+```sql
+CREATE TABLE Zapis (
+    NrIndeksu   INTEGER,
+    KursID      INTEGER,
+    DataZapisu  DATE,
+    PRIMARY KEY (NrIndeksu, KursID),
+    FOREIGN KEY (NrIndeksu) REFERENCES Student(NrIndeksu),
+    FOREIGN KEY (KursID) REFERENCES Kurs(KursID)
+);
+```
+
+Ten sam student (`NrIndeksu`) może wystąpić wielokrotnie (na różnych kursach), ten sam kurs (`KursID`) też — ale para `(NrIndeksu, KursID)` musi być unikalna: nie da się zapisać dwa razy na ten sam kurs.
+
+### 🔹 Co się dzieje przy usuwaniu powiązanych danych — `ON DELETE`
+
+Sam `FOREIGN KEY` mówi tylko, że wartość musi istnieć w tabeli nadrzędnej. Nie mówi, co zrobić, gdy ktoś spróbuje **usunąć** wiersz nadrzędny, do którego wciąż odwołują się wiersze podrzędne. To ustala klauzula `ON DELETE`:
+
+| Opcja | Zachowanie przy `DELETE` rodzica |
+|-------|-----------------------------------|
+| *(brak, domyślnie)* `NO ACTION` / `RESTRICT` | Baza **odrzuca** usunięcie, dopóki istnieją powiązane wiersze podrzędne. |
+| `ON DELETE CASCADE` | Usunięcie rodzica **automatycznie usuwa** powiązane wiersze podrzędne. |
+| `ON DELETE SET NULL` | Powiązane wiersze podrzędne dostają `NULL` w kolumnie klucza obcego. |
+
+```sql
+FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) ON DELETE CASCADE
+```
+
+Jeśli klauzuli `ON DELETE` nie podamy w ogóle (tak jak w przykładzie `Ksiazki` poniżej), obowiązuje domyślne zachowanie restrykcyjne — baza nie pozwoli usunąć autora, który ma jeszcze książki.
+
+---
+
+## 3️⃣ Rodzaje związków (relacji) między tabelami
+
+W relacyjnych bazach danych tabele łączy się przez **klucze obce**.
+Na tej podstawie tworzą się różne typy relacji:
+
+| Typ relacji | Opis | Przykład |
+|--------------|------|----------|
+| **1:1 (jeden do jednego)** | jeden rekord w tabeli A odpowiada dokładnie jednemu rekordowi w tabeli B | Student ↔️ Legitymacja |
+| **1:N (jeden do wielu)** | jeden rekord w tabeli A może być powiązany z wieloma rekordami w tabeli B | Wykładowca ↔️ Kursy |
+| **N:M (wielu do wielu)** | wiele rekordów w A może być powiązanych z wieloma w B | Studenci ↔️ Kursy |
+
+Relację **N:M** realizuje się przez **tabelę pośredniczącą**, np.:
+
+```sql
+STUDENT (NrIndeksu, Imie, Nazwisko)
+KURS (KursID, Nazwa)
+ZAPIS (NrIndeksu, KursID, DataZapisu)
+```
+
+Tabela ZAPIS zawiera klucze obce wskazujące na STUDENT i KURS.
+
+ <img alt="Schemat: STUDENT —< ZAPIS >— KURS (relacja N:M)">
+
+ ## 4️⃣ Wprowadzenie do języka SQL (Structured Query Language)
+
+SQL to standardowy język do definiowania, modyfikowania i pobierania danych w relacyjnych bazach danych. Przypomnienie z wykładu 1 — SQL dzieli się na cztery podjęzyki: **DDL**, **DML**, **DCL**, **TCL**. Dziś skupiamy się głównie na DDL i DML.
+
+---
+
+### 🔹 Tworzenie tabel (DDL – Data Definition Language)
+
+Polecenie `CREATE TABLE` służy do utworzenia nowej tabeli w bazie danych.
+W tym poleceniu definiujemy nazwy kolumn, ich typy danych oraz różne więzy integralności, takie jak `PRIMARY KEY`, `NOT NULL` czy `FOREIGN KEY`.
+
+Każda tabela powinna mieć kolumnę, która jednoznacznie identyfikuje każdy wiersz – to właśnie **klucz główny**.
+
+W przykładzie poniżej tworzymy dwie tabele: **Autorzy** i **Ksiazki**, które będą ze sobą powiązane relacją **klucz główny–klucz obcy**.
+
+---
+
+### 💡 Przykład w **SQLite** i **PostgreSQL**
+
+```sql
+CREATE TABLE Autorzy (
+    autor_id     INTEGER PRIMARY KEY,         -- w SQLite automatycznie AUTOINCREMENT
+    imie         TEXT NOT NULL,
+    nazwisko     TEXT NOT NULL
+);
+
+CREATE TABLE Ksiazki (
+    ksiazka_id   SERIAL PRIMARY KEY,          -- PostgreSQL: automatyczna numeracja
+    tytul        VARCHAR(200) NOT NULL,
+    rok          INTEGER CHECK (rok > 0),
+    autor_id     INTEGER,
+    FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)
+);
+
+```
+
+- W SQLite INTEGER PRIMARY KEY = alias dla AUTOINCREMENT.
+- W PostgreSQL używamy SERIAL lub GENERATED ALWAYS AS IDENTITY.
+
+W powyższym przykładzie:
+
+- tabela Autorzy przechowuje dane o autorach,
+- tabela Ksiazki przechowuje dane o książkach,
+- kolumna autor_id w Ksiazki to klucz obcy, który wskazuje autora.
+
+Dzięki więzom integralności baza pilnuje, by każda książka miała poprawnego autora.
+Takie powiązania są podstawą modelu relacyjnego.
+
+> ⚠️ Zwróć uwagę: `FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)` powyżej **nie ma** klauzuli `ON DELETE` — patrz sekcja 2 wyżej, co to oznacza w praktyce.
+
+
+## 5️⃣ Modyfikacja i usuwanie tabel
+
+### 🔹 Dodawanie kolumn
+```sql
+ALTER TABLE Ksiazki ADD COLUMN gatunek TEXT;
+```
+### 🔹 Zmiana typu kolumny
+
+```sql
+ALTER TABLE STUDENT ALTER COLUMN Kierunek TYPE VARCHAR(100);
+```
+
+### 🔹 Usuwanie kolumny
+
+```sql
+ALTER TABLE STUDENT DROP COLUMN Email;
+```
+
+### 🔹 Usuwanie tabeli
+
+```sql
+DROP TABLE Ksiazki;
+```
+
+
+
+## 6️⃣ Wstawianie danych (DML – Data Manipulation Language)
+
+Polecenie INSERT INTO służy do wprowadzania nowych wierszy (rekordów) do tabeli.
+Wartości muszą być zgodne z typami kolumn oraz ograniczeniami (NOT NULL, CHECK, itp.).
+
+Można dodać jeden lub wiele rekordów w jednym poleceniu.
+
+```sql
+INSERT INTO Autorzy (imie, nazwisko) VALUES
+('Adam', 'Mickiewicz'),
+('Henryk', 'Sienkiewicz'),
+('Bolesław', 'Prus');
+
+INSERT INTO Ksiazki (tytul, rok, autor_id) VALUES
+('Pan Tadeusz', 1834, 1),
+('Quo Vadis', 1896, 2),
+('Lalka', 1890, 3);
+
+```
+
+
+
+Każdy rekord reprezentuje jedną pozycję w tabeli.
+Polecenie INSERT wymaga podania wartości w tej samej kolejności, w jakiej wymieniono kolumny.
+Jeśli nie podamy jakiejś kolumny, a ma ona zdefiniowaną wartość domyślną (DEFAULT), baza wstawi ją automatycznie.
+
+
+## 7️⃣ Wybieranie danych – SELECT
+
+### 🧩 Podstawowy SELECT
+
+```sql
+SELECT * FROM Autorzy;
+```
+Powyższe zapytanie zwraca wszystkich autorów z tabeli Autorzy.
+
+
+
+### 🧩 Wybór konkretnych kolumn
+```sql
+
+SELECT imie, nazwisko FROM Autorzy;
+```
+
+### 🧩 Nadawanie aliasów
+
+```sql
+SELECT imie AS "Imię", nazwisko AS "Nazwisko" FROM Autorzy;
+```
+
+Alias (AS) pozwala nadać kolumnom bardziej opisowe nazwy w wynikach.
+
+
+## 8️⃣ Filtrowanie – WHERE
+
+```sql
+SELECT * FROM Ksiazki
+WHERE rok > 1850;
+```
+
+### 🧠 Operatory logiczne:
+
+- = , <>, <, >, <=, >=
+- LIKE 'Q%' → zaczyna się na Q
+- IN (...)
+- BETWEEN 1800 AND 1900
+- IS NULL, IS NOT NULL
+
+Przykład wyszukiwania książek zawierających literę “a” w tytule:
+
+
+```sql
+SELECT tytul FROM Ksiazki WHERE tytul LIKE '%a%';
+```
+
+### ⚠️ Pułapka: `NULL` w `WHERE`
+
+`NULL` oznacza „wartość nieznana”, więc **nie** porównujemy go operatorem `=`.
+
+```sql
+-- ŹLE — nigdy nie zwróci wierszy, nawet jeśli autor_id jest puste:
+SELECT * FROM Ksiazki WHERE autor_id = NULL;
+
+-- DOBRZE:
+SELECT * FROM Ksiazki WHERE autor_id IS NULL;
+```
+
+`autor_id = NULL` nie daje ani `TRUE`, ani `FALSE`, tylko `UNKNOWN` — a `WHERE` odrzuca wiersze, dla których warunek nie jest jednoznacznie `TRUE`. Ten sam problem dotyczy `<>` — `autor_id <> NULL` też nic nie zwróci, trzeba użyć `IS NOT NULL`.
+
+## 9️⃣ Sortowanie – ORDER BY
+
+
+```sql
+SELECT * FROM Ksiazki ORDER BY rok DESC;
+```
+
+Sortowanie wyników można wykonać według dowolnej kolumny.
+Domyślnie ORDER BY sortuje rosnąco (ASC).
+Dla kilku kolumn można napisać np.:
+
+```sql
+SELECT * FROM Ksiazki ORDER BY autor_id ASC, rok DESC;
+```
+
+## 🔟 Grupowanie i agregacja – GROUP BY, HAVING
+
+```sql
+SELECT autor_id, COUNT(*) AS liczba_ksiazek
+FROM Ksiazki
+GROUP BY autor_id
+HAVING COUNT(*) > 1;
+
+```
+
+Klauzula GROUP BY grupuje dane, a HAVING filtruje grupy po agregacji.
+Funkcje agregujące: COUNT(), SUM(), AVG(), MIN(), MAX().
+
+### 🔹 Dlaczego `HAVING`, a nie `WHERE`?
+
+`WHERE` filtruje **pojedyncze wiersze**, zanim zostaną zgrupowane — w momencie jego działania `COUNT(*)` jeszcze nie istnieje. `HAVING` filtruje **gotowe grupy**, już po agregacji. Dlatego `WHERE COUNT(*) > 1` jest błędem składniowym, a `HAVING COUNT(*) > 1` — poprawne.
+
+Silnik SQL wykonuje zapytanie w innej kolejności logicznej, niż je piszemy:
+
+```
+FROM  →  WHERE  →  GROUP BY  →  HAVING  →  SELECT  →  ORDER BY
+```
+
+Czyli mimo że `SELECT` piszemy na początku, jest wykonywany niemal na końcu — dlatego alias nadany w `SELECT ... AS liczba_ksiazek` nie jest jeszcze dostępny w `WHERE`, ale można go użyć w `ORDER BY`.
+
+
+## 1️⃣1️⃣ Łączenie tabel – JOIN
+
+### 🔹 INNER JOIN
+
+
+```sql
+SELECT k.tytul, a.imie, a.nazwisko
+FROM Ksiazki k
+JOIN Autorzy a ON k.autor_id = a.autor_id;
+```
+
+
+### 🔹 LEFT JOIN
+
+```sql
+SELECT k.tytul, a.imie, a.nazwisko
+FROM Ksiazki k
+LEFT JOIN Autorzy a ON k.autor_id = a.autor_id;
+```
+
+INNER JOIN zwraca tylko dopasowane rekordy,
+LEFT JOIN – wszystkie rekordy z lewej tabeli (nawet bez dopasowania).
+
+
+## 1️⃣2️⃣ Aktualizacja i usuwanie danych
+
+### 🔹 Aktualizacja danych
+
+```sql
+UPDATE Ksiazki SET rok = 1836 WHERE tytul = 'Pan Tadeusz';
+```
+
+### 🔹 Usuwanie danych
+
+```sql
+DELETE FROM Ksiazki WHERE rok < 1850;
+```
+Zawsze należy używać WHERE, aby nie zmodyfikować lub nie usunąć wszystkich rekordów.
+
+## 🧾 Podsumowanie
+
+SQL jest językiem deklaratywnym – opisujemy co chcemy uzyskać, a nie jak to zrobić.
+Dzięki temu użytkownik nie musi znać szczegółów działania bazy danych.
+
+Poznane dziś polecenia:
+
+CREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY
+
+to fundament pracy z bazami danych.
+Opanowanie ich pozwala budować i analizować nawet bardzo złożone systemy informacyjne.
+
+⸻
+
+## 📚 Źródła i literatura:
+	•	Dokumentacja SQLite
+	•	Dokumentacja PostgreSQL
+	•	A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts
