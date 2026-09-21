@@ -111,5 +111,23 @@ return [
                 'q5' => ['correct' => 'B', 'points' => 3],
             ],
         ],
+
+        'wdplab2026' => [
+            // Recap of sesja 1, shown at the top of sesja 2
+            'sesja02' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            // Recap of sesja 2, shown at the top of sesja 3
+            'sesja03' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            // Recap of sesja 3, shown at the top of sesja 4
+            'sesja04' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+        ],
     ],
 ];
