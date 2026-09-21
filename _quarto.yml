@@ -1,6 +1,18 @@
 project:
   type: website
   output-dir: docs
+  # Reveal each lecture week by week: comment OUT its "!lectures/..." line
+  # below (so it renders) once that lecture is taught, then uncomment the
+  # matching entry in website.sidebar.contents further down. Doing only
+  # one of the two either publishes an unlisted page (still reachable by
+  # a direct URL) or links to a page that doesn't exist yet.
+  render:
+    - "*.qmd"
+    - "lectures/*.qmd"
+    - "!lectures/wyklad2.qmd"
+    - "!lectures/wyklad3.qmd"
+    - "!lectures/wyklad4.qmd"
+    - "!lectures/wyklad5.qmd"
 
 website:
   title: Relacyjne Systemy Organizacji Danych
@@ -13,10 +25,10 @@ website:
       - section: "Wykłady"
         contents:
           - lectures/wyklad1.qmd
-          - lectures/wyklad2.qmd
-          - lectures/wyklad3.qmd
-          - lectures/wyklad4.qmd
-          - lectures/wyklad5.qmd
+          # - lectures/wyklad2.qmd
+          # - lectures/wyklad3.qmd
+          # - lectures/wyklad4.qmd
+          # - lectures/wyklad5.qmd
   page-footer: "Copyright 2026, Sebastian Zając"
 format:
   html:

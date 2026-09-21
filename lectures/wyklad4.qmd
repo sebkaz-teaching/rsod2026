@@ -2,6 +2,72 @@
 title: "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
 ---
 
+## ✅ Sprawdź się z wykładu 3
+
+<div id="rsod-quiz"></div>
+<script src="../assets/js/quiz-engine.js"></script>
+<script>
+RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+  lecture: "wyklad4",
+  title: "Wykład 3: Normalizacja i projektowanie baz danych",
+  submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
+  questions: [
+    {
+      id: "q1", points: 1, diff: "bardzo łatwe",
+      text: "Co to jest redundancja danych?",
+      options: [
+        {v:"A", t:"Brak danych w tabeli"},
+        {v:"B", t:"Powielanie tych samych informacji w wielu miejscach bazy"},
+        {v:"C", t:"Nadmiar indeksów w tabeli"},
+        {v:"D", t:"Zbyt duża liczba tabel w bazie"}
+      ]
+    },
+    {
+      id: "q2", points: 1, diff: "łatwe",
+      text: "Zapis „NrIndeksu → Imię, Nazwisko” oznacza, że:",
+      options: [
+        {v:"A", t:"Imię i Nazwisko są kluczami obcymi"},
+        {v:"B", t:"Każdemu NrIndeksu odpowiada dokładnie jedna wartość Imię i jedna wartość Nazwisko"},
+        {v:"C", t:"NrIndeksu zależy od Imienia i Nazwiska"},
+        {v:"D", t:"To zapis relacji N:M"}
+      ]
+    },
+    {
+      id: "q3", points: 2, diff: "średnie",
+      text: "Tabela Kursy(Student, NrIndeksu, Kursy), gdzie kolumna Kursy zawiera wartość „Bazy danych, Programowanie”. Którą postać normalną narusza taki zapis?",
+      options: [
+        {v:"A", t:"2NF, bo brakuje klucza złożonego"},
+        {v:"B", t:"3NF, bo istnieje zależność przechodnia"},
+        {v:"C", t:"1NF — wartości w kolumnie Kursy nie są atomowe"},
+        {v:"D", t:"BCNF, bo klucz kandydujący nie jest unikalny"}
+      ]
+    },
+    {
+      id: "q4", points: 2, diff: "trudne",
+      text: "Tabela ZAPISY(StudentID, KursID, Sala), klucz złożony (StudentID, KursID), a Sala zależy wyłącznie od KursID. Jaki to problem i jak go rozwiązać?",
+      options: [
+        {v:"A", t:"Narusza 1NF — trzeba rozbić Sala na osobne wiersze"},
+        {v:"B", t:"Narusza 2NF (zależność częściowa od części klucza) — trzeba wydzielić tabelę KURS(KursID, Sala)"},
+        {v:"C", t:"Narusza 3NF (zależność przechodnia) — trzeba wydzielić SALA(Sala, Budynek)"},
+        {v:"D", t:"To poprawny projekt, nic nie trzeba zmieniać"}
+      ]
+    },
+    {
+      id: "q5", points: 3, diff: "wnioskowanie",
+      text: "Tabela KURS(KursID, Nazwa, Prowadzący, PokojProwadzącego) — pokój zależy od tego, KTO prowadzi (Prowadzący), a nie bezpośrednio od KursID (KursID → Prowadzący → PokojProwadzącego). Jaką postać normalną narusza ta tabela i jak to naprawić?",
+      options: [
+        {v:"A", t:"1NF — PokojProwadzącego nie jest wartością atomową"},
+        {v:"B", t:"2NF — PokojProwadzącego zależy tylko od części klucza złożonego"},
+        {v:"C", t:"3NF (zależność przechodnia) — trzeba wydzielić tabelę PROWADZĄCY(Prowadzący, PokojProwadzącego)"},
+        {v:"D", t:"Żadną — to poprawny projekt"}
+      ]
+    }
+  ]
+});
+</script>
+
+---
+
 ## 1️⃣ Wprowadzenie do PL/SQL
 
 ### 🔹 Czym jest PL/SQL?

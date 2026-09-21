@@ -18,14 +18,42 @@ return [
     // the score server-side (never trust a score sent by the browser —
     // it can be edited in devtools before the request is sent). Points
     // must match the client-side quiz config for each lecture.
+    //
+    // Each key is the PAGE the quiz is embedded on, not the material it
+    // tests: the quiz at the top of wyklad2.qmd is a recap of wyklad1,
+    // the one on wyklad3.qmd recaps wyklad2, and so on.
     'answer_keys' => [
+        // Recap of wyklad 1, shown at the top of wyklad2.qmd
         'wyklad2' => [
+            'q1' => ['correct' => 'C', 'points' => 1],
+            'q2' => ['correct' => 'B', 'points' => 1],
+            'q3' => ['correct' => 'C', 'points' => 2],
+            'q4' => ['correct' => 'C', 'points' => 2],
+            'q5' => ['correct' => 'B', 'points' => 3],
+        ],
+        // Recap of wyklad 2, shown at the top of wyklad3.qmd
+        'wyklad3' => [
             'q1' => ['correct' => 'B', 'points' => 1],
             'q2' => ['correct' => 'C', 'points' => 1],
             'q3' => ['correct' => 'B', 'points' => 2],
             'q4' => ['correct' => 'C', 'points' => 2],
             'q5' => ['correct' => 'B', 'points' => 3],
         ],
-        // 'wyklad3' => [ ... ],  // add as each lecture's quiz goes live
+        // Recap of wyklad 3, shown at the top of wyklad4.qmd
+        'wyklad4' => [
+            'q1' => ['correct' => 'B', 'points' => 1],
+            'q2' => ['correct' => 'B', 'points' => 1],
+            'q3' => ['correct' => 'C', 'points' => 2],
+            'q4' => ['correct' => 'B', 'points' => 2],
+            'q5' => ['correct' => 'C', 'points' => 3],
+        ],
+        // Recap of wyklad 4, shown at the top of wyklad5.qmd
+        'wyklad5' => [
+            'q1' => ['correct' => 'B', 'points' => 1],
+            'q2' => ['correct' => 'B', 'points' => 1],
+            'q3' => ['correct' => 'B', 'points' => 2],
+            'q4' => ['correct' => 'B', 'points' => 2],
+            'q5' => ['correct' => 'B', 'points' => 3],
+        ],
     ],
 ];

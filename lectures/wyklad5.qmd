@@ -2,6 +2,72 @@
 title: "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
 ---
 
+## ✅ Sprawdź się z wykładu 4
+
+<div id="rsod-quiz"></div>
+<script src="../assets/js/quiz-engine.js"></script>
+<script>
+RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+  lecture: "wyklad5",
+  title: "Wykład 4: PL/SQL, optymalizacja zapytań i indeksy",
+  submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
+  questions: [
+    {
+      id: "q1", points: 1, diff: "bardzo łatwe",
+      text: "Jaki znak kończy wykonanie bloku PL/SQL w SQL*Plus (po END;)?",
+      options: [
+        {v:"A", t:";;"},
+        {v:"B", t:"/"},
+        {v:"C", t:"#"},
+        {v:"D", t:"STOP"}
+      ]
+    },
+    {
+      id: "q2", points: 1, diff: "łatwe",
+      text: "Do czego służy indeks w bazie danych?",
+      options: [
+        {v:"A", t:"Do przechowywania kopii zapasowej tabeli"},
+        {v:"B", t:"Do szybkiego znajdowania wierszy bez skanowania całej tabeli (analogia: spis treści książki)"},
+        {v:"C", t:"Do automatycznego usuwania duplikatów"},
+        {v:"D", t:"Do szyfrowania danych w tabeli"}
+      ]
+    },
+    {
+      id: "q3", points: 2, diff: "średnie",
+      text: "Czym różni się EXPLAIN od EXPLAIN ANALYZE?",
+      options: [
+        {v:"A", t:"EXPLAIN działa tylko w Oracle, EXPLAIN ANALYZE tylko w PostgreSQL"},
+        {v:"B", t:"EXPLAIN pokazuje plan teoretyczny (na bazie statystyk), EXPLAIN ANALYZE faktycznie wykonuje zapytanie i pokazuje rzeczywisty czas"},
+        {v:"C", t:"EXPLAIN ANALYZE jest szybszą, uproszczoną wersją EXPLAIN"},
+        {v:"D", t:"Nie ma różnicy, to synonimy"}
+      ]
+    },
+    {
+      id: "q4", points: 2, diff: "trudne",
+      text: "W planie zapytania widzimy: Seq Scan on orders (cost=0.00..450.00 rows=3 width=48). Co to oznacza i co warto zrobić?",
+      options: [
+        {v:"A", t:"Baza użyła indeksu — zapytanie jest już zoptymalizowane"},
+        {v:"B", t:"Baza przeskanowała całą tabelę bez indeksu — warto rozważyć dodanie indeksu na kolumnie z warunku WHERE"},
+        {v:"C", t:"Zapytanie zawiera błąd składniowy"},
+        {v:"D", t:"cost=0.00..450.00 oznacza czas wykonania w milisekundach"}
+      ]
+    },
+    {
+      id: "q5", points: 3, diff: "wnioskowanie",
+      text: "Tabela Studenci ma kolumnę plec (tylko 2 wartości: M/K) i kolumnę nr_indeksu (unikalna). Zapytania często filtrują po jednej z nich w WHERE. Na której kolumnie indeks przyniesie realną korzyść, a na której będzie prawie bezużyteczny — i dlaczego?",
+      options: [
+        {v:"A", t:"Obie kolumny zyskają tak samo na indeksie"},
+        {v:"B", t:"Indeks na nr_indeksu pomoże (wysoka selektywność), indeks na plec niewiele da (niska selektywność — trzeba i tak przejrzeć ok. połowy tabeli)"},
+        {v:"C", t:"Indeks na plec pomoże bardziej, bo ma mniej unikalnych wartości do przeszukania"},
+        {v:"D", t:"Żadna z kolumn nie nadaje się do indeksowania"}
+      ]
+    }
+  ]
+});
+</script>
+
+---
+
 ## 1️⃣ Transakcje i ich właściwości (ACID)
 
 ### 🔹 Co to jest transakcja?
