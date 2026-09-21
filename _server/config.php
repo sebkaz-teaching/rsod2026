@@ -149,6 +149,62 @@ return [
                 'q1' => ['correct' => 'B', 'points' => 1],
                 'q2' => ['correct' => 'B', 'points' => 2],
             ],
+            'sesja05' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja06' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja07' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja08' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja09' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja10' => [
+                'q1' => ['correct' => 'C', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja11' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja12' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja13' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja14' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja15' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja16' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja17' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
+            'sesja18' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 2],
+            ],
         ],
     ],
 ];
