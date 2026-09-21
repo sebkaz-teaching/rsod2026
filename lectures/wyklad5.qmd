@@ -7,7 +7,8 @@ title: "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
 <div id="rsod-quiz"></div>
 <script src="../assets/js/quiz-engine.js"></script>
 <script>
-RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+CourseQuiz.mount(document.getElementById('rsod-quiz'), {
+  course: "rsod2026",
   lecture: "wyklad5",
   title: "Wykład 4: PL/SQL, optymalizacja zapytań i indeksy",
   submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",

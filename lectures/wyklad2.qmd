@@ -7,7 +7,8 @@ title: "Model relacyjny i podstawy SQL"
 <div id="rsod-quiz"></div>
 <script src="../assets/js/quiz-engine.js"></script>
 <script>
-RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+CourseQuiz.mount(document.getElementById('rsod-quiz'), {
+  course: "rsod2026",
   lecture: "wyklad2",
   title: "Wykład 1: Od pliku do bazy danych",
   submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",

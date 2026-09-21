@@ -7,7 +7,8 @@ title: "Normalizacja i projektowanie baz danych"
 <div id="rsod-quiz"></div>
 <script src="../assets/js/quiz-engine.js"></script>
 <script>
-RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+CourseQuiz.mount(document.getElementById('rsod-quiz'), {
+  course: "rsod2026",
   lecture: "wyklad3",
   title: "Wykład 2: Model relacyjny i podstawy SQL",
   submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",

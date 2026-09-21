@@ -36,6 +36,7 @@ if (!is_array($body)) {
 }
 
 $email = trim((string)($body['email'] ?? ''));
+$course = trim((string)($body['course'] ?? ''));
 $lecture = trim((string)($body['lecture'] ?? ''));
 $answers = $body['answers'] ?? null;
 
@@ -45,9 +46,9 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-if (!isset($cfg['answer_keys'][$lecture])) {
+if (!isset($cfg['answer_keys'][$course][$lecture])) {
     http_response_code(422);
-    echo json_encode(['error' => 'unknown_lecture']);
+    echo json_encode(['error' => 'unknown_course_or_lecture']);
     exit;
 }
 
@@ -59,7 +60,7 @@ if (!is_array($answers)) {
 
 // --- Recompute the score server-side — never trust a score sent by the
 // browser, it can be edited in devtools before the request goes out.
-$key = $cfg['answer_keys'][$lecture];
+$key = $cfg['answer_keys'][$course][$lecture];
 $score = 0;
 $maxScore = 0;
 foreach ($key as $qid => $spec) {
@@ -71,10 +72,11 @@ foreach ($key as $qid => $spec) {
 
 $db = rsod_db();
 $stmt = $db->prepare(
-    'INSERT INTO submissions (lecture, email, score, max_score, answers, submitted_at, ip)
-     VALUES (:lecture, :email, :score, :max_score, :answers, :submitted_at, :ip)'
+    'INSERT INTO submissions (course, lecture, email, score, max_score, answers, submitted_at, ip)
+     VALUES (:course, :lecture, :email, :score, :max_score, :answers, :submitted_at, :ip)'
 );
 $stmt->execute([
+    ':course' => $course,
     ':lecture' => $lecture,
     ':email' => $email,
     ':score' => $score,

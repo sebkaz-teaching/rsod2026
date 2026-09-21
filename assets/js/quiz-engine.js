@@ -1,15 +1,18 @@
 /**
- * RSOD quiz engine — mounts a self-grading, 5-question quiz into a
- * container and POSTs the result to the PHP backend in _server/.
+ * Course quiz engine — shared across course sites (rsod2026, prba2026,
+ * ...), each keeping its own copy of this file. Mounts a self-grading
+ * quiz into a container and POSTs the result to the shared PHP backend
+ * in _server/, tagged with which course and lecture page it's on.
  *
- * Usage (bottom of a lecture .qmd, as raw HTML):
- *   <div id="rsod-quiz"></div>
+ * Usage (top of a lecture .qmd, as raw HTML):
+ *   <div id="course-quiz"></div>
  *   <script src="../assets/js/quiz-engine.js"></script>
  *   <script>
- *     RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+ *     CourseQuiz.mount(document.getElementById('course-quiz'), {
+ *       course: "rsod2026",
  *       lecture: "wyklad2",
  *       submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
- *       questions: [ { id, points, diff, text, code, options:[{v,t}], correct }, ... ]
+ *       questions: [ { id, points, diff, text, code, options:[{v,t}] }, ... ]
  *     });
  */
 (function (global) {
@@ -121,7 +124,7 @@
       fetch(config.submitUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, lecture: config.lecture, answers: answers }),
+        body: JSON.stringify({ email: email, course: config.course, lecture: config.lecture, answers: answers }),
       })
         .then(function (r) {
           if (!r.ok) throw new Error("http_" + r.status);
@@ -150,5 +153,5 @@
     });
   }
 
-  global.RSODQuiz = { mount: mount };
+  global.CourseQuiz = { mount: mount };
 })(window);

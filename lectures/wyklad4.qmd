@@ -7,7 +7,8 @@ title: "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
 <div id="rsod-quiz"></div>
 <script src="../assets/js/quiz-engine.js"></script>
 <script>
-RSODQuiz.mount(document.getElementById('rsod-quiz'), {
+CourseQuiz.mount(document.getElementById('rsod-quiz'), {
+  course: "rsod2026",
   lecture: "wyklad4",
   title: "Wykład 3: Normalizacja i projektowanie baz danych",
   submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
