@@ -113,24 +113,18 @@ return [
         ],
 
         'pas2026' => [
-            // Recap of wyklad 1, shown at the top of wyklad2.qmd
-            'wyklad2' => [
+            // 3 lecture meetings (90 min = 2x45, each merging 2 of the
+            // original 6 topics). Recap of spotkanie 1, shown at the
+            // top of spotkanie2.qmd
+            'spotkanie2' => [
                 'q1' => ['correct' => 'B', 'points' => 1],
                 'q2' => ['correct' => 'B', 'points' => 1],
                 'q3' => ['correct' => 'B', 'points' => 2],
                 'q4' => ['correct' => 'B', 'points' => 2],
                 'q5' => ['correct' => 'B', 'points' => 3],
             ],
-            // Recap of wyklad 2, shown at the top of wyklad3.qmd
-            'wyklad3' => [
-                'q1' => ['correct' => 'B', 'points' => 1],
-                'q2' => ['correct' => 'B', 'points' => 1],
-                'q3' => ['correct' => 'B', 'points' => 2],
-                'q4' => ['correct' => 'B', 'points' => 2],
-                'q5' => ['correct' => 'B', 'points' => 3],
-            ],
-            // Recap of wyklad 3, shown at the top of wyklad4.qmd
-            'wyklad4' => [
+            // Recap of spotkanie 2, shown at the top of spotkanie3.qmd
+            'spotkanie3' => [
                 'q1' => ['correct' => 'B', 'points' => 1],
                 'q2' => ['correct' => 'B', 'points' => 1],
                 'q3' => ['correct' => 'B', 'points' => 2],
