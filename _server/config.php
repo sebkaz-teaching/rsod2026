@@ -112,6 +112,17 @@ return [
             ],
         ],
 
+        'pas2026' => [
+            // Recap of wyklad 1, shown at the top of wyklad2.qmd
+            'wyklad2' => [
+                'q1' => ['correct' => 'B', 'points' => 1],
+                'q2' => ['correct' => 'B', 'points' => 1],
+                'q3' => ['correct' => 'B', 'points' => 2],
+                'q4' => ['correct' => 'B', 'points' => 2],
+                'q5' => ['correct' => 'B', 'points' => 3],
+            ],
+        ],
+
         'wdplab2026' => [
             // Recap of sesja 1, shown at the top of sesja 2
             'sesja02' => [
