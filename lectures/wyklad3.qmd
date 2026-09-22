@@ -161,8 +161,12 @@ Tworzymy osobną tabelę STUDENT_KURS, gdzie każdy kurs to osobny rekord.
 
 ### 🧩 Druga postać normalna (2NF)
 
-- Tabela jest w 1NF **i** wszystkie atrybuty niekluczowe zależą **w pełni** od całego klucza głównego.  
-- Dotyczy tabel z **kluczem złożonym**.
+- Tabela jest w 1NF **i** każdy atrybut niekluczowy zależy **w pełni** od
+  **każdego klucza kandydującego** (nie tylko od tego, który akurat wybraliście na
+  klucz główny — jeśli tabela ma więcej niż jeden klucz kandydujący, warunek musi
+  być spełniony względem wszystkich).
+- Ma znaczenie tylko dla tabel z **kluczem złożonym** — przy kluczu jednokolumnowym
+  2NF jest spełnione automatycznie (nie ma jak zależeć "częściowo" od jednej kolumny).
 
 **Przykład:**
 
@@ -174,15 +178,46 @@ Rozwiązanie: wydziel tabelę KURS(KursID, Sala).
 
 ### 🧩 Trzecia postać normalna (3NF)
 
-- Tabela jest w 2NF **i** nie zawiera zależności przechodnich.  
-- Każdy atrybut niekluczowy zależy bezpośrednio od klucza głównego.
+- Tabela jest w 2NF **i** nie zawiera zależności przechodnich.
+- Każdy atrybut niekluczowy zależy **bezpośrednio** od klucza kandydującego — nie
+  pośrednio, przez inny atrybut niekluczowy.
 
 **Przykład:**
 
-NrIndeksu → Kierunek, Kierunek → Dziekan  
-➡️ *Dziekan* zależy pośrednio od *NrIndeksu*.  
+NrIndeksu → Kierunek, Kierunek → Dziekan
+➡️ *Dziekan* zależy pośrednio od *NrIndeksu*.
 Rozwiązanie: osobna tabela KIERUNEK(Dziekan, Kierunek).
 
+### 🧩 Postać normalna Boyce'a-Codda (BCNF)
+
+3NF ma lukę: dopuszcza sytuację, w której atrybut niekluczowy determinuje **część**
+klucza — o ile sam ten atrybut nie jest "całkiem niekluczowy" (jest częścią jakiegoś
+klucza kandydującego). BCNF usuwa ten wyjątek: **każda nietrywialna zależność
+funkcjonalna `X → Y` musi mieć po lewej stronie klucz kandydujący** — bez wyjątków.
+
+**Klasyczny przykład naruszenia BCNF (przy zachowanym 3NF):**
+
+Tabela `Zajecia(Student, Przedmiot, Nauczyciel)`, gdzie:
+
+- każdy student może uczęszczać na wiele przedmiotów u różnych nauczycieli → klucz
+  kandydujący to `(Student, Przedmiot)`,
+- ale **każdy nauczyciel uczy tylko jednego przedmiotu** → `Nauczyciel → Przedmiot`
+  jest prawdziwą zależnością funkcjonalną, mimo że `Nauczyciel` **nie jest** kluczem
+  kandydującym (sam jeden nie identyfikuje wiersza).
+
+Tabela jest w 3NF (`Przedmiot` jest częścią klucza, więc formalnie "zależność
+częściowo-kluczowa" nie łamie 3NF), ale **łamie BCNF** — determinant `Nauczyciel` nie
+jest kluczem kandydującym. Rozwiązanie: wydzielić `Nauczyciele(Nauczyciel,
+Przedmiot)` i `Zajecia(Student, Nauczyciel)`.
+
+::: {.callout-note}
+## Czy BCNF jest zawsze "lepsze" niż 3NF?
+Prawie zawsze pożądane, ale nie zawsze **osiągalne bez utraty zależności** — czasem
+rozbicie tabeli do BCNF sprawia, że pewnej zależności funkcjonalnej nie da się już
+wymusić samymi więzami integralności (`PRIMARY KEY`/`UNIQUE`) bez dodatkowej logiki
+aplikacyjnej. W praktyce inżynierskiej 3NF jest bardzo częstym, "wystarczająco
+dobrym" punktem zatrzymania — BCNF wymaga świadomej analizy, czy warto.
+:::
 
 ## 4. Diagramy ERD (Entity–Relationship Diagram)
 

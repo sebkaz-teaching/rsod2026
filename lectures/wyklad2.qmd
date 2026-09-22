@@ -193,27 +193,69 @@ W przykładzie poniżej tworzymy dwie tabele: **Autorzy** i **Ksiazki**, które 
 
 ---
 
-### 💡 Przykład w **SQLite** i **PostgreSQL**
+### 💡 Ten sam schemat w dwóch dialektach — celowo osobno
+
+SQL nie jest jednym, uniwersalnym językiem — `CREATE TABLE` różni się między
+silnikami akurat w tym miejscu, gdzie boli najbardziej: jak nadać kluczowi głównemu
+automatyczną numerację. Poniżej dwie **osobne, w pełni poprawne** wersje tego samego
+schematu — nie mieszajcie składni między nimi, żadna baza nie zrozumie takiej
+mieszanki.
+
+**Wariant SQLite:**
 
 ```sql
 CREATE TABLE Autorzy (
-    autor_id     INTEGER PRIMARY KEY,         -- w SQLite automatycznie AUTOINCREMENT
+    autor_id     INTEGER PRIMARY KEY,   -- patrz uwaga ponizej: to NIE to samo co AUTOINCREMENT
     imie         TEXT NOT NULL,
     nazwisko     TEXT NOT NULL
 );
 
 CREATE TABLE Ksiazki (
-    ksiazka_id   SERIAL PRIMARY KEY,          -- PostgreSQL: automatyczna numeracja
+    ksiazka_id   INTEGER PRIMARY KEY,
+    tytul        TEXT NOT NULL,
+    rok          INTEGER CHECK (rok > 0),
+    autor_id     INTEGER,
+    FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)
+);
+```
+
+**Wariant PostgreSQL:**
+
+```sql
+CREATE TABLE Autorzy (
+    autor_id     SERIAL PRIMARY KEY,
+    imie         TEXT NOT NULL,
+    nazwisko     TEXT NOT NULL
+);
+
+CREATE TABLE Ksiazki (
+    ksiazka_id   SERIAL PRIMARY KEY,
     tytul        VARCHAR(200) NOT NULL,
     rok          INTEGER CHECK (rok > 0),
     autor_id     INTEGER,
     FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)
 );
-
 ```
 
-- W SQLite INTEGER PRIMARY KEY = alias dla AUTOINCREMENT.
-- W PostgreSQL używamy SERIAL lub GENERATED ALWAYS AS IDENTITY.
+::: {.callout-important}
+## `INTEGER PRIMARY KEY` w SQLite to NIE alias dla `AUTOINCREMENT`
+
+To częsty błąd (nawet w niejednym tutorialu w internecie). W SQLite `INTEGER PRIMARY
+KEY` to alias dla wewnętrznego identyfikatora wiersza (`ROWID`) — baza **owszem**
+sama nada mu kolejną wolną liczbę przy `INSERT` bez podania wartości, ale ta liczba
+**może zostać ponownie użyta** po usunięciu wiersza (np. usuniecie ostatniego wiersza
+i dodanie nowego może dostać to samo ID co usunięty).
+
+Żeby naprawdę zagwarantować, że ID **nigdy** się nie powtórzy (nawet po usunięciach),
+trzeba dopisać dosłowne słowo kluczowe: `INTEGER PRIMARY KEY AUTOINCREMENT`. To
+osobna, ściślejsza gwarancja — kosztem odrobinę wolniejszych insertów (SQLite
+pilnuje dodatkowej tabeli `sqlite_sequence`). Do zwykłych ćwiczeń wystarczy sam
+`INTEGER PRIMARY KEY`; gdybyście kiedyś potrzebowali identyfikatorów, które nigdy się
+nie powtórzą (np. numery faktur), sięgnijcie po `AUTOINCREMENT` świadomie.
+
+PostgreSQL nie ma tego rozróżnienia — `SERIAL` zawsze daje rosnącą sekwencję, która
+(poza rzadkimi przypadkami jawnego resetu) nie powtarza wartości.
+:::
 
 W powyższym przykładzie:
 

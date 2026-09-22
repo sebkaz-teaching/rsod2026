@@ -77,6 +77,15 @@ Transakcja to logiczna jednostka pracy w bazie danych, składająca się z jedne
 
 Transakcja to zbiór operacji, które albo wszystkie się powiodą, albo żadna – nie ma stanu pośredniego.
 
+### 🔹 Cztery litery ACID — każda osobno
+
+| Litera | Właściwość | Co gwarantuje |
+|--------|------------|----------------|
+| **A** | Atomicity (atomowość) | Transakcja wykonuje się w całości albo wcale — dokładnie przykład z Kontami niżej: albo obie aktualizacje sald przejdą, albo żadna. |
+| **C** | Consistency (spójność) | Transakcja przenosi bazę z jednego poprawnego stanu w drugi — więzy integralności (`CHECK`, `FOREIGN KEY`, `UNIQUE`) muszą być spełnione i przed, i po. Jeśli transakcja złamałaby którykolwiek, baza ją odrzuci. |
+| **I** | Isolation (izolacja) | Transakcje wykonywane równocześnie nie "widzą" swoich niedokończonych zmian nawzajem — tyle, ile dokładnie "nie widzą", określa **poziom izolacji** (sekcja 3 niżej). |
+| **D** | Durability (trwałość) | Po `COMMIT` zmiana przetrwa — nawet awarię zasilania zaraz potem. Baza zapisuje to na trwałym nośniku (dziennik/WAL), zanim potwierdzi sukces klientowi. |
+
 Przykład:
 ```sql
 BEGIN;
@@ -141,7 +150,33 @@ Jeśli system nie zapewni izolacji — saldo końcowe może być błędne.
 
 ## 3️⃣ Poziomy izolacji transakcji
 
-Bazy danych zapewniają różne poziomy izolacji, które równoważą spójność danych i wydajność.
+Bazy danych zapewniają różne poziomy izolacji, które równoważą spójność danych i
+wydajność — im silniejsza izolacja, tym więcej blokad i tym wolniej działa system
+przy dużej współbieżności. Standard SQL definiuje cztery poziomy, każdy zapobiegający
+kolejnej "anomalii":
+
+| Poziom izolacji | Odczyt "brudnych" danych (dirty read) | Powtórny odczyt daje inny wynik (non-repeatable read) | Nowe wiersze "pojawiają się" w kolejnym odczycie (phantom read) |
+|---|---|---|---|
+| **READ UNCOMMITTED** | ❌ możliwy | ❌ możliwy | ❌ możliwy |
+| **READ COMMITTED** | ✅ zablokowany | ❌ możliwy | ❌ możliwy |
+| **REPEATABLE READ** | ✅ zablokowany | ✅ zablokowany | ❌ możliwy* |
+| **SERIALIZABLE** | ✅ zablokowany | ✅ zablokowany | ✅ zablokowany |
+
+\* W PostgreSQL `REPEATABLE READ` w praktyce blokuje też phantom read (dzięki
+implementacji przez migawkę danych — *snapshot isolation*) — to mocniejsza
+gwarancja, niż wymaga sam standard SQL. Nie zakładajcie tego zachowania w innych
+silnikach bez sprawdzenia dokumentacji.
+
+- **Dirty read** — transakcja A czyta dane, które transakcja B jeszcze nie
+  zacommitowała (i może zaraz wycofać przez `ROLLBACK`) — A oparła decyzję na
+  danych, które "nigdy się nie wydarzyły".
+- **Non-repeatable read** — transakcja A czyta ten sam wiersz dwa razy w trakcie
+  swojego działania i dostaje **różne** wartości, bo transakcja B zdążyła go
+  zmienić i zacommitować pomiędzy odczytami A.
+- **Phantom read** — transakcja A wykonuje ten sam warunek `WHERE` dwa razy i za
+  drugim razem dostaje **inny zestaw wierszy** (nie zmienioną wartość istniejącego
+  wiersza, tylko zupełnie nowy/zniknięty wiersz), bo B wstawiła/usunęła coś w
+  międzyczasie.
 
 ### 🔹 Przykład w PostgreSQL:
 
@@ -154,7 +189,16 @@ COMMIT;
 
 ```
 
-➡️ Na poziomie REPEATABLE READ oba SELECT-y zobaczą ten sam zestaw danych, nawet jeśli inna transakcja je zmieniła w międzyczasie.
+➡️ Na poziomie REPEATABLE READ oba SELECT-y zobaczą ten sam zestaw danych, nawet jeśli inna transakcja je zmieniła w międzyczasie — to właśnie ochrona przed non-repeatable read z tabeli wyżej.
+
+::: {.callout-note}
+## Kompromis, nie "im wyżej, tym lepiej"
+`SERIALIZABLE` daje najsilniejsze gwarancje, ale kosztem wydajności (więcej blokad,
+więcej transakcji odrzuconych do ponowienia przy konflikcie). Domyślny poziom w
+PostgreSQL to `READ COMMITTED` — świadomy wybór "wystarczająco bezpiecznie dla
+większości aplikacji, bez kosztu SERIALIZABLE". Podnosicie poziom izolacji tylko
+tam, gdzie konkretna anomalia z tabeli wyżej realnie zagraża Waszym danym.
+:::
 
 
 
@@ -196,7 +240,15 @@ WHERE autor_id = (
 1.	Podzapytanie wewnętrzne szuka identyfikatora autora autor_id, którego nazwisko to Sienkiewicz.
 2.	Zapytanie główne wybiera z tabeli Ksiazki tylko te rekordy, w których autor_id jest równy wynikowi podzapytania.
 
-> 🔸 Takie podzapytanie musi zwrócić jedną wartość (scalar subquery) – w przeciwnym razie wystąpi błąd.
+> 🔸 Takie podzapytanie **powinno** zwrócić jedną wartość (scalar subquery). Co się
+> stanie, gdy zwróci więcej niż jedną, zależy od silnika: **PostgreSQL zgłosi błąd**
+> (`more than one row returned by a subquery used as an expression`) — ale
+> **SQLite nie zgłasza błędu**, tylko po cichu bierze jeden z wierszy (który
+> konkretnie — nie jest gwarantowane) i ignoruje resztę. To niebezpieczne "milczące"
+> zachowanie: kod, który w SQLite "działa", może się wywrócić dopiero po
+> przeniesieniu na PostgreSQL. Nie polegajcie na konkretnym zachowaniu — jeśli
+> podzapytanie może zwrócić więcej niż jeden wiersz, użyjcie `IN` (sekcja niżej) albo
+> dodajcie `LIMIT 1` ze świadomym sortowaniem.
 
 ## 🔹 2. Podzapytanie zwracające wiele wartości (operator IN)
 
