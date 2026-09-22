@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Informacje ogólne – Relacyjne Systemy Organizacji Danych</title>
+<title>Magazyn wyposażenia — zadania – Relacyjne Systemy Organizacji Danych</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -86,7 +86,9 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Informacje ogólne</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      Relacyjne Systemy Organizacji Danych
+      </li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -113,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Informacje ogólne</span></a>
   </div>
 </li>
@@ -144,9 +146,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title"><strong>Sections</strong></h2>
    
   <ul class="collapse">
-  <li><a href="#relacyjne-systemy-organizacji-danych" id="toc-relacyjne-systemy-organizacji-danych" class="nav-link active" data-scroll-target="#relacyjne-systemy-organizacji-danych">Relacyjne Systemy Organizacji Danych</a></li>
-  <li><a href="#kalendarz" id="toc-kalendarz" class="nav-link" data-scroll-target="#kalendarz">Kalendarz</a></li>
-  <li><a href="#scenariusze-zajęć" id="toc-scenariusze-zajęć" class="nav-link" data-scroll-target="#scenariusze-zajęć">Scenariusze zajęć</a></li>
+  <li><a href="#wasze-zadanie" id="toc-wasze-zadanie" class="nav-link active" data-scroll-target="#wasze-zadanie">Wasze zadanie</a></li>
+  <li><a href="#jak-pracujemy" id="toc-jak-pracujemy" class="nav-link" data-scroll-target="#jak-pracujemy">Jak pracujemy</a></li>
+  <li><a href="#wykład-1-któremu-arkuszowi-wierzyć" id="toc-wykład-1-któremu-arkuszowi-wierzyć" class="nav-link" data-scroll-target="#wykład-1-któremu-arkuszowi-wierzyć">Wykład 1 — Któremu arkuszowi wierzyć?</a></li>
   </ul>
 </nav>
     </div>
@@ -155,7 +157,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Informacje ogólne</h1>
+<h1 class="title">Magazyn wyposażenia — zadania</h1>
 </div>
 
 
@@ -172,30 +174,69 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="relacyjne-systemy-organizacji-danych" class="level2">
-<h2 class="anchored" data-anchor-id="relacyjne-systemy-organizacji-danych">Relacyjne Systemy Organizacji Danych</h2>
-<p>Kod:</p>
-<p>Semestr: zimowy</p>
+<section id="wasze-zadanie" class="level2">
+<h2 class="anchored" data-anchor-id="wasze-zadanie">Wasze zadanie</h2>
+<p>Przejmujecie ewidencję fikcyjnego magazynu „Baza Brzoza”. Dwie osoby prowadziły osobne arkusze. Ustalcie, czy na ich podstawie można wiarygodnie odpowiedzieć, kto ma dany egzemplarz.</p>
+<p>Jeden egzemplarz może mieć najwyżej jedno niezakończone wydanie. Puste pole zwrotu oznacza wydanie niezakończone.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Źródło</th>
+<th>Wydanie</th>
+<th>Egzemplarz</th>
+<th>Zespół</th>
+<th>Wydano</th>
+<th>Zwrócono</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>101</td>
+<td>R-01</td>
+<td>Alfa</td>
+<td>dzień 1, 08:00</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>102</td>
+<td>R-01</td>
+<td>Bravo</td>
+<td>dzień 1, 08:10</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>A</td>
+<td>103</td>
+<td>L-01</td>
+<td>Alfa</td>
+<td>dzień 1, 08:15</td>
+<td>dzień 1, 10:00</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>104</td>
+<td>L-01</td>
+<td>Bravo</td>
+<td>dzień 1, 10:15</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="kalendarz" class="level2">
-<h2 class="anchored" data-anchor-id="kalendarz">Kalendarz</h2>
-<!-- TODO: uzupełnić na podstawie https://wel.wat.edu.pl/planyzajec/zima/dr__Zajac_Sebastian.htm -->
-<section id="wykład-dla-grup" class="level3">
-<h3 class="anchored" data-anchor-id="wykład-dla-grup">Wykład dla grup:</h3>
+<section id="jak-pracujemy" class="level2">
+<h2 class="anchored" data-anchor-id="jak-pracujemy">Jak pracujemy</h2>
+<p>Każda para oddaje rozwiązanie, opis próby i krótkie uzasadnienie. Każda osoba powinna umieć wyjaśnić wynik. Dane i zadania są niezależne od pozostałych przedmiotów.</p>
+</section>
+<section id="wykład-1-któremu-arkuszowi-wierzyć" class="level2">
+<h2 class="anchored" data-anchor-id="wykład-1-któremu-arkuszowi-wierzyć">Wykład 1 — Któremu arkuszowi wierzyć?</h2>
+<p><a href="./lectures/wyklad1.html">Materiał do zajęć</a></p>
 <ol type="1">
-<li>TODO: dzień tygodnia, godzina, sala</li>
+<li>Wskaż wiersze wymagające wyjaśnienia. Uzasadnij, czy samo powtórzenie identyfikatora egzemplarza oznacza błąd.</li>
+<li>Zaproponuj trzy reguły poprawnej ewidencji. Oceń, czy scalenie arkuszy w jeden plik wystarczy do ich zapewnienia.</li>
 </ol>
-</section>
-<section id="laboratorium-dla-grup" class="level3">
-<h3 class="anchored" data-anchor-id="laboratorium-dla-grup">Laboratorium dla grup:</h3>
-<ol type="1">
-<li>TODO: dzień tygodnia, godzina, sala</li>
-</ol>
-</section>
-</section>
-<section id="scenariusze-zajęć" class="level2">
-<h2 class="anchored" data-anchor-id="scenariusze-zajęć">Scenariusze zajęć</h2>
-<p><a href="./scenariusze.html">Otwórz zadania i opis projektu</a>.</p>
+<p>Kolejne karty będą udostępniane wraz z następnymi zajęciami.</p>
 
 
 </section>

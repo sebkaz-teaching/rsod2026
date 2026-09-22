@@ -1,5 +1,73 @@
 [
   {
+    "objectID": "scenariusze.html",
+    "href": "scenariusze.html",
+    "title": "Magazyn wyposażenia — zadania",
+    "section": "",
+    "text": "Przejmujecie ewidencję fikcyjnego magazynu „Baza Brzoza”. Dwie osoby prowadziły osobne arkusze. Ustalcie, czy na ich podstawie można wiarygodnie odpowiedzieć, kto ma dany egzemplarz.\nJeden egzemplarz może mieć najwyżej jedno niezakończone wydanie. Puste pole zwrotu oznacza wydanie niezakończone.\n\n\n\nŹródło\nWydanie\nEgzemplarz\nZespół\nWydano\nZwrócono\n\n\n\n\nA\n101\nR-01\nAlfa\ndzień 1, 08:00\n—\n\n\nB\n102\nR-01\nBravo\ndzień 1, 08:10\n—\n\n\nA\n103\nL-01\nAlfa\ndzień 1, 08:15\ndzień 1, 10:00\n\n\nB\n104\nL-01\nBravo\ndzień 1, 10:15\n—"
+  },
+  {
+    "objectID": "scenariusze.html#wasze-zadanie",
+    "href": "scenariusze.html#wasze-zadanie",
+    "title": "Magazyn wyposażenia — zadania",
+    "section": "",
+    "text": "Przejmujecie ewidencję fikcyjnego magazynu „Baza Brzoza”. Dwie osoby prowadziły osobne arkusze. Ustalcie, czy na ich podstawie można wiarygodnie odpowiedzieć, kto ma dany egzemplarz.\nJeden egzemplarz może mieć najwyżej jedno niezakończone wydanie. Puste pole zwrotu oznacza wydanie niezakończone.\n\n\n\nŹródło\nWydanie\nEgzemplarz\nZespół\nWydano\nZwrócono\n\n\n\n\nA\n101\nR-01\nAlfa\ndzień 1, 08:00\n—\n\n\nB\n102\nR-01\nBravo\ndzień 1, 08:10\n—\n\n\nA\n103\nL-01\nAlfa\ndzień 1, 08:15\ndzień 1, 10:00\n\n\nB\n104\nL-01\nBravo\ndzień 1, 10:15\n—"
+  },
+  {
+    "objectID": "scenariusze.html#jak-pracujemy",
+    "href": "scenariusze.html#jak-pracujemy",
+    "title": "Magazyn wyposażenia — zadania",
+    "section": "Jak pracujemy",
+    "text": "Jak pracujemy\nKażda para oddaje rozwiązanie, opis próby i krótkie uzasadnienie. Każda osoba powinna umieć wyjaśnić wynik. Dane i zadania są niezależne od pozostałych przedmiotów."
+  },
+  {
+    "objectID": "scenariusze.html#wykład-1-któremu-arkuszowi-wierzyć",
+    "href": "scenariusze.html#wykład-1-któremu-arkuszowi-wierzyć",
+    "title": "Magazyn wyposażenia — zadania",
+    "section": "Wykład 1 — Któremu arkuszowi wierzyć?",
+    "text": "Wykład 1 — Któremu arkuszowi wierzyć?\nMateriał do zajęć\n\nWskaż wiersze wymagające wyjaśnienia. Uzasadnij, czy samo powtórzenie identyfikatora egzemplarza oznacza błąd.\nZaproponuj trzy reguły poprawnej ewidencji. Oceń, czy scalenie arkuszy w jeden plik wystarczy do ich zapewnienia.\n\nKolejne karty będą udostępniane wraz z następnymi zajęciami."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Informacje ogólne",
+    "section": "",
+    "text": "Kod:\nSemestr: zimowy",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#relacyjne-systemy-organizacji-danych",
+    "href": "index.html#relacyjne-systemy-organizacji-danych",
+    "title": "Informacje ogólne",
+    "section": "",
+    "text": "Kod:\nSemestr: zimowy",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#kalendarz",
+    "href": "index.html#kalendarz",
+    "title": "Informacje ogólne",
+    "section": "Kalendarz",
+    "text": "Kalendarz\n\n\nWykład dla grup:\n\nTODO: dzień tygodnia, godzina, sala\n\n\n\nLaboratorium dla grup:\n\nTODO: dzień tygodnia, godzina, sala",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#scenariusze-zajęć",
+    "href": "index.html#scenariusze-zajęć",
+    "title": "Informacje ogólne",
+    "section": "Scenariusze zajęć",
+    "text": "Scenariusze zajęć\nOtwórz zadania i opis projektu.",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
     "objectID": "lectures/wyklad1.html",
     "href": "lectures/wyklad1.html",
     "title": "Od pliku do bazy danych",
@@ -129,36 +197,6 @@
     "crumbs": [
       "Wykłady",
       "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Informacje ogólne",
-    "section": "",
-    "text": "Kod:\nSemestr: zimowy",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#relacyjne-systemy-organizacji-danych",
-    "href": "index.html#relacyjne-systemy-organizacji-danych",
-    "title": "Informacje ogólne",
-    "section": "",
-    "text": "Kod:\nSemestr: zimowy",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#kalendarz",
-    "href": "index.html#kalendarz",
-    "title": "Informacje ogólne",
-    "section": "Kalendarz",
-    "text": "Kalendarz\n\n\nWykład dla grup:\n\nTODO: dzień tygodnia, godzina, sala\n\n\n\nLaboratorium dla grup:\n\nTODO: dzień tygodnia, godzina, sala",
-    "crumbs": [
-      "Informacje ogólne"
     ]
   }
 ]

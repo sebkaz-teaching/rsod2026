@@ -1,0 +1,30 @@
+---
+title: "Magazyn wyposażenia — zadania"
+toc: true
+---
+
+## Wasze zadanie
+
+Przejmujecie ewidencję fikcyjnego magazynu „Baza Brzoza”. Dwie osoby prowadziły osobne arkusze. Ustalcie, czy na ich podstawie można wiarygodnie odpowiedzieć, kto ma dany egzemplarz.
+
+Jeden egzemplarz może mieć najwyżej jedno niezakończone wydanie. Puste pole zwrotu oznacza wydanie niezakończone.
+
+| Źródło | Wydanie | Egzemplarz | Zespół | Wydano | Zwrócono |
+|---|---|---|---|---|---|
+| A | 101 | R-01 | Alfa | dzień 1, 08:00 | — |
+| B | 102 | R-01 | Bravo | dzień 1, 08:10 | — |
+| A | 103 | L-01 | Alfa | dzień 1, 08:15 | dzień 1, 10:00 |
+| B | 104 | L-01 | Bravo | dzień 1, 10:15 | — |
+
+## Jak pracujemy
+
+Każda para oddaje rozwiązanie, opis próby i krótkie uzasadnienie. Każda osoba powinna umieć wyjaśnić wynik. Dane i zadania są niezależne od pozostałych przedmiotów.
+
+## Wykład 1 — Któremu arkuszowi wierzyć?
+
+[Materiał do zajęć](lectures/wyklad1.qmd)
+
+1. Wskaż wiersze wymagające wyjaśnienia. Uzasadnij, czy samo powtórzenie identyfikatora egzemplarza oznacza błąd.
+2. Zaproponuj trzy reguły poprawnej ewidencji. Oceń, czy scalenie arkuszy w jeden plik wystarczy do ich zapewnienia.
+
+Kolejne karty będą udostępniane wraz z następnymi zajęciami.
