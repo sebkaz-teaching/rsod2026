@@ -69,3 +69,37 @@ submitting — only the client-side celebratory number could, in
 principle, be forged locally, which does not affect your records.
 This is judged acceptable for a formative, ungraded quiz; flag it if
 that assumption changes (e.g. if this ever counts toward a grade).
+
+## PRBA open-ended coursework (hosting file manager)
+
+Upload these three files directly into the existing `rsod-quiz/` directory:
+
+- `assignment-submit.php` (new write endpoint)
+- `schema.sql` (adds `assignment_submissions` with `CREATE TABLE IF NOT EXISTS`)
+- `results.php` (adds the **Prace opisowe** tab and preserves quiz viewing)
+
+Keep the existing `config.local.php`, `db.php`, `.htaccess`, password file and
+`data/` directory. No configuration edit, shell command or manual migration is
+needed: opening the protected results page creates the new table in the configured
+SQLite database. Existing quiz rows and scores are preserved. Back up the database
+using the hosting panel before deployment; do not replace it with an empty file.
+
+Open `results.php?view=assignments&course=prba2026&lecture=wyklad1` using your
+existing Basic Auth login. The same protected PHP page displays authors, emails,
+server timestamps and escaped text responses. There is no public read endpoint.
+Submissions are not automatically graded. Changed submissions produce new entries;
+retrying the same request ID and content returns the original receipt. As with the
+quizzes, student emails are self-declared, not verified identities.
+
+Deploy PHP before asking students to use the new form on the PRBA site. Until the
+endpoint is installed, the form will show a save failure and retain the entered
+text. Students can download a plain-text copy; drafts do not survive page reloads.
+Use synthetic data for a manual smoke test, verify the receipt in the protected
+viewer, and avoid changing existing quiz configuration.
+
+### Local regression check
+
+Run `python3 _server/tests/test_assignments.py` from the repository root with PHP
+CLI and PDO SQLite installed. The test starts a temporary localhost PHP server
+on port 18763, creates a disposable database and sends synthetic HTTP requests.
+It never connects to the production endpoint.

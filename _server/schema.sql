@@ -16,3 +16,18 @@ CREATE TABLE IF NOT EXISTS submissions (
 
 CREATE INDEX IF NOT EXISTS idx_submissions_course_lecture ON submissions(course, lecture);
 CREATE INDEX IF NOT EXISTS idx_submissions_email ON submissions(email);
+
+-- Open-ended coursework uses the same database without changing quiz scores.
+CREATE TABLE IF NOT EXISTS assignment_submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id TEXT NOT NULL UNIQUE,
+    course TEXT NOT NULL,
+    lecture TEXT NOT NULL,
+    email TEXT NOT NULL,
+    partner_email TEXT NOT NULL,
+    authors TEXT NOT NULL,
+    answers TEXT NOT NULL,
+    submitted_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_assignments_course_lecture
+    ON assignment_submissions(course, lecture);
