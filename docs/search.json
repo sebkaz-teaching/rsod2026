@@ -25,47 +25,14 @@
     "href": "scenariusze.html#wykład-1-któremu-arkuszowi-wierzyć",
     "title": "Magazyn wyposażenia — zadania",
     "section": "Wykład 1 — Któremu arkuszowi wierzyć?",
-    "text": "Wykład 1 — Któremu arkuszowi wierzyć?\nMateriał do zajęć\n\nWskaż wiersze wymagające wyjaśnienia. Uzasadnij, czy samo powtórzenie identyfikatora egzemplarza oznacza błąd.\nZaproponuj trzy reguły poprawnej ewidencji. Oceń, czy scalenie arkuszy w jeden plik wystarczy do ich zapewnienia.\n\nKolejne karty będą udostępniane wraz z następnymi zajęciami."
+    "text": "Wykład 1 — Któremu arkuszowi wierzyć?\nMateriał do zajęć\n\nWskaż wiersze wymagające wyjaśnienia. Uzasadnij, czy samo powtórzenie identyfikatora egzemplarza oznacza błąd.\nZaproponuj trzy reguły poprawnej ewidencji. Oceń, czy scalenie arkuszy w jeden plik wystarczy do ich zapewnienia."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Informacje ogólne",
-    "section": "",
-    "text": "Kod:\nSemestr: zimowy",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#relacyjne-systemy-organizacji-danych",
-    "href": "index.html#relacyjne-systemy-organizacji-danych",
-    "title": "Informacje ogólne",
-    "section": "",
-    "text": "Kod:\nSemestr: zimowy",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#kalendarz",
-    "href": "index.html#kalendarz",
-    "title": "Informacje ogólne",
-    "section": "Kalendarz",
-    "text": "Kalendarz\n\n\nWykład dla grup:\n\nTODO: dzień tygodnia, godzina, sala\n\n\n\nLaboratorium dla grup:\n\nTODO: dzień tygodnia, godzina, sala",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#scenariusze-zajęć",
-    "href": "index.html#scenariusze-zajęć",
-    "title": "Informacje ogólne",
-    "section": "Scenariusze zajęć",
-    "text": "Scenariusze zajęć\nOtwórz zadania i opis projektu.",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
+    "objectID": "scenariusze.html#wyklad-2",
+    "href": "scenariusze.html#wyklad-2",
+    "title": "Magazyn wyposażenia — zadania",
+    "section": "Wykład 2 — Czy raport ujawnia konflikt?",
+    "text": "Wykład 2 — Czy raport ujawnia konflikt?\nTest i materiał. Po indywidualnym teście obserwujcie pokaz bazy magazynu. Zapiszcie w parze odpowiedzi na dwa zadania:\n\nPorównajcie returned_at = NULL z returned_at IS NULL. Wyjaśnijcie różnicę wyników i wskażcie, które wydania wymagają wyjaśnienia.\nZaproponujcie warunek wykrycia więcej niż jednego niezakończonego wydania tego samego egzemplarza. Sprawdźcie, czy raport obejmuje też R-02, którego nie wydano.\n\nPo otrzymaniu dodatkowego faktu o zwrocie sprzętu wskażcie dokładnie jeden wiersz do korekty. Porównajcie raport przed i po. Nie zgadujcie, komu wierzyć na podstawie kolejności wierszy. Efekt: krótka notatka z wynikiem, uzasadnieniem i opisem próby; każda osoba wyjaśnia jeden z wniosków podczas omówienia.\nKolejne karty będą udostępniane wraz z następnymi zajęciami."
   },
   {
     "objectID": "lectures/wyklad1.html",
@@ -197,6 +164,211 @@
     "crumbs": [
       "Wykłady",
       "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Informacje ogólne",
+    "section": "",
+    "text": "Kod:\nSemestr: zimowy",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#relacyjne-systemy-organizacji-danych",
+    "href": "index.html#relacyjne-systemy-organizacji-danych",
+    "title": "Informacje ogólne",
+    "section": "",
+    "text": "Kod:\nSemestr: zimowy",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#kalendarz",
+    "href": "index.html#kalendarz",
+    "title": "Informacje ogólne",
+    "section": "Kalendarz",
+    "text": "Kalendarz\n\n\nWykład dla grup:\n\nTODO: dzień tygodnia, godzina, sala\n\n\n\nLaboratorium dla grup:\n\nTODO: dzień tygodnia, godzina, sala",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#scenariusze-zajęć",
+    "href": "index.html#scenariusze-zajęć",
+    "title": "Informacje ogólne",
+    "section": "Scenariusze zajęć",
+    "text": "Scenariusze zajęć\nOtwórz zadania i opis projektu.",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#pokaz-przewodni-kto-ma-radiostację",
+    "href": "lectures/wyklad2.html#pokaz-przewodni-kto-ma-radiostację",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "Pokaz przewodni — kto ma radiostację?",
+    "text": "Pokaz przewodni — kto ma radiostację?\nWracamy do magazynu „Baza Brzoza”. Dane z pierwszego spotkania przeniesiono z dwóch arkuszy do SQLite. Sprzeczne wydania R-01 nadal istnieją: przeprowadzka do bazy nie rozstrzyga, który dokument opisuje rzeczywistość.\nPodczas pokazu prowadzący używa DB Browser for SQLite. Śledzimy jedną historię: od surowych wierszy, przez raport, do wykrycia konfliktu. Nie trzeba jeszcze instalować programu ani wykonywać wszystkich przykładów z części referencyjnej.\n\n\n\n\n\n\n\nTabela\nZnaczenie\n\n\n\n\nitems\nEgzemplarze wyposażenia: R-01, L-01 oraz niewydany R-02\n\n\nteams\nZespoły Alfa i Bravo\n\n\nloans\nWydania: egzemplarz, zespół, czas wydania i opcjonalny zwrot\n\n\n\nW bazie dzień 1 ma umowną datę 2027-02-01. Brak zwrotu zapisujemy jako NULL, nie jako myślnik z tabeli na stronie. Zwrócony egzemplarz może później zostać wydany ponownie; powtórzenie identyfikatora w historii nie jest samo w sobie błędem.\n\nOd wierszy do pytania\nSELECT * FROM loans ORDER BY loan_id;\nSELECT * FROM loans WHERE returned_at = NULL;\nSELECT * FROM loans WHERE returned_at IS NULL;\nPrzed wykonaniem porównajcie dwa ostatnie warunki. NULL oznacza brak wartości; porównanie przez = nie daje tu TRUE. IS NULL wybiera niezakończone wydania.\n\n\nRaport z nazwami zamiast samych identyfikatorów\nSELECT l.loan_id, i.item_id, i.name AS item,\n       t.name AS team, l.issued_at\nFROM loans AS l\nJOIN items AS i ON i.item_id = l.item_id\nJOIN teams AS t ON t.team_id = l.team_id\nWHERE l.returned_at IS NULL\nORDER BY i.item_id, l.loan_id;\nCzy raport pozwala już powiedzieć, kto ma R-01? Zestawia istniejące zapisy, ale nie wybiera automatycznie prawdziwego. Jeżeli w danych jest konflikt, raport powinien go ujawnić, a nie ukryć przez wybranie przypadkowego wiersza.\n\n\nZnajdź konflikt reguły\nSELECT item_id, COUNT(*) AS open_loans\nFROM loans\nWHERE returned_at IS NULL\nGROUP BY item_id\nHAVING COUNT(*) &gt; 1;\nWHERE ogranicza wejście do niezakończonych wydań. GROUP BY tworzy grupę dla każdego egzemplarza. HAVING wybiera grupy przekraczające dozwoloną liczbę. To zapytanie wykrywa istniejący problem; samo nie blokuje następnego zapisu.\n\n\nNie zgub wyposażenia, którego nie wydano\nSELECT i.item_id, COUNT(l.loan_id) AS open_loans\nFROM items AS i\nLEFT JOIN loans AS l\n  ON l.item_id = i.item_id AND l.returned_at IS NULL\nGROUP BY i.item_id\nORDER BY i.item_id;\nDlaczego zaczynamy od items? Chcemy uwzględnić również R-02 bez wydań. Liczymy niepuste identyfikatory wydań, a nie wszystkie wiersze przez COUNT(*).\n\n\nKorekta wymaga dodatkowej wiedzy\nProwadzący poda nowy, fikcyjny fakt o zwrocie R-01. Dopiero wtedy wykonamy aktualizację konkretnego wydania i ponowimy raport konfliktów. Nie usuwamy historii i nie wybieramy zwycięzcy na podstawie numeru wiersza.\nZadanie towarzyszące pokazowi.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#materiał-referencyjny",
+    "href": "lectures/wyklad2.html#materiał-referencyjny",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "Materiał referencyjny",
+    "text": "Materiał referencyjny\nDalsze sekcje rozwijają pojęcia i składnię. Główna ścieżka zajęć to pokaz powyżej; przykłady innych dialektów i operacji na schemacie służą późniejszej pracy własnej.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#model-relacyjny-przypomnienie-i-pojęcia-podstawowe",
+    "href": "lectures/wyklad2.html#model-relacyjny-przypomnienie-i-pojęcia-podstawowe",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe",
+    "text": "1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe\n\n🔹 Relacja = tabela\n\nDane przechowywane są w tabelach (ang. relations).\nKażdy wiersz (row) to rekord / krotka.\nKażda kolumna (column) to atrybut.\nDziedzina (domain) to zbiór dopuszczalnych wartości w danej kolumnie.\n\nPrzykład relacji STUDENT:\n\n\n\nid\nimie\nnazwisko\nrok_urodzenia\n\n\n\n\n1\nAdam\nMickiewicz\n1798\n\n\n2\nHenryk\nSienkiewicz\n1846\n\n\n\n\n Schemat relacji: tabela STUDENT z kolumnami i wierszami",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#klucze-i-więzy-integralności",
+    "href": "lectures/wyklad2.html#klucze-i-więzy-integralności",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "2️⃣ Klucze i więzy integralności",
+    "text": "2️⃣ Klucze i więzy integralności\n\n🔸 Klucz główny (PRIMARY KEY)\n\nUnikalnie identyfikuje każdy wiersz w tabeli.\nNie może przyjmować wartości NULL.\nW tabeli może występować tylko jeden klucz główny.\n\n\n\n🔸 Klucz obcy (FOREIGN KEY)\n\nTworzy powiązanie z inną tabelą.\nWymusza spójność danych – nie można wprowadzić wartości, której nie ma w tabeli nadrzędnej.\n\n\n\n🔸 Inne więzy integralności\n\nUNIQUE – zapewnia unikalność wartości w kolumnie.\nNOT NULL – kolumna nie może przyjmować wartości pustych.\nCHECK – sprawdza warunek logiczny (np. wiek &gt; 0).\n\n\n\n\n\n\n\n\n\nRodzaj klucza\nOpis\nPrzykład\n\n\n\n\nKlucz główny (Primary Key)\njednoznacznie identyfikuje rekord\nNrIndeksu w STUDENT\n\n\nKlucz obcy (Foreign Key)\ntworzy powiązanie między tabelami\nKursID w tabeli ZAPIS\n\n\nKlucz kandydujący (Candidate Key)\natrybut, który może być kluczem głównym\nPESEL, NrIndeksu\n\n\nKlucz złożony (Composite Key)\nskłada się z kilku kolumn\n(StudentID, KursID)\n\n\n\n\n Schemat: klucz główny i klucz obcy między tabelami STUDENT, KURS, ZAPIS\n\n\n\n🔹 Klucz złożony w praktyce\nKlucz złożony (composite key) deklarujemy jako PRIMARY KEY obejmujący kilka kolumn naraz — żadna z nich osobno nie musi być unikalna, unikalna musi być dopiero ich kombinacja.\nCREATE TABLE Zapis (\n    NrIndeksu   INTEGER,\n    KursID      INTEGER,\n    DataZapisu  DATE,\n    PRIMARY KEY (NrIndeksu, KursID),\n    FOREIGN KEY (NrIndeksu) REFERENCES Student(NrIndeksu),\n    FOREIGN KEY (KursID) REFERENCES Kurs(KursID)\n);\nTen sam student (NrIndeksu) może wystąpić wielokrotnie (na różnych kursach), ten sam kurs (KursID) też — ale para (NrIndeksu, KursID) musi być unikalna: nie da się zapisać dwa razy na ten sam kurs.\n\n\n🔹 Co się dzieje przy usuwaniu powiązanych danych — ON DELETE\nSam FOREIGN KEY mówi tylko, że wartość musi istnieć w tabeli nadrzędnej. Nie mówi, co zrobić, gdy ktoś spróbuje usunąć wiersz nadrzędny, do którego wciąż odwołują się wiersze podrzędne. To ustala klauzula ON DELETE:\n\n\n\n\n\n\n\nOpcja\nZachowanie przy DELETE rodzica\n\n\n\n\n(brak, domyślnie) NO ACTION / RESTRICT\nBaza odrzuca usunięcie, dopóki istnieją powiązane wiersze podrzędne.\n\n\nON DELETE CASCADE\nUsunięcie rodzica automatycznie usuwa powiązane wiersze podrzędne.\n\n\nON DELETE SET NULL\nPowiązane wiersze podrzędne dostają NULL w kolumnie klucza obcego.\n\n\n\nFOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) ON DELETE CASCADE\nJeśli klauzuli ON DELETE nie podamy w ogóle (tak jak w przykładzie Ksiazki poniżej), obowiązuje domyślne zachowanie restrykcyjne — baza nie pozwoli usunąć autora, który ma jeszcze książki.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#rodzaje-związków-relacji-między-tabelami",
+    "href": "lectures/wyklad2.html#rodzaje-związków-relacji-między-tabelami",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "3️⃣ Rodzaje związków (relacji) między tabelami",
+    "text": "3️⃣ Rodzaje związków (relacji) między tabelami\nW relacyjnych bazach danych tabele łączy się przez klucze obce. Na tej podstawie tworzą się różne typy relacji:\n\n\n\n\n\n\n\n\nTyp relacji\nOpis\nPrzykład\n\n\n\n\n1:1 (jeden do jednego)\njeden rekord w tabeli A odpowiada dokładnie jednemu rekordowi w tabeli B\nStudent ↔︎️ Legitymacja\n\n\n1:N (jeden do wielu)\njeden rekord w tabeli A może być powiązany z wieloma rekordami w tabeli B\nWykładowca ↔︎️ Kursy\n\n\nN:M (wielu do wielu)\nwiele rekordów w A może być powiązanych z wieloma w B\nStudenci ↔︎️ Kursy\n\n\n\nRelację N:M realizuje się przez tabelę pośredniczącą, np.:\nSTUDENT (NrIndeksu, Imie, Nazwisko)\nKURS (KursID, Nazwa)\nZAPIS (NrIndeksu, KursID, DataZapisu)\nTabela ZAPIS zawiera klucze obce wskazujące na STUDENT i KURS.\n\n## 4️⃣ Wprowadzenie do języka SQL (Structured Query Language)\nSQL to standardowy język do definiowania, modyfikowania i pobierania danych w relacyjnych bazach danych. Przypomnienie z wykładu 1 — SQL dzieli się na cztery podjęzyki: DDL, DML, DCL, TCL. Dziś skupiamy się głównie na DDL i DML.\n\n\n🔹 Tworzenie tabel (DDL – Data Definition Language)\nPolecenie CREATE TABLE służy do utworzenia nowej tabeli w bazie danych. W tym poleceniu definiujemy nazwy kolumn, ich typy danych oraz różne więzy integralności, takie jak PRIMARY KEY, NOT NULL czy FOREIGN KEY.\nKażda tabela powinna mieć kolumnę, która jednoznacznie identyfikuje każdy wiersz – to właśnie klucz główny.\nW przykładzie poniżej tworzymy dwie tabele: Autorzy i Ksiazki, które będą ze sobą powiązane relacją klucz główny–klucz obcy.\n\n\n\n💡 Ten sam schemat w dwóch dialektach — celowo osobno\nSQL nie jest jednym, uniwersalnym językiem — CREATE TABLE różni się między silnikami akurat w tym miejscu, gdzie boli najbardziej: jak nadać kluczowi głównemu automatyczną numerację. Poniżej dwie osobne, w pełni poprawne wersje tego samego schematu — nie mieszajcie składni między nimi, żadna baza nie zrozumie takiej mieszanki.\nWariant SQLite:\nCREATE TABLE Autorzy (\n    autor_id     INTEGER PRIMARY KEY,   -- patrz uwaga ponizej: to NIE to samo co AUTOINCREMENT\n    imie         TEXT NOT NULL,\n    nazwisko     TEXT NOT NULL\n);\n\nCREATE TABLE Ksiazki (\n    ksiazka_id   INTEGER PRIMARY KEY,\n    tytul        TEXT NOT NULL,\n    rok          INTEGER CHECK (rok &gt; 0),\n    autor_id     INTEGER,\n    FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)\n);\nWariant PostgreSQL:\nCREATE TABLE Autorzy (\n    autor_id     SERIAL PRIMARY KEY,\n    imie         TEXT NOT NULL,\n    nazwisko     TEXT NOT NULL\n);\n\nCREATE TABLE Ksiazki (\n    ksiazka_id   SERIAL PRIMARY KEY,\n    tytul        VARCHAR(200) NOT NULL,\n    rok          INTEGER CHECK (rok &gt; 0),\n    autor_id     INTEGER,\n    FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)\n);\n\n\n\n\n\n\nImportantINTEGER PRIMARY KEY w SQLite to NIE alias dla AUTOINCREMENT\n\n\n\nTo częsty błąd (nawet w niejednym tutorialu w internecie). W SQLite INTEGER PRIMARY KEY to alias dla wewnętrznego identyfikatora wiersza (ROWID) — baza owszem sama nada mu kolejną wolną liczbę przy INSERT bez podania wartości, ale ta liczba może zostać ponownie użyta po usunięciu wiersza (np. usuniecie ostatniego wiersza i dodanie nowego może dostać to samo ID co usunięty).\nŻeby naprawdę zagwarantować, że ID nigdy się nie powtórzy (nawet po usunięciach), trzeba dopisać dosłowne słowo kluczowe: INTEGER PRIMARY KEY AUTOINCREMENT. To osobna, ściślejsza gwarancja — kosztem odrobinę wolniejszych insertów (SQLite pilnuje dodatkowej tabeli sqlite_sequence). Do zwykłych ćwiczeń wystarczy sam INTEGER PRIMARY KEY; gdybyście kiedyś potrzebowali identyfikatorów, które nigdy się nie powtórzą (np. numery faktur), sięgnijcie po AUTOINCREMENT świadomie.\nPostgreSQL nie ma tego rozróżnienia — SERIAL zawsze daje rosnącą sekwencję, która (poza rzadkimi przypadkami jawnego resetu) nie powtarza wartości.\n\n\nW powyższym przykładzie:\n\ntabela Autorzy przechowuje dane o autorach,\ntabela Ksiazki przechowuje dane o książkach,\nkolumna autor_id w Ksiazki to klucz obcy, który wskazuje autora.\n\nDzięki więzom integralności baza pilnuje, by każda książka miała poprawnego autora. Takie powiązania są podstawą modelu relacyjnego.\n\n⚠️ Zwróć uwagę: FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) powyżej nie ma klauzuli ON DELETE — patrz sekcja 2 wyżej, co to oznacza w praktyce.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#modyfikacja-i-usuwanie-tabel",
+    "href": "lectures/wyklad2.html#modyfikacja-i-usuwanie-tabel",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "5️⃣ Modyfikacja i usuwanie tabel",
+    "text": "5️⃣ Modyfikacja i usuwanie tabel\n\n🔹 Dodawanie kolumn\nALTER TABLE Ksiazki ADD COLUMN gatunek TEXT;\n\n\n🔹 Zmiana typu kolumny\nALTER TABLE STUDENT ALTER COLUMN Kierunek TYPE VARCHAR(100);\n\n\n🔹 Usuwanie kolumny\nALTER TABLE STUDENT DROP COLUMN Email;\n\n\n🔹 Usuwanie tabeli\nDROP TABLE Ksiazki;",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#wstawianie-danych-dml-data-manipulation-language",
+    "href": "lectures/wyklad2.html#wstawianie-danych-dml-data-manipulation-language",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "6️⃣ Wstawianie danych (DML – Data Manipulation Language)",
+    "text": "6️⃣ Wstawianie danych (DML – Data Manipulation Language)\nPolecenie INSERT INTO służy do wprowadzania nowych wierszy (rekordów) do tabeli. Wartości muszą być zgodne z typami kolumn oraz ograniczeniami (NOT NULL, CHECK, itp.).\nMożna dodać jeden lub wiele rekordów w jednym poleceniu.\nINSERT INTO Autorzy (imie, nazwisko) VALUES\n('Adam', 'Mickiewicz'),\n('Henryk', 'Sienkiewicz'),\n('Bolesław', 'Prus');\n\nINSERT INTO Ksiazki (tytul, rok, autor_id) VALUES\n('Pan Tadeusz', 1834, 1),\n('Quo Vadis', 1896, 2),\n('Lalka', 1890, 3);\nKażdy rekord reprezentuje jedną pozycję w tabeli. Polecenie INSERT wymaga podania wartości w tej samej kolejności, w jakiej wymieniono kolumny. Jeśli nie podamy jakiejś kolumny, a ma ona zdefiniowaną wartość domyślną (DEFAULT), baza wstawi ją automatycznie.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#wybieranie-danych-select",
+    "href": "lectures/wyklad2.html#wybieranie-danych-select",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "7️⃣ Wybieranie danych – SELECT",
+    "text": "7️⃣ Wybieranie danych – SELECT\n\n🧩 Podstawowy SELECT\nSELECT * FROM Autorzy;\nPowyższe zapytanie zwraca wszystkich autorów z tabeli Autorzy.\n\n\n🧩 Wybór konkretnych kolumn\n\nSELECT imie, nazwisko FROM Autorzy;\n\n\n🧩 Nadawanie aliasów\nSELECT imie AS \"Imię\", nazwisko AS \"Nazwisko\" FROM Autorzy;\nAlias (AS) pozwala nadać kolumnom bardziej opisowe nazwy w wynikach.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#filtrowanie-where",
+    "href": "lectures/wyklad2.html#filtrowanie-where",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "8️⃣ Filtrowanie – WHERE",
+    "text": "8️⃣ Filtrowanie – WHERE\nSELECT * FROM Ksiazki\nWHERE rok &gt; 1850;\n\n🧠 Operatory logiczne:\n\n= , &lt;&gt;, &lt;, &gt;, &lt;=, &gt;=\nLIKE ‘Q%’ → zaczyna się na Q\nIN (…)\nBETWEEN 1800 AND 1900\nIS NULL, IS NOT NULL\n\nPrzykład wyszukiwania książek zawierających literę “a” w tytule:\nSELECT tytul FROM Ksiazki WHERE tytul LIKE '%a%';\n\n\n⚠️ Pułapka: NULL w WHERE\nNULL oznacza „wartość nieznana”, więc nie porównujemy go operatorem =.\n-- ŹLE — nigdy nie zwróci wierszy, nawet jeśli autor_id jest puste:\nSELECT * FROM Ksiazki WHERE autor_id = NULL;\n\n-- DOBRZE:\nSELECT * FROM Ksiazki WHERE autor_id IS NULL;\nautor_id = NULL nie daje ani TRUE, ani FALSE, tylko UNKNOWN — a WHERE odrzuca wiersze, dla których warunek nie jest jednoznacznie TRUE. Ten sam problem dotyczy &lt;&gt; — autor_id &lt;&gt; NULL też nic nie zwróci, trzeba użyć IS NOT NULL.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#sortowanie-order-by",
+    "href": "lectures/wyklad2.html#sortowanie-order-by",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "9️⃣ Sortowanie – ORDER BY",
+    "text": "9️⃣ Sortowanie – ORDER BY\nSELECT * FROM Ksiazki ORDER BY rok DESC;\nSortowanie wyników można wykonać według dowolnej kolumny. Domyślnie ORDER BY sortuje rosnąco (ASC). Dla kilku kolumn można napisać np.:\nSELECT * FROM Ksiazki ORDER BY autor_id ASC, rok DESC;",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#grupowanie-i-agregacja-group-by-having",
+    "href": "lectures/wyklad2.html#grupowanie-i-agregacja-group-by-having",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "🔟 Grupowanie i agregacja – GROUP BY, HAVING",
+    "text": "🔟 Grupowanie i agregacja – GROUP BY, HAVING\nSELECT autor_id, COUNT(*) AS liczba_ksiazek\nFROM Ksiazki\nGROUP BY autor_id\nHAVING COUNT(*) &gt; 1;\nKlauzula GROUP BY grupuje dane, a HAVING filtruje grupy po agregacji. Funkcje agregujące: COUNT(), SUM(), AVG(), MIN(), MAX().\n\n🔹 Dlaczego HAVING, a nie WHERE?\nWHERE filtruje pojedyncze wiersze, zanim zostaną zgrupowane — w momencie jego działania COUNT(*) jeszcze nie istnieje. HAVING filtruje gotowe grupy, już po agregacji. Dlatego WHERE COUNT(*) &gt; 1 jest błędem składniowym, a HAVING COUNT(*) &gt; 1 — poprawne.\nSilnik SQL wykonuje zapytanie w innej kolejności logicznej, niż je piszemy:\nFROM  →  WHERE  →  GROUP BY  →  HAVING  →  SELECT  →  ORDER BY\nCzyli mimo że SELECT piszemy na początku, jest wykonywany niemal na końcu — dlatego alias nadany w SELECT ... AS liczba_ksiazek nie jest jeszcze dostępny w WHERE, ale można go użyć w ORDER BY.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#łączenie-tabel-join",
+    "href": "lectures/wyklad2.html#łączenie-tabel-join",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "1️⃣1️⃣ Łączenie tabel – JOIN",
+    "text": "1️⃣1️⃣ Łączenie tabel – JOIN\n\n🔹 INNER JOIN\nSELECT k.tytul, a.imie, a.nazwisko\nFROM Ksiazki k\nJOIN Autorzy a ON k.autor_id = a.autor_id;\n\n\n🔹 LEFT JOIN\nSELECT k.tytul, a.imie, a.nazwisko\nFROM Ksiazki k\nLEFT JOIN Autorzy a ON k.autor_id = a.autor_id;\nINNER JOIN zwraca tylko dopasowane rekordy, LEFT JOIN – wszystkie rekordy z lewej tabeli (nawet bez dopasowania).",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#aktualizacja-i-usuwanie-danych",
+    "href": "lectures/wyklad2.html#aktualizacja-i-usuwanie-danych",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "1️⃣2️⃣ Aktualizacja i usuwanie danych",
+    "text": "1️⃣2️⃣ Aktualizacja i usuwanie danych\n\n🔹 Aktualizacja danych\nUPDATE Ksiazki SET rok = 1836 WHERE tytul = 'Pan Tadeusz';\n\n\n🔹 Usuwanie danych\nDELETE FROM Ksiazki WHERE rok &lt; 1850;\nZawsze należy używać WHERE, aby nie zmodyfikować lub nie usunąć wszystkich rekordów.",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#podsumowanie",
+    "href": "lectures/wyklad2.html#podsumowanie",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "🧾 Podsumowanie",
+    "text": "🧾 Podsumowanie\nSQL jest językiem deklaratywnym – opisujemy co chcemy uzyskać, a nie jak to zrobić. Dzięki temu użytkownik nie musi znać szczegółów działania bazy danych.\nPoznane dziś polecenia:\nCREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY\nto fundament pracy z bazami danych. Opanowanie ich pozwala budować i analizować nawet bardzo złożone systemy informacyjne.\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad2.html#źródła-i-literatura",
+    "href": "lectures/wyklad2.html#źródła-i-literatura",
+    "title": "Model relacyjny i podstawy SQL",
+    "section": "📚 Źródła i literatura:",
+    "text": "📚 Źródła i literatura:\n•   Dokumentacja SQLite\n•   Dokumentacja PostgreSQL\n•   A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts",
+    "crumbs": [
+      "Wykłady",
+      "Model relacyjny i podstawy SQL"
     ]
   }
 ]
