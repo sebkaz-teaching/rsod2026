@@ -29,7 +29,7 @@ Każda para oddaje rozwiązanie, opis próby i krótkie uzasadnienie. Każda oso
 
 ## Wykład 2 — Czy raport ujawnia konflikt? {#wyklad-2}
 
-[Test i materiał](lectures/wyklad2.qmd). Po indywidualnym teście obserwujcie pokaz
+[Materiał do wykładu](lectures/wyklad2.qmd). Na tym spotkaniu nie ma testu. Obserwujcie pokaz
 bazy magazynu. Zapiszcie w parze odpowiedzi na dwa zadania:
 
 1. Porównajcie `returned_at = NULL` z `returned_at IS NULL`. Wyjaśnijcie różnicę
