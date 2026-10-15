@@ -2,10 +2,10 @@
 title: "Model relacyjny i podstawy SQL"
 ---
 
-## Kto ma radiostację?
+## Analiza ewidencji magazynowej
 
 Magazyn „Baza Brzoza” prowadzi ewidencję wydań wyposażenia. Dane przeniesiono
-z dwóch arkuszy do SQLite. Sprzeczne wydania R-01 nadal istnieją: przeprowadzka
+z dwóch arkuszy do SQLite. Sprzeczne wydania R-01 pozostają w ewidencji: przeniesienie danych
 do bazy nie rozstrzyga, który dokument opisuje rzeczywistość.
 
 Polecenia `CREATE TABLE` definiują strukturę bazy, a `INSERT` dodaje dane.
@@ -18,11 +18,11 @@ sprzeczności w ewidencji.
 | `teams` | Zespoły Alfa i Bravo |
 | `loans` | Wydania: egzemplarz, zespół, czas wydania i opcjonalny zwrot |
 
-W bazie dzień 1 ma umowną datę 2027-02-01. Brak zwrotu zapisujemy jako `NULL`,
+W bazie dzień 1 ma umowną datę 2027-02-01. Brak zwrotu jest reprezentowany przez `NULL`,
 nie jako myślnik z tabeli na stronie. Zwrócony egzemplarz może później zostać
 wydany ponownie; powtórzenie identyfikatora w historii nie jest samo w sobie błędem.
 
-### Od wierszy do pytania
+### Odczyt danych i identyfikacja niezakończonych wydań
 
 ```sql
 SELECT * FROM loans ORDER BY loan_id;
@@ -45,11 +45,12 @@ WHERE l.returned_at IS NULL
 ORDER BY i.item_id, l.loan_id;
 ```
 
-Czy raport pozwala już powiedzieć, kto ma R-01? Zestawia istniejące zapisy,
-ale nie wybiera automatycznie prawdziwego. Jeżeli w danych jest konflikt,
-raport powinien go ujawnić, a nie ukryć przez wybranie przypadkowego wiersza.
+Raport zestawia istniejące zapisy dotyczące R-01, lecz nie rozstrzyga ich
+prawdziwości. W przypadku sprzecznych danych zachowanie wszystkich powiązanych
+wierszy umożliwia identyfikację konfliktu. Arbitralne ograniczenie wyniku do
+jednego wiersza ukryłoby problem ewidencji.
 
-### Znajdź konflikt reguły
+### Wykrywanie naruszeń reguły pojedynczego wydania
 
 ```sql
 SELECT item_id, COUNT(*) AS open_loans
@@ -63,7 +64,7 @@ HAVING COUNT(*) > 1;
 każdego egzemplarza. `HAVING` wybiera grupy przekraczające dozwoloną liczbę.
 To zapytanie wykrywa istniejący problem; samo nie blokuje następnego zapisu.
 
-### Nie zgub wyposażenia, którego nie wydano
+### Uwzględnienie egzemplarzy bez aktywnych wydań
 
 ```sql
 SELECT i.item_id, COUNT(l.loan_id) AS open_loans
@@ -74,10 +75,11 @@ GROUP BY i.item_id
 ORDER BY i.item_id;
 ```
 
-Dlaczego zaczynamy od `items`? Chcemy uwzględnić również R-02 bez wydań.
-Liczymy niepuste identyfikatory wydań, a nie wszystkie wiersze przez `COUNT(*)`.
+Tabela `items` stanowi podstawę raportu, dzięki czemu wynik obejmuje również
+R-02 bez wydań. Agregacja zlicza niepuste identyfikatory wydań. Zastosowanie
+`COUNT(*)` oznaczałoby zliczanie wszystkich wierszy wyniku złączenia.
 
-### Korekta wymaga dodatkowej wiedzy
+### Weryfikacja źródłowa i korekta danych
 
 Sama sprzeczność w ewidencji nie wskazuje, który zapis jest błędny. Korekta
 wymaga dodatkowej informacji, np. dokumentu potwierdzającego czas zwrotu R-01.
@@ -91,9 +93,9 @@ konfliktów. Numer ani kolejność wiersza nie rozstrzygają prawdziwości danyc
 Dalsze sekcje rozwijają model relacyjny, ograniczenia integralności i składnię SQL,
 w tym różnice między dialektami oraz operacje na schemacie i danych.
 
-## 1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe
+## Model relacyjny – przypomnienie i pojęcia podstawowe
 
-### 🔹 Relacja = tabela
+### Relacja = tabela
 
 - Dane przechowywane są w **tabelach** (ang. *relations*).
 - Każdy **wiersz (row)** to rekord / krotka.
@@ -111,18 +113,18 @@ Przykład relacji **STUDENT**:
 
 ---
 
-## 2️⃣ Klucze i więzy integralności
+## Klucze i więzy integralności
 
-### 🔸 Klucz główny (PRIMARY KEY)
+### Klucz główny (PRIMARY KEY)
 - Unikalnie identyfikuje każdy wiersz w tabeli.
 - Nie może przyjmować wartości `NULL`.
 - W tabeli może występować tylko jeden klucz główny.
 
-### 🔸 Klucz obcy (FOREIGN KEY)
+### Klucz obcy (FOREIGN KEY)
 - Tworzy powiązanie z inną tabelą.
 - Wymusza spójność danych – nie można wprowadzić wartości, której nie ma w tabeli nadrzędnej.
 
-### 🔸 Inne więzy integralności
+### Inne więzy integralności
 - `UNIQUE` – zapewnia unikalność wartości w kolumnie.
 - `NOT NULL` – kolumna nie może przyjmować wartości pustych.
 - `CHECK` – sprawdza warunek logiczny (np. `wiek > 0`).
@@ -136,9 +138,9 @@ Przykład relacji **STUDENT**:
 
 > <img> Schemat: klucz główny i klucz obcy między tabelami STUDENT, KURS, ZAPIS
 
-### 🔹 Klucz złożony w praktyce
+### Klucz złożony w praktyce
 
-Klucz złożony (composite key) deklarujemy jako `PRIMARY KEY` obejmujący kilka kolumn naraz — żadna z nich osobno nie musi być unikalna, unikalna musi być dopiero ich **kombinacja**.
+Klucz złożony (composite key) jest deklarowany jako `PRIMARY KEY` obejmujący kilka kolumn naraz — żadna z nich osobno nie musi być unikalna, unikalna musi być dopiero ich **kombinacja**.
 
 ```sql
 CREATE TABLE Zapis (
@@ -151,11 +153,11 @@ CREATE TABLE Zapis (
 );
 ```
 
-Ten sam student (`NrIndeksu`) może wystąpić wielokrotnie (na różnych kursach), ten sam kurs (`KursID`) też — ale para `(NrIndeksu, KursID)` musi być unikalna: nie da się zapisać dwa razy na ten sam kurs.
+Identyfikator studenta może występować w wielu zapisach dotyczących różnych kursów. Identyfikator kursu również może się powtarzać. Unikalność pary `(NrIndeksu, KursID)` wyklucza natomiast drugi zapis tego samego studenta na ten sam kurs.
 
-### 🔹 Co się dzieje przy usuwaniu powiązanych danych — `ON DELETE`
+### Działanie klauzuli `ON DELETE`
 
-Sam `FOREIGN KEY` mówi tylko, że wartość musi istnieć w tabeli nadrzędnej. Nie mówi, co zrobić, gdy ktoś spróbuje **usunąć** wiersz nadrzędny, do którego wciąż odwołują się wiersze podrzędne. To ustala klauzula `ON DELETE`:
+Klucz obcy określa odwołanie do tabeli nadrzędnej. Zachowanie ograniczenia podczas usuwania wiersza nadrzędnego, do którego odwołują się wiersze podrzędne, określa klauzula `ON DELETE` lub jej ustawienie domyślne:
 
 | Opcja | Zachowanie przy `DELETE` rodzica |
 |-------|-----------------------------------|
@@ -167,11 +169,11 @@ Sam `FOREIGN KEY` mówi tylko, że wartość musi istnieć w tabeli nadrzędnej.
 FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id) ON DELETE CASCADE
 ```
 
-Jeśli klauzuli `ON DELETE` nie podamy w ogóle (tak jak w przykładzie `Ksiazki` poniżej), obowiązuje domyślne zachowanie restrykcyjne — baza nie pozwoli usunąć autora, który ma jeszcze książki.
+W przykładzie tabeli `Ksiazki` nie zadeklarowano klauzuli `ON DELETE`. Przy włączonej kontroli kluczy obcych usunięcie autora z istniejącymi odwołaniami zostanie odrzucone.
 
 ---
 
-## 3️⃣ Rodzaje związków (relacji) między tabelami
+## Rodzaje związków (relacji) między tabelami
 
 W relacyjnych bazach danych tabele łączy się przez **klucze obce**.
 Na tej podstawie tworzą się różne typy relacji:
@@ -194,30 +196,29 @@ Tabela ZAPIS zawiera klucze obce wskazujące na STUDENT i KURS.
 
  <img alt="Schemat: STUDENT —< ZAPIS >— KURS (relacja N:M)">
 
- ## 4️⃣ Wprowadzenie do języka SQL (Structured Query Language)
+## Wprowadzenie do języka SQL (Structured Query Language)
 
-SQL to standardowy język do definiowania, modyfikowania i pobierania danych w relacyjnych bazach danych. Przypomnienie z wykładu 1 — SQL dzieli się na cztery podjęzyki: **DDL**, **DML**, **DCL**, **TCL**. Dziś skupiamy się głównie na DDL i DML.
+SQL (Structured Query Language) jest językiem definiowania struktur, modyfikowania danych i formułowania zapytań w relacyjnych bazach danych. Podstawowe grupy poleceń obejmują **DDL**, **DML**, **DCL** i **TCL**. Poniższe przykłady dotyczą przede wszystkim definiowania struktur i operacji na danych, czyli DDL i DML.
 
 ---
 
-### 🔹 Tworzenie tabel (DDL – Data Definition Language)
+### Tworzenie tabel (DDL – Data Definition Language)
 
 Polecenie `CREATE TABLE` służy do utworzenia nowej tabeli w bazie danych.
-W tym poleceniu definiujemy nazwy kolumn, ich typy danych oraz różne więzy integralności, takie jak `PRIMARY KEY`, `NOT NULL` czy `FOREIGN KEY`.
+Definicja zawiera nazwy kolumn, ich typy danych oraz ograniczenia integralności, takie jak `PRIMARY KEY`, `NOT NULL` i `FOREIGN KEY`.
 
 Każda tabela powinna mieć kolumnę, która jednoznacznie identyfikuje każdy wiersz – to właśnie **klucz główny**.
 
-W przykładzie poniżej tworzymy dwie tabele: **Autorzy** i **Ksiazki**, które będą ze sobą powiązane relacją **klucz główny–klucz obcy**.
+Przykład obejmuje dwie tabele, **Autorzy** i **Ksiazki**, połączone odwołaniem klucza obcego do klucza głównego.
 
 ---
 
-### 💡 Ten sam schemat w dwóch dialektach — celowo osobno
+### Definicja schematu w SQLite i PostgreSQL
 
-SQL nie jest jednym, uniwersalnym językiem — `CREATE TABLE` różni się między
-silnikami akurat w tym miejscu, gdzie boli najbardziej: jak nadać kluczowi głównemu
-automatyczną numerację. Poniżej dwie **osobne, w pełni poprawne** wersje tego samego
-schematu — nie mieszajcie składni między nimi, żadna baza nie zrozumie takiej
-mieszanki.
+Implementacje SQL różnią się składnią niektórych definicji, między innymi
+mechanizmem automatycznego nadawania identyfikatorów. Poniżej przedstawiono
+dwa warianty tego samego schematu, przeznaczone odpowiednio dla SQLite
+i PostgreSQL. Każdy wariant stanowi odrębną definicję dla wskazanego silnika.
 
 **Wariant SQLite:**
 
@@ -256,20 +257,18 @@ CREATE TABLE Ksiazki (
 ```
 
 ::: {.callout-important}
-## `INTEGER PRIMARY KEY` w SQLite to NIE alias dla `AUTOINCREMENT`
+## `INTEGER PRIMARY KEY` a `AUTOINCREMENT` w SQLite
 
-To częsty błąd (nawet w niejednym tutorialu w internecie). W SQLite `INTEGER PRIMARY
-KEY` to alias dla wewnętrznego identyfikatora wiersza (`ROWID`) — baza **owszem**
-sama nada mu kolejną wolną liczbę przy `INSERT` bez podania wartości, ale ta liczba
-**może zostać ponownie użyta** po usunięciu wiersza (np. usuniecie ostatniego wiersza
-i dodanie nowego może dostać to samo ID co usunięty).
+W SQLite `INTEGER PRIMARY KEY` jest aliasem wewnętrznego identyfikatora wiersza
+`ROWID`. Przy operacji `INSERT` bez jawnego identyfikatora baza nadaje jego
+wartość automatycznie. Usunięcie wiersza o największym identyfikatorze może
+jednak umożliwić ponowne użycie tej wartości przy kolejnym dodaniu danych.
 
-Żeby naprawdę zagwarantować, że ID **nigdy** się nie powtórzy (nawet po usunięciach),
-trzeba dopisać dosłowne słowo kluczowe: `INTEGER PRIMARY KEY AUTOINCREMENT`. To
-osobna, ściślejsza gwarancja — kosztem odrobinę wolniejszych insertów (SQLite
-pilnuje dodatkowej tabeli `sqlite_sequence`). Do zwykłych ćwiczeń wystarczy sam
-`INTEGER PRIMARY KEY`; gdybyście kiedyś potrzebowali identyfikatorów, które nigdy się
-nie powtórzą (np. numery faktur), sięgnijcie po `AUTOINCREMENT` świadomie.
+Deklaracja `INTEGER PRIMARY KEY AUTOINCREMENT` ogranicza ponowne używanie
+wcześniej przydzielonych identyfikatorów przez mechanizm automatycznej numeracji.
+SQLite utrzymuje w tym celu dodatkową tabelę `sqlite_sequence`, co zwiększa
+koszt operacji zapisu. Wybór mechanizmu zależy od wymagań dotyczących
+identyfikatorów; w podstawowych przykładach wystarcza `INTEGER PRIMARY KEY`.
 
 PostgreSQL nie ma tego rozróżnienia — `SERIAL` zawsze daje rosnącą sekwencję, która
 (poza rzadkimi przypadkami jawnego resetu) nie powtarza wartości.
@@ -284,28 +283,30 @@ W powyższym przykładzie:
 Dzięki więzom integralności baza pilnuje, by każda książka miała poprawnego autora.
 Takie powiązania są podstawą modelu relacyjnego.
 
-> ⚠️ Zwróć uwagę: `FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)` powyżej **nie ma** klauzuli `ON DELETE` — patrz sekcja 2 wyżej, co to oznacza w praktyce.
+W definicji `FOREIGN KEY (autor_id) REFERENCES Autorzy(autor_id)` pominięto
+klauzulę `ON DELETE`. Zastosowanie ma więc zachowanie domyślne opisane w sekcji
+dotyczącej usuwania powiązanych danych.
 
 
-## 5️⃣ Modyfikacja i usuwanie tabel
+## Modyfikacja i usuwanie tabel
 
-### 🔹 Dodawanie kolumn
+### Dodawanie kolumn
 ```sql
 ALTER TABLE Ksiazki ADD COLUMN gatunek TEXT;
 ```
-### 🔹 Zmiana typu kolumny
+### Zmiana typu kolumny
 
 ```sql
 ALTER TABLE STUDENT ALTER COLUMN Kierunek TYPE VARCHAR(100);
 ```
 
-### 🔹 Usuwanie kolumny
+### Usuwanie kolumny
 
 ```sql
 ALTER TABLE STUDENT DROP COLUMN Email;
 ```
 
-### 🔹 Usuwanie tabeli
+### Usuwanie tabeli
 
 ```sql
 DROP TABLE Ksiazki;
@@ -313,7 +314,7 @@ DROP TABLE Ksiazki;
 
 
 
-## 6️⃣ Wstawianie danych (DML – Data Manipulation Language)
+## Wstawianie danych (DML – Data Manipulation Language)
 
 Polecenie INSERT INTO służy do wprowadzania nowych wierszy (rekordów) do tabeli.
 Wartości muszą być zgodne z typami kolumn oraz ograniczeniami (NOT NULL, CHECK, itp.).
@@ -337,12 +338,12 @@ INSERT INTO Ksiazki (tytul, rok, autor_id) VALUES
 
 Każdy rekord reprezentuje jedną pozycję w tabeli.
 Polecenie INSERT wymaga podania wartości w tej samej kolejności, w jakiej wymieniono kolumny.
-Jeśli nie podamy jakiejś kolumny, a ma ona zdefiniowaną wartość domyślną (DEFAULT), baza wstawi ją automatycznie.
+Pominięcie kolumny z zadeklarowaną wartością domyślną (`DEFAULT`) powoduje zastosowanie tej wartości przez bazę.
 
 
-## 7️⃣ Wybieranie danych – SELECT
+## Wybieranie danych – SELECT
 
-### 🧩 Podstawowy SELECT
+### Podstawowy SELECT
 
 ```sql
 SELECT * FROM Autorzy;
@@ -351,13 +352,13 @@ Powyższe zapytanie zwraca wszystkich autorów z tabeli Autorzy.
 
 
 
-### 🧩 Wybór konkretnych kolumn
+### Wybór konkretnych kolumn
 ```sql
 
 SELECT imie, nazwisko FROM Autorzy;
 ```
 
-### 🧩 Nadawanie aliasów
+### Nadawanie aliasów
 
 ```sql
 SELECT imie AS "Imię", nazwisko AS "Nazwisko" FROM Autorzy;
@@ -366,14 +367,14 @@ SELECT imie AS "Imię", nazwisko AS "Nazwisko" FROM Autorzy;
 Alias (AS) pozwala nadać kolumnom bardziej opisowe nazwy w wynikach.
 
 
-## 8️⃣ Filtrowanie – WHERE
+## Filtrowanie – WHERE
 
 ```sql
 SELECT * FROM Ksiazki
 WHERE rok > 1850;
 ```
 
-### 🧠 Operatory logiczne:
+### Operatory logiczne:
 
 - = , <>, <, >, <=, >=
 - LIKE 'Q%' → zaczyna się na Q
@@ -388,9 +389,9 @@ Przykład wyszukiwania książek zawierających literę “a” w tytule:
 SELECT tytul FROM Ksiazki WHERE tytul LIKE '%a%';
 ```
 
-### ⚠️ Pułapka: `NULL` w `WHERE`
+### Wartość `NULL` w warunkach filtrowania
 
-`NULL` oznacza „wartość nieznana”, więc **nie** porównujemy go operatorem `=`.
+`NULL` oznacza brak znanej wartości. Testowanie jej obecności wymaga operatora `IS NULL`, zamiast porównania przez `=`.
 
 ```sql
 -- ŹLE — nigdy nie zwróci wierszy, nawet jeśli autor_id jest puste:
@@ -400,9 +401,9 @@ SELECT * FROM Ksiazki WHERE autor_id = NULL;
 SELECT * FROM Ksiazki WHERE autor_id IS NULL;
 ```
 
-`autor_id = NULL` nie daje ani `TRUE`, ani `FALSE`, tylko `UNKNOWN` — a `WHERE` odrzuca wiersze, dla których warunek nie jest jednoznacznie `TRUE`. Ten sam problem dotyczy `<>` — `autor_id <> NULL` też nic nie zwróci, trzeba użyć `IS NOT NULL`.
+Wyrażenie `autor_id = NULL` ma wynik `UNKNOWN`. Klauzula `WHERE` zachowuje wyłącznie wiersze, dla których warunek daje `TRUE`. Analogicznie porównanie `autor_id <> NULL` nie wybiera wierszy; obecność znanej wartości sprawdza operator `IS NOT NULL`.
 
-## 9️⃣ Sortowanie – ORDER BY
+## Sortowanie – ORDER BY
 
 
 ```sql
@@ -417,7 +418,7 @@ Dla kilku kolumn można napisać np.:
 SELECT * FROM Ksiazki ORDER BY autor_id ASC, rok DESC;
 ```
 
-## 🔟 Grupowanie i agregacja – GROUP BY, HAVING
+## Grupowanie i agregacja – GROUP BY, HAVING
 
 ```sql
 SELECT autor_id, COUNT(*) AS liczba_ksiazek
@@ -430,22 +431,25 @@ HAVING COUNT(*) > 1;
 Klauzula GROUP BY grupuje dane, a HAVING filtruje grupy po agregacji.
 Funkcje agregujące: COUNT(), SUM(), AVG(), MIN(), MAX().
 
-### 🔹 Dlaczego `HAVING`, a nie `WHERE`?
+### Różnica między `WHERE` i `HAVING`
 
 `WHERE` filtruje **pojedyncze wiersze**, zanim zostaną zgrupowane — w momencie jego działania `COUNT(*)` jeszcze nie istnieje. `HAVING` filtruje **gotowe grupy**, już po agregacji. Dlatego `WHERE COUNT(*) > 1` jest błędem składniowym, a `HAVING COUNT(*) > 1` — poprawne.
 
-Silnik SQL wykonuje zapytanie w innej kolejności logicznej, niż je piszemy:
+Logiczna kolejność przetwarzania zapytania różni się od kolejności zapisu klauzul:
 
 ```
 FROM  →  WHERE  →  GROUP BY  →  HAVING  →  SELECT  →  ORDER BY
 ```
 
-Czyli mimo że `SELECT` piszemy na początku, jest wykonywany niemal na końcu — dlatego alias nadany w `SELECT ... AS liczba_ksiazek` nie jest jeszcze dostępny w `WHERE`, ale można go użyć w `ORDER BY`.
+Lista wynikowa `SELECT` występuje na początku zapisu zapytania, lecz w modelu
+logicznego przetwarzania następuje po filtrowaniu i agregacji. Alias nadany
+w `SELECT ... AS liczba_ksiazek` może być użyty w `ORDER BY`. Dostępność aliasów
+w innych klauzulach zależy od dialektu SQL.
 
 
-## 1️⃣1️⃣ Łączenie tabel – JOIN
+## 1️⃣ Łączenie tabel – JOIN
 
-### 🔹 INNER JOIN
+### INNER JOIN
 
 
 ```sql
@@ -455,7 +459,7 @@ JOIN Autorzy a ON k.autor_id = a.autor_id;
 ```
 
 
-### 🔹 LEFT JOIN
+### LEFT JOIN
 
 ```sql
 SELECT k.tytul, a.imie, a.nazwisko
@@ -467,36 +471,36 @@ INNER JOIN zwraca tylko dopasowane rekordy,
 LEFT JOIN – wszystkie rekordy z lewej tabeli (nawet bez dopasowania).
 
 
-## 1️⃣2️⃣ Aktualizacja i usuwanie danych
+## 2️⃣ Aktualizacja i usuwanie danych
 
-### 🔹 Aktualizacja danych
+### Aktualizacja danych
 
 ```sql
 UPDATE Ksiazki SET rok = 1836 WHERE tytul = 'Pan Tadeusz';
 ```
 
-### 🔹 Usuwanie danych
+### Usuwanie danych
 
 ```sql
 DELETE FROM Ksiazki WHERE rok < 1850;
 ```
 Zawsze należy używać WHERE, aby nie zmodyfikować lub nie usunąć wszystkich rekordów.
 
-## 🧾 Podsumowanie
+## Podsumowanie
 
-SQL jest językiem deklaratywnym – opisujemy co chcemy uzyskać, a nie jak to zrobić.
+SQL jest językiem deklaratywnym: zapytanie określa oczekiwany wynik, a silnik bazy dobiera sposób jego uzyskania.
 Dzięki temu użytkownik nie musi znać szczegółów działania bazy danych.
 
-Poznane dziś polecenia:
+Podstawowe polecenia i klauzule:
 
 CREATE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY
 
 to fundament pracy z bazami danych.
 Opanowanie ich pozwala budować i analizować nawet bardzo złożone systemy informacyjne.
 
-⸻
+---
 
-## 📚 Źródła i literatura:
+## Źródła i literatura:
 	•	Dokumentacja SQLite
 	•	Dokumentacja PostgreSQL
 	•	A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts
