@@ -185,9 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title"><strong>Sections</strong></h2>
    
   <ul class="collapse">
-  <li><a href="#model-relacyjny-i-podstawy-sql" id="toc-model-relacyjny-i-podstawy-sql" class="nav-link active" data-scroll-target="#model-relacyjny-i-podstawy-sql">💾 Model relacyjny i podstawy SQL</a>
-  <ul class="collapse">
-  <li><a href="#pokaz-przewodni-kto-ma-radiostację" id="toc-pokaz-przewodni-kto-ma-radiostację" class="nav-link" data-scroll-target="#pokaz-przewodni-kto-ma-radiostację">Pokaz przewodni — kto ma radiostację?</a></li>
+  <li><a href="#kto-ma-radiostację" id="toc-kto-ma-radiostację" class="nav-link active" data-scroll-target="#kto-ma-radiostację">Kto ma radiostację?</a></li>
   <li><a href="#materiał-referencyjny" id="toc-materiał-referencyjny" class="nav-link" data-scroll-target="#materiał-referencyjny">Materiał referencyjny</a></li>
   <li><a href="#model-relacyjny-przypomnienie-i-pojęcia-podstawowe" id="toc-model-relacyjny-przypomnienie-i-pojęcia-podstawowe" class="nav-link" data-scroll-target="#model-relacyjny-przypomnienie-i-pojęcia-podstawowe">1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe</a></li>
   <li><a href="#klucze-i-więzy-integralności" id="toc-klucze-i-więzy-integralności" class="nav-link" data-scroll-target="#klucze-i-więzy-integralności">2️⃣ Klucze i więzy integralności</a></li>
@@ -202,7 +200,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#aktualizacja-i-usuwanie-danych" id="toc-aktualizacja-i-usuwanie-danych" class="nav-link" data-scroll-target="#aktualizacja-i-usuwanie-danych">1️⃣2️⃣ Aktualizacja i usuwanie danych</a></li>
   <li><a href="#podsumowanie" id="toc-podsumowanie" class="nav-link" data-scroll-target="#podsumowanie">🧾 Podsumowanie</a></li>
   <li><a href="#źródła-i-literatura" id="toc-źródła-i-literatura" class="nav-link" data-scroll-target="#źródła-i-literatura">📚 Źródła i literatura:</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -228,14 +225,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<hr>
-<section id="model-relacyjny-i-podstawy-sql" class="level1">
-<h1>💾 Model relacyjny i podstawy SQL</h1>
-<hr>
-<section id="pokaz-przewodni-kto-ma-radiostację" class="level2">
-<h2 class="anchored" data-anchor-id="pokaz-przewodni-kto-ma-radiostację">Pokaz przewodni — kto ma radiostację?</h2>
-<p>Wracamy do magazynu „Baza Brzoza”. Dane z pierwszego spotkania przeniesiono z dwóch arkuszy do SQLite. Sprzeczne wydania R-01 nadal istnieją: przeprowadzka do bazy nie rozstrzyga, który dokument opisuje rzeczywistość.</p>
-<p>Podczas pokazu prowadzący używa DB Browser for SQLite. Śledzimy jedną historię: od surowych wierszy, przez raport, do wykrycia konfliktu. Nie trzeba jeszcze instalować programu ani wykonywać wszystkich przykładów z części referencyjnej.</p>
+<section id="kto-ma-radiostację" class="level2">
+<h2 class="anchored" data-anchor-id="kto-ma-radiostację">Kto ma radiostację?</h2>
+<p>Magazyn „Baza Brzoza” prowadzi ewidencję wydań wyposażenia. Dane przeniesiono z dwóch arkuszy do SQLite. Sprzeczne wydania R-01 nadal istnieją: przeprowadzka do bazy nie rozstrzyga, który dokument opisuje rzeczywistość.</p>
+<p>Polecenia <code>CREATE TABLE</code> definiują strukturę bazy, a <code>INSERT</code> dodaje dane. <code>SELECT</code> pozwala je odczytać: od pojedynczych wierszy po raport ujawniający sprzeczności w ewidencji.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -268,7 +261,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> loans <span class="kw">ORDER</span> <span class="kw">BY</span> loan_id;</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> loans <span class="kw">WHERE</span> returned_at <span class="op">=</span> <span class="kw">NULL</span>;</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> loans <span class="kw">WHERE</span> returned_at <span class="kw">IS</span> <span class="kw">NULL</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Przed wykonaniem porównajcie dwa ostatnie warunki. <code>NULL</code> oznacza brak wartości; porównanie przez <code>=</code> nie daje tu TRUE. <code>IS NULL</code> wybiera niezakończone wydania.</p>
+<p>Dwa ostatnie warunki mają różne znaczenie. <code>NULL</code> oznacza brak wartości; porównanie przez <code>=</code> nie daje tu TRUE. <code>IS NULL</code> wybiera niezakończone wydania.</p>
 </section>
 <section id="raport-z-nazwami-zamiast-samych-identyfikatorów" class="level3">
 <h3 class="anchored" data-anchor-id="raport-z-nazwami-zamiast-samych-identyfikatorów">Raport z nazwami zamiast samych identyfikatorów</h3>
@@ -302,13 +295,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="korekta-wymaga-dodatkowej-wiedzy" class="level3">
 <h3 class="anchored" data-anchor-id="korekta-wymaga-dodatkowej-wiedzy">Korekta wymaga dodatkowej wiedzy</h3>
-<p>Prowadzący poda nowy, fikcyjny fakt o zwrocie R-01. Dopiero wtedy wykonamy aktualizację konkretnego wydania i ponowimy raport konfliktów. Nie usuwamy historii i nie wybieramy zwycięzcy na podstawie numeru wiersza.</p>
-<p><a href="../scenariusze.html#wyklad-2">Zadanie towarzyszące pokazowi</a>.</p>
+<p>Sama sprzeczność w ewidencji nie wskazuje, który zapis jest błędny. Korekta wymaga dodatkowej informacji, np. dokumentu potwierdzającego czas zwrotu R-01. Dopiero na tej podstawie można zaktualizować konkretne wydanie i ponowić raport konfliktów. Numer ani kolejność wiersza nie rozstrzygają prawdziwości danych.</p>
+<p><a href="../scenariusze.html#wyklad-2">Zadanie: analiza ewidencji magazynu</a>.</p>
 </section>
 </section>
 <section id="materiał-referencyjny" class="level2">
 <h2 class="anchored" data-anchor-id="materiał-referencyjny">Materiał referencyjny</h2>
-<p>Dalsze sekcje rozwijają pojęcia i składnię. Główna ścieżka zajęć to pokaz powyżej; przykłady innych dialektów i operacji na schemacie służą późniejszej pracy własnej.</p>
+<p>Dalsze sekcje rozwijają model relacyjny, ograniczenia integralności i składnię SQL, w tym różnice między dialektami oraz operacje na schemacie i danych.</p>
 </section>
 <section id="model-relacyjny-przypomnienie-i-pojęcia-podstawowe" class="level2">
 <h2 class="anchored" data-anchor-id="model-relacyjny-przypomnienie-i-pojęcia-podstawowe">1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe</h2>
@@ -713,7 +706,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 •   A. Silberschatz, H. Korth, S. Sudarshan, Database System Concepts</code></pre>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

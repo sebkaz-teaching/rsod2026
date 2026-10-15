@@ -2,21 +2,15 @@
 title: "Model relacyjny i podstawy SQL"
 ---
 
----
+## Kto ma radiostację?
 
-# 💾 Model relacyjny i podstawy SQL
-
----
-
-## Pokaz przewodni — kto ma radiostację?
-
-Wracamy do magazynu „Baza Brzoza”. Dane z pierwszego spotkania przeniesiono
+Magazyn „Baza Brzoza” prowadzi ewidencję wydań wyposażenia. Dane przeniesiono
 z dwóch arkuszy do SQLite. Sprzeczne wydania R-01 nadal istnieją: przeprowadzka
 do bazy nie rozstrzyga, który dokument opisuje rzeczywistość.
 
-Podczas pokazu prowadzący używa DB Browser for SQLite. Śledzimy jedną historię:
-od surowych wierszy, przez raport, do wykrycia konfliktu. Nie trzeba jeszcze
-instalować programu ani wykonywać wszystkich przykładów z części referencyjnej.
+Polecenia `CREATE TABLE` definiują strukturę bazy, a `INSERT` dodaje dane.
+`SELECT` pozwala je odczytać: od pojedynczych wierszy po raport ujawniający
+sprzeczności w ewidencji.
 
 | Tabela | Znaczenie |
 |---|---|
@@ -36,7 +30,7 @@ SELECT * FROM loans WHERE returned_at = NULL;
 SELECT * FROM loans WHERE returned_at IS NULL;
 ```
 
-Przed wykonaniem porównajcie dwa ostatnie warunki. `NULL` oznacza brak wartości;
+Dwa ostatnie warunki mają różne znaczenie. `NULL` oznacza brak wartości;
 porównanie przez `=` nie daje tu TRUE. `IS NULL` wybiera niezakończone wydania.
 
 ### Raport z nazwami zamiast samych identyfikatorów
@@ -85,16 +79,17 @@ Liczymy niepuste identyfikatory wydań, a nie wszystkie wiersze przez `COUNT(*)`
 
 ### Korekta wymaga dodatkowej wiedzy
 
-Prowadzący poda nowy, fikcyjny fakt o zwrocie R-01. Dopiero wtedy wykonamy
-aktualizację konkretnego wydania i ponowimy raport konfliktów. Nie usuwamy
-historii i nie wybieramy zwycięzcy na podstawie numeru wiersza.
+Sama sprzeczność w ewidencji nie wskazuje, który zapis jest błędny. Korekta
+wymaga dodatkowej informacji, np. dokumentu potwierdzającego czas zwrotu R-01.
+Dopiero na tej podstawie można zaktualizować konkretne wydanie i ponowić raport
+konfliktów. Numer ani kolejność wiersza nie rozstrzygają prawdziwości danych.
 
-[Zadanie towarzyszące pokazowi](../scenariusze.qmd#wyklad-2).
+[Zadanie: analiza ewidencji magazynu](../scenariusze.qmd#wyklad-2).
 
 ## Materiał referencyjny
 
-Dalsze sekcje rozwijają pojęcia i składnię. Główna ścieżka zajęć to pokaz powyżej;
-przykłady innych dialektów i operacji na schemacie służą późniejszej pracy własnej.
+Dalsze sekcje rozwijają model relacyjny, ograniczenia integralności i składnię SQL,
+w tym różnice między dialektami oraz operacje na schemacie i danych.
 
 ## 1️⃣ Model relacyjny – przypomnienie i pojęcia podstawowe
 
