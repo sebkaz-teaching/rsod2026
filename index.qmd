@@ -12,14 +12,30 @@ Semestr: zimowy
 
 <!-- TODO: uzupełnić na podstawie https://wel.wat.edu.pl/planyzajec/zima/dr__Zajac_Sebastian.htm -->
 
-### Wykład dla grup:
+### Wykłady
 
-1. TODO: dzień tygodnia, godzina, sala
+- **Wykład 3: 21 października 2026 r.** — struktura logiczna i normalizacja baz danych.
 
-### Laboratorium dla grup:
+### Laboratoria
 
-1. TODO: dzień tygodnia, godzina, sala
+Laboratoria odbędą się **wyłącznie w dwóch ostatnich terminach zajęć,
+po 8 godzin każde** (łącznie 16 godzin). Będą przeznaczone na samodzielną
+pracę z bazą danych na podstawie zadań i wymagań.
 
 ## Scenariusze zajęć
 
 [Otwórz zadania i opis projektu](scenariusze.qmd).
+
+
+## Materiały wykładowe i praca laboratoryjna
+
+Strony wykładów zawierają wyjaśnienia pojęć, przykłady i kod SQL do ponownej
+analizy. Demonstracje ilustrują działanie bazy oraz skutki decyzji projektowych.
+Laboratoria są przeznaczone na samodzielną realizację zadań: analizę wymagań,
+projektowanie tabel, wykonywanie operacji i weryfikację wyników. Szczegółowe
+polecenia oraz kryteria oddania będą podane w materiałach laboratoryjnych.
+
+[Wykład 3: struktura logiczna i normalizacja baz danych](lectures/wyklad3.qmd)
+prowadzi od jednej tabeli dokumentów magazynowych przez 1NF, 2NF i 3NF do
+odtworzenia raportu. Zawiera również zestaw SQL do odtworzenia demonstracji
+w osobnej bazie SQLite.

@@ -1,257 +1,520 @@
 ---
-title: "Normalizacja i projektowanie baz danych"
+title: "Struktura logiczna i normalizacja baz danych"
 ---
 
-## ✅ Sprawdź się z wykładu 2
+**Termin wykładu: 21 października 2026 r.**
 
-<div id="rsod-quiz"></div>
-<script src="../assets/js/quiz-engine.js"></script>
-<script>
-CourseQuiz.mount(document.getElementById('rsod-quiz'), {
-  course: "rsod2026",
-  lecture: "wyklad3",
-  title: "Wykład 2: Model relacyjny i podstawy SQL",
-  submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
-  questions: [
-    {
-      id: "q1", points: 1, diff: "bardzo łatwe",
-      text: "Co robi klauzula FOREIGN KEY w definicji tabeli?",
-      options: [
-        {v:"A", t:"Tworzy nową tabelę"},
-        {v:"B", t:"Tworzy powiązanie z inną tabelą i wymusza, by wartość istniała w tabeli nadrzędnej"},
-        {v:"C", t:"Sortuje dane w tabeli"},
-        {v:"D", t:"Usuwa duplikaty wierszy"}
-      ]
-    },
-    {
-      id: "q2", points: 1, diff: "łatwe",
-      text: "Co jednoznacznie identyfikuje wiersz w tabeli i nie może przyjmować wartości NULL?",
-      options: [
-        {v:"A", t:"Klucz obcy"},
-        {v:"B", t:"Klucz kandydujący"},
-        {v:"C", t:"Klucz główny (PRIMARY KEY)"},
-        {v:"D", t:"Indeks"}
-      ]
-    },
-    {
-      id: "q3", points: 2, diff: "średnie",
-      text: "Jak realizuje się relację N:M między dwiema tabelami w modelu relacyjnym?",
-      options: [
-        {v:"A", t:"Przez dodanie kolumny NULL w jednej z tabel"},
-        {v:"B", t:"Przez tabelę pośredniczącą z kluczami obcymi do obu tabel"},
-        {v:"C", t:"Przez połączenie obu tabel w jedną"},
-        {v:"D", t:"Model relacyjny nie obsługuje N:M"}
-      ]
-    },
-    {
-      id: "q4", points: 2, diff: "trudne",
-      text: "Czym różni się INNER JOIN od LEFT JOIN?",
-      options: [
-        {v:"A", t:"INNER JOIN zwraca więcej wierszy niż LEFT JOIN"},
-        {v:"B", t:"LEFT JOIN zwraca tylko dopasowane rekordy, INNER JOIN wszystkie z lewej tabeli"},
-        {v:"C", t:"INNER JOIN zwraca tylko dopasowane rekordy, LEFT JOIN — wszystkie z lewej tabeli, nawet bez dopasowania"},
-        {v:"D", t:"To synonimy, nie ma różnicy"}
-      ]
-    },
-    {
-      id: "q5", points: 3, diff: "wnioskowanie",
-      text: "Tabela Ksiazki ma wiersze, w których autor_id jest NULL (książki bez przypisanego autora). Czy poniższe zapytanie je zwróci?",
-      code: "SELECT k.tytul, a.imie\nFROM Ksiazki k\nJOIN Autorzy a ON k.autor_id = a.autor_id;",
-      options: [
-        {v:"A", t:"Tak, pojawią się z pustym imie"},
-        {v:"B", t:"Nie — warunek ON k.autor_id = a.autor_id dla NULL nigdy nie jest TRUE, JOIN (czyli INNER JOIN) je pomija; trzeba LEFT JOIN"},
-        {v:"C", t:"Tak, bo JOIN domyślnie zachowuje się jak LEFT JOIN"},
-        {v:"D", t:"Nastąpi błąd składniowy"}
-      ]
-    }
-  ]
-});
-</script>
+## Od zapytań do projektu bazy
 
----
+Zapytanie SQL może poprawnie odczytać dane, które są wzajemnie sprzeczne.
+Jeżeli nazwa jednego zespołu została zapisana w wielu wierszach i tylko część
+z nich zaktualizowano, sam `SELECT` nie rozstrzyga, która nazwa obowiązuje.
+Poprawność składni zapytania nie zastępuje poprawnego projektu bazy.
 
-## 🎯 Temat: Jak uniknąć błędów w projektowaniu?
+W poprzednim wykładzie ewidencja magazynu była już podzielona na egzemplarze,
+zespoły i wydania. Teraz punktem wyjścia jest jedna tabela przypominająca arkusz.
+Kolejne przekształcenia wyjaśniają, skąd bierze się podział danych i jakie
+problemy rozwiązuje. Przykład obejmuje strukturę logiczną relacyjnej bazy:
+encje, atrybuty, związki, klucze i zależności między danymi.
 
-Celem wykładu jest pokazanie, jak unikać błędów podczas projektowania relacyjnych baz danych poprzez stosowanie zasad **normalizacji**, zrozumienie **zależności funkcjonalnych** oraz wykorzystanie **diagramów ERD** (Entity–Relationship Diagram).
+**Normalizacja** jest analizą i przekształcaniem schematu na podstawie
+zależności między atrybutami. Jej celem jest ograniczenie zbędnego powielania
+faktów oraz związanych z nim anomalii. Nie polega na tworzeniu jak największej
+liczby tabel.
 
+### Wykład, materiał na stronie i laboratorium
 
-## 🧠 Cele wykładu
+Materiał na stronie zawiera wyjaśnienia pojęć, przykład projektowy i zapytania,
+do których można wracać po zajęciach. Demonstracja wykładowa koncentruje się
+na zmianach stanu danych oraz uzasadnieniu kolejnych decyzji projektowych.
 
-- nauczenie zasad **normalizacji** relacyjnych baz danych,  
-- zrozumienie pojęcia **zależności funkcjonalnych**,  
-- wprowadzenie do **diagramów ERD** jako narzędzia modelowania danych.
+Na laboratorium analogiczny sposób rozumowania zostanie zastosowany samodzielnie:
+od danych wejściowych i wymagań, przez schemat i implementację SQL, do kontroli
+wyników. Zadanie laboratoryjne będzie zawierało oczekiwany rezultat i kryteria
+sprawdzenia; nie będzie wymagało jedynie przepisania demonstracji.
 
+## Przypadek: dokumenty wydania sprzętu
 
+Magazyn „Baza Brzoza” prowadzi ewidencję dokumentów wydania. W porównaniu
+z poprzednim przykładem pojawia się rozróżnienie **dokumentu** i jego **pozycji**:
+jeden dokument może obejmować kilka egzemplarzy sprzętu.
 
-## 1. Problemy złego projektu bazy danych
+Przyjęte reguły określają znaczenie danych:
 
-Złe zaprojektowanie struktury bazy danych prowadzi do wielu problemów:
+- Dokument ma jeden numer, jeden czas wydania i jeden zespół odbierający.
+- Egzemplarz ma własny identyfikator, np. R-01. Ten sam egzemplarz może występować
+  na różnych dokumentach w historii, ale najwyżej raz na jednym dokumencie.
+- Identyfikator zespołu wyznacza jego bieżącą nazwę. Identyfikator egzemplarza
+  wyznacza jego bieżący opis. Nazwy nie muszą być unikalne.
+- Przykład dotyczy struktury dokumentów. Nie zawiera ewidencji zwrotów, więc
+  liczba wystąpień egzemplarza nie jest liczbą jego aktywnych wypożyczeń.
 
-### 🔹 Redundancja danych
+Daty są umowne. Poniższe dane nie stanowią migracji bazy z poprzedniego wykładu.
 
-To **powielanie tych samych informacji** w różnych miejscach bazy. 
+| Dokument | Wydano | Zespół ID | Nazwa zespołu | Sprzęt |
+|---|---|---|---|---|
+| 201 | 2027-02-01 08:00 | A | Alfa | R-01: Radiostacja; L-01: Latarka |
+| 202 | 2027-02-02 09:00 | B | Bravo | R-02: Radiostacja zapasowa |
+| 203 | 2027-02-03 10:00 | A | Alfa | R-01: Radiostacja |
 
-Przykład: jeśli w każdej tabeli z zamówieniami przechowujemy pełne dane klienta, to zmiana jego adresu wymaga aktualizacji wielu rekordów.
+### Odtworzenie przykładu w SQLite
 
-### 🔹 Anomalie danych
+[Pliki SQL do demonstracji — pobierz ZIP](../assets/sql/rsod3-normalizacja.zip).
+Archiwum zawiera ponumerowane kroki 00–11, bez dodatkowego oprogramowania.
 
-Błędy i niekonsekwencje wynikające z nadmiarowej struktury danych.
+W DB Browser for SQLite:
 
-- **Anomalia aktualizacji** – zmiana jednej informacji wymaga wielu modyfikacji.  
-  *Np. zmiana nazwiska wykładowcy w kilku wierszach tabeli.*
+1. Utwórz **nową, pustą bazę** przez **New Database** i zapisz ją pod nową nazwą.
+   Anuluj okno ręcznego tworzenia tabeli.
+2. Rozpakuj archiwum. W **Execute SQL** otwieraj i wykonuj całe pliki kolejno
+   od 00. Po zmianach korzystaj z **Write Changes**.
+3. Plik 00 włącza kontrolę kluczy obcych. Osobno wykonane
+   `PRAGMA foreign_keys;` powinno zwrócić `1`. Ustawienie dotyczy połączenia;
+   po ponownym otwarciu bazy trzeba je ponownie włączyć, poza aktywną transakcją.
+4. Skrypty wymagają SQLite co najmniej 3.37 ze względu na tabele `STRICT`.
+   Wersję sprawdza `SELECT sqlite_version();`.
 
-- **Anomalia wstawiania** – brak możliwości dodania danych bez istnienia innych.  
-  *Np. nie można dodać nowego kursu, dopóki nie zapisze się na niego student.*
+Skrypty tworzą kolejne tabele etapowe, aby umożliwić porównanie. Nie są przeznaczone
+do ponownego uruchamiania od początku na tej samej bazie. Nie należy wykonywać
+ich na bazie magazynu z wykładu 2. Fragmenty SQL poniżej objaśniają poszczególne
+kroki; pełna sekwencja wykonania znajduje się w archiwum.
 
-- **Anomalia usuwania** – usunięcie rekordu powoduje utratę innych informacji.  
-  *Np. usunięcie ostatniego studenta z kursu powoduje utratę danych o samym kursie.*
+## Jedna tabela i trzy rodzaje anomalii
 
-👉 **Wniosek:** błędy projektowe utrudniają utrzymanie spójności danych.
+W tabeli początkowej kolumna ze sprzętem przechowuje listę. Ustalenie liczby
+wydań radiostacji wymaga rozpoznania poszczególnych elementów tego tekstu.
+Liczba wierszy jest liczbą dokumentów, a nie liczbą wydanych egzemplarzy.
 
----
+Po rozpisaniu list na osobne wiersze pojawia się inny problem: nazwy sprzętu,
+nazwy zespołów i dane dokumentu są wielokrotnie kopiowane. **Redundancja**
+oznacza tutaj powtarzanie tego samego faktu, np. bieżącej nazwy zespołu A.
+Nie każde powtórzenie wartości jest zbędne — identyfikatory w tabeli powiązań
+przechowują potrzebną informację o związku.
 
-## 2. Zależności funkcjonalne
+| Anomalia | Operacja | Skutek w pojedynczej tabeli pozycji |
+|---|---|---|
+| Aktualizacji | Zmiana nazwy zespołu tylko w jednym wierszu | Ten sam identyfikator ma różne nazwy |
+| Wstawiania | Dodanie nowego sprzętu, którego jeszcze nie wydano | Brakuje dokumentu potrzebnego do utworzenia pełnego wiersza |
+| Usuwania | Usunięcie jedynej pozycji dotyczącej R-02 | Znika również jedyna informacja o istnieniu i nazwie R-02 |
 
-### 🔹 Definicja
+Przyczyną jest połączenie w jednej strukturze faktów o różnych obiektach:
+sprzęcie, zespołach i dokumentach. Normalizacja porządkuje miejsce ich przechowywania.
 
-Zależność funkcjonalna (ang. *functional dependency*) opisuje **relację między atrybutami** w tabeli.
+## Pierwsza postać normalna — 1NF
 
-Mówimy, że atrybut *B* jest **funkcyjnie zależny** od atrybutu *A* (zapis:  
-**A → B**), jeśli każdej wartości *A* odpowiada dokładnie jedna wartość *B*.
+**1NF — First Normal Form**, czyli pierwsza postać normalna, wymaga wartości
+atomowych w ramach przyjętych dziedzin. W tym przykładzie jednostką opisu
+jest pojedynczy egzemplarz na dokumencie, a nie lista egzemplarzy w jednej komórce.
 
-### 🔹 Przykłady
-- NrIndeksu → Imię, Nazwisko, Kierunek  
-  (każdy numer indeksu jednoznacznie identyfikuje studenta)
-- Kurs → Sala, Prowadzący  
-  (dany kurs odbywa się zawsze w tej samej sali, prowadzony przez tę samą osobę)
+Atomowość zależy od modelu: napis zawierający średnik nie jest automatycznie
+błędny. Problemem jest wykorzystanie pola tekstowego jako zbioru obiektów,
+które mają być osobno identyfikowane, wiązane i zliczane.
 
-### 🔹 Klucze
-- **Klucz główny (primary key)** – jednoznacznie identyfikuje wiersz tabeli.  
-- **Klucz kandydujący (candidate key)** – minimalny zestaw atrybutów, który może być kluczem.  
-- **Klucz obcy (foreign key)** – wskazuje na klucz główny w innej tabeli i tworzy powiązanie między tabelami.
+Po rozdzieleniu list powstaje tabela `issue_lines_1nf`:
 
-### 🔹 Typy zależności
-- **Zależność pełna** – atrybut zależy od całego klucza złożonego.  
-- **Zależność częściowa** – atrybut zależy tylko od części klucza.  
-- **Zależność przechodnia** – atrybut zależy pośrednio od klucza (A → B → C).
+| document_id | item_id | item_name | issued_at | team_id | team_name |
+|---|---|---|---|---|---|
+| 201 | L-01 | Latarka | 2027-02-01 08:00 | A | Alfa |
+| 201 | R-01 | Radiostacja | 2027-02-01 08:00 | A | Alfa |
+| 202 | R-02 | Radiostacja zapasowa | 2027-02-02 09:00 | B | Bravo |
+| 203 | R-01 | Radiostacja | 2027-02-03 10:00 | A | Alfa |
 
----
-
-## 3. Formy normalne (1NF – 3NF, BCNF)
-
-Normalizacja to proces przekształcania tabel w taki sposób, aby **usunąć redundancję** i **zapobiec anomaliom**.
-
-### 🧩 Pierwsza postać normalna (1NF)
-
-- Wszystkie wartości w tabeli są **atomowe** (niepodzielne).  
-- Brak list, zbiorów lub kolumn powtarzających się.  
-  
-✅ *Każda kolumna ma jedną wartość w komórce.*
-
-**Przykład (naruszenie 1NF):**
-
-| Student  | NrIndeksu  | Kursy |
-|----------|------------|--------|
-| Jan Nowak | 12345 | Bazy danych, Programowanie |
-
-✅ *Poprawnie:*  
-Tworzymy osobną tabelę STUDENT_KURS, gdzie każdy kurs to osobny rekord.
-
----
-
-### 🧩 Druga postać normalna (2NF)
-
-- Tabela jest w 1NF **i** każdy atrybut niekluczowy zależy **w pełni** od
-  **każdego klucza kandydującego** (nie tylko od tego, który akurat wybraliście na
-  klucz główny — jeśli tabela ma więcej niż jeden klucz kandydujący, warunek musi
-  być spełniony względem wszystkich).
-- Ma znaczenie tylko dla tabel z **kluczem złożonym** — przy kluczu jednokolumnowym
-  2NF jest spełnione automatycznie (nie ma jak zależeć "częściowo" od jednej kolumny).
-
-**Przykład:**
-
-Tabela ZAPISY(StudentID, KursID, Sala)  
-→ atrybut *Sala* zależy tylko od *KursID*, a nie od całego klucza (StudentID, KursID).  
-Rozwiązanie: wydziel tabelę KURS(KursID, Sala).
-
----
-
-### 🧩 Trzecia postać normalna (3NF)
-
-- Tabela jest w 2NF **i** nie zawiera zależności przechodnich.
-- Każdy atrybut niekluczowy zależy **bezpośrednio** od klucza kandydującego — nie
-  pośrednio, przez inny atrybut niekluczowy.
-
-**Przykład:**
-
-NrIndeksu → Kierunek, Kierunek → Dziekan
-➡️ *Dziekan* zależy pośrednio od *NrIndeksu*.
-Rozwiązanie: osobna tabela KIERUNEK(Dziekan, Kierunek).
-
-### 🧩 Postać normalna Boyce'a-Codda (BCNF)
-
-3NF ma lukę: dopuszcza sytuację, w której atrybut niekluczowy determinuje **część**
-klucza — o ile sam ten atrybut nie jest "całkiem niekluczowy" (jest częścią jakiegoś
-klucza kandydującego). BCNF usuwa ten wyjątek: **każda nietrywialna zależność
-funkcjonalna `X → Y` musi mieć po lewej stronie klucz kandydujący** — bez wyjątków.
-
-**Klasyczny przykład naruszenia BCNF (przy zachowanym 3NF):**
-
-Tabela `Zajecia(Student, Przedmiot, Nauczyciel)`, gdzie:
-
-- każdy student może uczęszczać na wiele przedmiotów u różnych nauczycieli → klucz
-  kandydujący to `(Student, Przedmiot)`,
-- ale **każdy nauczyciel uczy tylko jednego przedmiotu** → `Nauczyciel → Przedmiot`
-  jest prawdziwą zależnością funkcjonalną, mimo że `Nauczyciel` **nie jest** kluczem
-  kandydującym (sam jeden nie identyfikuje wiersza).
-
-Tabela jest w 3NF (`Przedmiot` jest częścią klucza, więc formalnie "zależność
-częściowo-kluczowa" nie łamie 3NF), ale **łamie BCNF** — determinant `Nauczyciel` nie
-jest kluczem kandydującym. Rozwiązanie: wydzielić `Nauczyciele(Nauczyciel,
-Przedmiot)` i `Zajecia(Student, Nauczyciel)`.
-
-::: {.callout-note}
-## Czy BCNF jest zawsze "lepsze" niż 3NF?
-Prawie zawsze pożądane, ale nie zawsze **osiągalne bez utraty zależności** — czasem
-rozbicie tabeli do BCNF sprawia, że pewnej zależności funkcjonalnej nie da się już
-wymusić samymi więzami integralności (`PRIMARY KEY`/`UNIQUE`) bez dodatkowej logiki
-aplikacyjnej. W praktyce inżynierskiej 3NF jest bardzo częstym, "wystarczająco
-dobrym" punktem zatrzymania — BCNF wymaga świadomej analizy, czy warto.
-:::
-
-## 4. Diagramy ERD (Entity–Relationship Diagram)
-
-Diagram ERD jest graficznym sposobem przedstawienia **modelu konceptualnego** bazy danych.
-
-### 🔹 Główne elementy ERD
-
-- **Encja (Entity)** – obiekt, o którym przechowujemy dane (np. Student, Kurs).  
-- **Atrybut (Attribute)** – właściwość encji (np. Imię, Nazwisko, NrIndeksu).  
-- **Relacja (Relationship)** – powiązanie między encjami (np. Student zapisuje się na Kurs).  
-- **Kardynalność (Cardinality)** – określa liczność relacji:  
-  - 1:1 (jeden do jednego)  
-  - 1:N (jeden do wielu)  
-  - N:M (wielu do wielu)  
-- **Identyfikator (Primary Key)** – atrybut jednoznacznie identyfikujący encję.
-
-### 🔹 Przykład:
+Trzy dokumenty dają cztery pozycje. Jest to zmiana jednostki opisu, a nie
+powstanie dodatkowego wydania. W pliku 01 elementy list zostały jawnie
+przepisane do wierszy; nie zastosowano uniwersalnego parsera dowolnego tekstu.
 
 ```sql
-STUDENT (NrIndeksu, Imię, Nazwisko, Kierunek)
-KURS (KursID, Nazwa, Prowadzący)
-ZAPIS (NrIndeksu, KursID, DataZapisu)
-
+CREATE TABLE issue_lines_1nf (
+    document_id INTEGER NOT NULL,
+    item_id TEXT NOT NULL,
+    item_name TEXT NOT NULL,
+    issued_at TEXT NOT NULL,
+    team_id TEXT NOT NULL,
+    team_name TEXT NOT NULL,
+    PRIMARY KEY (document_id, item_id)
+) STRICT;
 ```
 
-Relacja między STUDENT a KURS: N:M poprzez encję pośredniczącą ZAPIS.
+Sam `document_id` nie identyfikuje pozycji, ponieważ dokument 201 ma dwie
+pozycje. Sam `item_id` również nie wystarcza, ponieważ R-01 występuje na dwóch
+dokumentach. Przy przyjętych regułach kluczem jest para
+`(document_id, item_id)`.
 
----
+### Dlaczego 1NF jeszcze nie wystarcza
 
-## 5. Proces projektowania bazy danych
+Plik 02 celowo zmienia nazwę zespołu w jednej pozycji:
 
-Projektowanie bazy to proces etapowy:
+```sql
+UPDATE issue_lines_1nf
+SET team_name = 'Alfa Polnoc'
+WHERE document_id = 201 AND item_id = 'R-01';
 
-1. **Analiza wymagań** – zrozumienie, jakie dane są potrzebne i jakie operacje będą wykonywane.  
-2. **Model konceptualny** – opis danych w postaci ERD.  
-3. **Model logiczny** – zamiana modelu ERD na relacyjny schemat tabel.  
-4. **Model fizyczny** – implementacja w konkretnym systemie DBMS (np. PostgreSQL, MySQL).
+SELECT document_id, item_id, team_id, team_name
+FROM issue_lines_1nf
+WHERE team_id = 'A'
+ORDER BY document_id, item_id;
+```
+
+Wynik zawiera trzy pozycje zespołu A, lecz dwie różne nazwy. Nawet pozycje
+tego samego dokumentu 201 nie są zgodne. Klucz główny nie blokuje tej zmiany:
+żadna para identyfikatorów nie została powtórzona. Zapewnienie unikalności
+wiersza nie oznacza jeszcze zapewnienia wszystkich zależności biznesowych.
+
+Przed kolejnym podziałem plik 03 przywraca znaną wartość źródłową „Alfa”.
+Sprzecznych danych nie należy scalać przez arbitralne wybranie jednej nazwy,
+np. za pomocą `MIN()`.
+
+## Zależności funkcjonalne i klucze
+
+**FD — Functional Dependency**, zależność funkcjonalna, jest regułą dotyczącą
+wartości atrybutów. Zapis `X → Y` oznacza, że każde dwa wiersze zgodne na
+atrybutach X muszą być zgodne również na atrybutach Y.
+
+Zależność wynika z reguł opisywanego obszaru, a nie tylko z aktualnego zestawu
+wierszy. Brak konfliktu w trzech dokumentach nie dowodzi, że podobna reguła
+obowiązuje dla wszystkich przyszłych danych.
+
+| Zależność | Uzasadnienie |
+|---|---|
+| `document_id → issued_at, team_id` | Dokument ma jeden czas wydania i jeden zespół |
+| `team_id → team_name` | Zespół ma jedną bieżącą nazwę |
+| `item_id → item_name` | Egzemplarz ma jeden bieżący opis |
+| `(document_id, item_id) → wszystkie atrybuty pozycji` | Para identyfikuje pozycję dokumentu |
+
+**Nadklucz — superkey** to zestaw atrybutów jednoznacznie identyfikujący wiersz.
+**Klucz kandydujący — candidate key** jest nadkluczem minimalnym: usunięcie
+któregokolwiek jego atrybutu powoduje utratę tej właściwości. Jeden z kluczy
+kandydujących można wybrać jako **klucz główny — primary key**.
+
+W tym przykładzie jedynym kluczem kandydującym tabeli pozycji jest para
+`(document_id, item_id)`. Nazwy i daty nie są przyjętymi identyfikatorami.
+Atrybut należący do któregokolwiek klucza kandydującego jest atrybutem kluczowym;
+pozostałe są niekluczowe.
+
+**Zależność częściowa** zachodzi, gdy atrybut zależy od właściwej części klucza
+złożonego. **Zależność przechodnia** pozwala wyznaczyć atrybut za pośrednictwem
+innego, np. `document_id → team_id → team_name`.
+
+## Druga postać normalna — 2NF
+
+**2NF — Second Normal Form**, druga postać normalna, wymaga 1NF oraz braku
+zależności atrybutów niekluczowych od właściwej części któregokolwiek klucza
+kandydującego.
+
+W tabeli pozycji nazwa sprzętu zależy wyłącznie od `item_id`. Czas wydania,
+identyfikator zespołu i jego nazwa zależą od `document_id`. Do wyznaczenia
+żadnej z tych informacji nie jest potrzebna cała para identyfikatorów.
+
+Plik 04 tworzy trzy tabele:
+
+| Tabela | Atrybuty | Klucz główny | Liczba wierszy |
+|---|---|---|---|
+| `items_2nf` | item_id, item_name | item_id | 3 |
+| `documents_2nf` | document_id, issued_at, team_id, team_name | document_id | 3 |
+| `document_items_2nf` | document_id, item_id | (document_id, item_id) | 4 |
+
+Tabela `document_items_2nf` zachowuje informację, które egzemplarze należą
+do poszczególnych dokumentów. Sam katalog dokumentów i katalog sprzętu nie
+wystarczyłyby do odtworzenia czterech pozycji.
+
+Po utworzeniu tabel dane przenoszą projekcje:
+
+```sql
+INSERT INTO items_2nf
+SELECT DISTINCT item_id, item_name FROM issue_lines_1nf;
+
+INSERT INTO documents_2nf
+SELECT DISTINCT document_id, issued_at, team_id, team_name
+FROM issue_lines_1nf;
+
+INSERT INTO document_items_2nf
+SELECT document_id, item_id FROM issue_lines_1nf;
+```
+
+`DISTINCT` usuwa identyczne powtórzenia wybranych kolumn. Nie naprawia różnych
+nazw przypisanych temu samemu identyfikatorowi. Dlatego zgodność danych musi
+być sprawdzona przed przeniesieniem.
+
+::: {.callout-note}
+## Identyfikator techniczny nie usuwa zależności
+
+Dodanie kolumny `id` nie sprawia, że powtarzające się nazwy przestają zależeć
+od `item_id` lub `team_id`. Ocena 2NF uwzględnia wszystkie klucze kandydujące,
+a nie tylko wybrany klucz główny. Jeśli wszystkie klucze kandydujące są
+jednoatrybutowe, zależności częściowe nie występują; nadal mogą jednak
+występować zależności przechodnie.
+:::
+
+### Problem pozostający w 2NF
+
+Zespół A ma dwa dokumenty. Jego nazwa nadal jest zapisana dwukrotnie w
+`documents_2nf`. Plik 05 zmienia nazwę tylko na dokumencie 201:
+
+```sql
+UPDATE documents_2nf
+SET team_name = 'Alfa Polnoc'
+WHERE document_id = 201;
+
+SELECT document_id, team_id, team_name
+FROM documents_2nf
+WHERE team_id = 'A'
+ORDER BY document_id;
+```
+
+Dokument 201 zawiera „Alfa Polnoc”, a 203 — „Alfa”. Podział do 2NF ograniczył
+powielanie wewnątrz dokumentu, ale nie rozwiązał problemu nazwy zespołu
+występującego na różnych dokumentach.
+
+## Trzecia postać normalna — 3NF
+
+**3NF — Third Normal Form**, trzecia postać normalna, w omawianym przykładzie
+prowadzi do usunięcia zależności przechodniej:
+
+```text
+document_id → team_id → team_name
+```
+
+Nazwa zespołu opisuje zespół, nie dokument. Jej właściwym miejscem jest tabela
+zespołów. Dokument zachowuje identyfikator wskazujący zespół.
+
+Formalnie schemat w 1NF jest w 3NF, jeśli dla każdej nietrywialnej zależności
+`X → A`, gdzie A jest pojedynczym atrybutem, X jest nadkluczem **lub** A jest
+atrybutem kluczowym. Nietrywialność oznacza, że A nie należy już do X.
+Warunek obejmuje zależności wynikające z przyjętych reguł, nie tylko jawnie
+wypisane. W naszym przykładzie `team_name` nie jest atrybutem kluczowym,
+a `team_id` nie identyfikuje dokumentu, więc zależność narusza 3NF tabeli dokumentów.
+
+Po naprawieniu celowego błędu z poprzedniego kroku plik 06 tworzy końcowy schemat:
+
+```sql
+CREATE TABLE teams (
+    team_id TEXT NOT NULL PRIMARY KEY,
+    team_name TEXT NOT NULL
+) STRICT;
+
+CREATE TABLE items (
+    item_id TEXT NOT NULL PRIMARY KEY,
+    item_name TEXT NOT NULL
+) STRICT;
+
+CREATE TABLE documents (
+    document_id INTEGER PRIMARY KEY,
+    issued_at TEXT NOT NULL,
+    team_id TEXT NOT NULL REFERENCES teams(team_id)
+) STRICT;
+
+CREATE TABLE document_items (
+    document_id INTEGER NOT NULL REFERENCES documents(document_id),
+    item_id TEXT NOT NULL REFERENCES items(item_id),
+    PRIMARY KEY (document_id, item_id)
+) STRICT;
+```
+
+Klucz obcy — **foreign key** — wiąże identyfikator z istniejącym wierszem
+w tabeli nadrzędnej. W SQLite jego egzekwowanie wymaga włączonej kontroli
+`PRAGMA foreign_keys = ON`.
+
+### Encje, atrybuty i związki
+
+**Encja — entity** jest wyróżnionym obiektem modelowanego obszaru, np.
+zespołem lub egzemplarzem. **Atrybut — attribute** opisuje jego cechę.
+**Związek — relationship** przedstawia powiązanie obiektów. Pozycja dokumentu
+realizuje przypisanie egzemplarza do dokumentu.
+
+Diagram **ERD — Entity–Relationship Diagram**, diagram encji i związków,
+przedstawia poniżej logiczny model z kluczami:
+
+```{mermaid}
+erDiagram
+    teams ||--o{ documents : "odbiera"
+    documents ||--o{ document_items : "zawiera"
+    items ||--o{ document_items : "wystepuje w"
+    teams {
+        TEXT team_id PK
+        TEXT team_name
+    }
+    documents {
+        INTEGER document_id PK
+        TEXT issued_at
+        TEXT team_id FK
+    }
+    items {
+        TEXT item_id PK
+        TEXT item_name
+    }
+    document_items {
+        INTEGER document_id PK, FK
+        TEXT item_id PK, FK
+    }
+```
+
+Jeden zespół może mieć wiele dokumentów — związek **1:N**. Dokument może
+zawierać wiele egzemplarzy, a egzemplarz występować na wielu dokumentach
+w historii — związek **N:M**, realizowany przez `document_items`.
+
+Symbol zera oznacza możliwość braku powiązanych wierszy. Obecny schemat pozwala
+na dokument bez pozycji: klucz obcy pilnuje, aby pozycja wskazywała dokument,
+ale nie wymusza istnienia przynajmniej jednej pozycji dla każdego dokumentu.
+Wymóg niepustego, zatwierdzonego dokumentu wymaga osobnego mechanizmu.
+
+## Odtworzenie raportu i kontrola podziału
+
+Rozdzielenie tabel nie oznacza konieczności oglądania danych wyłącznie osobno.
+Złączenia odtwarzają raport:
+
+```sql
+SELECT d.document_id, i.item_id, i.item_name,
+       d.issued_at, t.team_id, t.team_name
+FROM documents AS d
+JOIN document_items AS di ON di.document_id = d.document_id
+JOIN items AS i ON i.item_id = di.item_id
+JOIN teams AS t ON t.team_id = d.team_id
+ORDER BY d.document_id, i.item_id;
+```
+
+Wynik zawiera cztery pozycje zgodne z tabelą po przejściu do 1NF. Plik 06 zapisuje
+zapytanie jako widok `issue_report`. **Widok — view** przechowuje definicję
+zapytania; ten zwykły widok nie jest dodatkową utrzymywaną kopią wyników.
+
+### Czy nie zgubiono albo nie dodano danych?
+
+Plik 07 porównuje oba zbiory w obu kierunkach, zanim wprowadzane są nowe zmiany:
+
+```sql
+SELECT * FROM issue_lines_1nf
+EXCEPT
+SELECT * FROM issue_report;
+
+SELECT * FROM issue_report
+EXCEPT
+SELECT * FROM issue_lines_1nf;
+
+PRAGMA foreign_key_check;
+```
+
+Wszystkie trzy wyniki powinny być puste. Pierwsze zapytanie wykrywa pozycje
+brakujące w raporcie, drugie — pozycje nadmiarowe lub różniące się wartościami.
+Trzecie sprawdza odwołania kluczy obcych. `EXCEPT` porównuje zbiory; w tym
+przykładzie klucze i sposób złączenia zapewniają jedną pozycję dla każdej pary
+identyfikatorów. Sama równość liczby wierszy nie potwierdziłaby zgodności treści.
+
+Jest to kontrola danych demonstracyjnych. Ogólne uzasadnienie **bezstratności
+podziału** opiera się na zależnościach: pozycja wskazuje jeden dokument i jeden
+egzemplarz, dokument jeden zespół, a tabela pozycji zachowuje właściwe powiązania.
+Do odtworzenia raportu nie trzeba odgadywać, które wiersze do siebie należą.
+
+## Zachowanie bazy po normalizacji
+
+### Jedna zmiana nazwy
+
+Plik 08 aktualizuje jeden wiersz tabeli zespołów:
+
+```sql
+UPDATE teams
+SET team_name = 'Alfa Polnoc'
+WHERE team_id = 'A';
+
+SELECT * FROM issue_report
+WHERE team_id = 'A'
+ORDER BY document_id, item_id;
+```
+
+Wszystkie trzy pozycje raportu zespołu A zawierają nową nazwę. Nie są
+aktualizowane trzy kopie — zapytanie pobiera nazwę z jednego miejsca.
+Stare tabele etapowe pozostają porównawczymi kopiami i nie są synchronizowane.
+
+::: {.callout-important}
+## Nazwa bieżąca a nazwa historyczna
+
+Reguła dotyczy bieżącej nazwy zespołu. Jeżeli dokument ma zachować dokładne
+brzmienie nazwy z chwili wydania, potrzebny jest inny model: np. historia nazw
+lub jawnie określony zapis danych dokumentu. Powtórzenie tekstu mającego inne
+znaczenie czasowe nie jest automatycznie błędem normalizacji.
+:::
+
+### Sprzęt bez wydania
+
+Plik 09 dodaje namiot do katalogu bez tworzenia fikcyjnego dokumentu:
+
+```sql
+INSERT INTO items (item_id, item_name)
+VALUES ('N-01', 'Namiot');
+
+SELECT i.item_id, i.item_name, COUNT(di.document_id) AS issue_count
+FROM items AS i
+LEFT JOIN document_items AS di ON di.item_id = i.item_id
+GROUP BY i.item_id, i.item_name
+ORDER BY i.item_id;
+```
+
+N-01 ma zero wydań, R-01 dwa, L-01 i R-02 po jednym. Raport dotyczy historii
+pozycji dokumentów, nie bieżącej dostępności. `COUNT(di.document_id)` zlicza
+dopasowane pozycje; `COUNT(*)` policzyłoby również wiersz zachowany przez
+`LEFT JOIN` dla sprzętu bez wydań.
+
+### Usunięcie pozycji bez utraty informacji o sprzęcie
+
+```sql
+DELETE FROM document_items
+WHERE document_id = 202 AND item_id = 'R-02';
+```
+
+Po wykonaniu pliku 10 egzemplarz R-02 nadal znajduje się w `items`, choć nie ma
+już żadnej pozycji wydania. Istnienie egzemplarza i istnienie jego wydania są
+odrębnymi faktami. Demonstracja nie ustanawia polityki usuwania dokumentów:
+w rzeczywistym systemie wymagania audytu mogą nakazywać zachowanie historii.
+
+Plik 11, wykonany raz po krokach 08–10, przywraca dane do stanu bezpośrednio
+po podziale. Umożliwia ponowne porównanie raportu z tabelą 1NF.
+
+## BCNF — rozszerzenie
+
+**BCNF — Boyce–Codd Normal Form**, postać normalna Boyce’a–Codda, wymaga,
+aby w każdej nietrywialnej zależności funkcjonalnej po lewej stronie znajdował
+się nadklucz. Jest to warunek mocniejszy niż 3NF: nie dopuszcza wyjątku dla
+atrybutu kluczowego po prawej stronie.
+
+Końcowe tabele magazynu, przy podanych zależnościach, spełniają również BCNF.
+Nie ma potrzeby kolejnego sztucznego podziału. Różnicę dobrze ilustruje
+osobny schemat `Przydzial(Student, Przedmiot, Nauczyciel)` z regułami:
+
+- Dla danej pary student–przedmiot przypisany jest jeden nauczyciel:
+  `(Student, Przedmiot) → Nauczyciel`.
+- Każdy nauczyciel uczy tylko jednego przedmiotu:
+  `Nauczyciel → Przedmiot`.
+- Nauczyciel może uczyć wielu studentów; przedmiot może mieć wielu nauczycieli.
+
+Kluczami kandydującymi są `(Student, Przedmiot)` i `(Student, Nauczyciel)`.
+Schemat jest w 3NF, lecz zależność `Nauczyciel → Przedmiot` narusza BCNF:
+nauczyciel nie identyfikuje całego wiersza. Bezstratny podział na
+`NauczycielPrzedmiot` i `StudentNauczyciel` usuwa to naruszenie.
+
+Podział ma jednak koszt: reguła jednego nauczyciela dla pary student–przedmiot
+nie jest już kontrolowana lokalnie w jednej tabeli. Jej egzekwowanie wymaga
+sprawdzenia obejmującego obie tabele. Dlatego przy projektowaniu analizuje się
+zarówno bezstratność podziału, jak i zachowanie zależności.
+
+## Granice normalizacji i dalsza praca
+
+Normalizacja porządkuje zapis faktów, ale nie zapewnia automatycznie:
+
+- zakazu dwóch jednoczesnych wydań tego samego egzemplarza;
+- wykonania kilku zmian jako jednej niepodzielnej operacji;
+- bezpiecznej współpracy dwóch użytkowników modyfikujących te same dane;
+- szybkiego działania wszystkich zapytań.
+
+Te zagadnienia prowadzą do transakcji, współbieżności i optymalizacji.
+Poprawny schemat jest podstawą, na której dopiero określa się reguły operacji,
+ograniczenia i sposoby dostępu do danych.
+
+Samodzielne opracowanie podobnego przypadku wymaga wskazania faktów i zależności,
+uzasadnienia kluczy, utworzenia schematu oraz sprawdzenia raportu po podziale.
+Kompletne rozwiązanie powinno pozwalać odtworzyć bazę i wykazać konkretnymi
+przykładami, które błędy zostały wyeliminowane, a które wymagają dodatkowych
+mechanizmów.
+
+## Literatura
+
+- [Rensselaer Polytechnic Institute — CSCI 4380: Normalization](https://www.cs.rpi.edu/~sibel/csci4380/fall2018/course_notes/normalization.html): zależności funkcjonalne, klucze, dekompozycja, 3NF i BCNF.
+- [SQLite — Foreign Key Support](https://www.sqlite.org/foreignkeys.html): kontrola kluczy obcych i ustawienie `foreign_keys`.
+- [SQLite — STRICT Tables](https://www.sqlite.org/stricttables.html): wymagania i zasady tabel `STRICT`.

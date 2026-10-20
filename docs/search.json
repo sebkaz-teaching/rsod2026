@@ -35,178 +35,6 @@
     "text": "Wykład 2 — Czy raport ujawnia konflikt?\nMateriał do wykładu. Na tym spotkaniu nie ma testu. Obserwujcie pokaz bazy magazynu. Zapiszcie w parze odpowiedzi na dwa zadania:\n\nPorównajcie returned_at = NULL z returned_at IS NULL. Wyjaśnijcie różnicę wyników i wskażcie, które wydania wymagają wyjaśnienia.\nZaproponujcie warunek wykrycia więcej niż jednego niezakończonego wydania tego samego egzemplarza. Sprawdźcie, czy raport obejmuje też R-02, którego nie wydano.\n\nPo otrzymaniu dodatkowego faktu o zwrocie sprzętu wskażcie dokładnie jeden wiersz do korekty. Porównajcie raport przed i po. Nie zgadujcie, komu wierzyć na podstawie kolejności wierszy. Efekt: krótka notatka z wynikiem, uzasadnieniem i opisem próby; każda osoba wyjaśnia jeden z wniosków podczas omówienia.\nKolejne karty będą udostępniane wraz z następnymi zajęciami."
   },
   {
-    "objectID": "lectures/wyklad1.html",
-    "href": "lectures/wyklad1.html",
-    "title": "Od pliku do bazy danych",
-    "section": "",
-    "text": "W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.\nNa końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.\n⸻",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#cele-wykładu",
-    "href": "lectures/wyklad1.html#cele-wykładu",
-    "title": "Od pliku do bazy danych",
-    "section": "",
-    "text": "W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.\nNa końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.\n⸻",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#dane-informacja-baza-danych",
-    "href": "lectures/wyklad1.html#dane-informacja-baza-danych",
-    "title": "Od pliku do bazy danych",
-    "section": "1️⃣ Dane, informacja, baza danych",
-    "text": "1️⃣ Dane, informacja, baza danych\n\n🔹 Dane\nNa początku warto zadać pytanie: czym właściwie są dane?\nDane to surowe fakty – liczby, teksty, symbole – które same w sobie nie mają znaczenia. Przykładowo, zapis:\n12345\nJan Kowalski\nBazy danych\nnie mówi nam jeszcze nic o tym, co oznacza. Może to być numer indeksu, nazwisko klienta albo temat zajęć.\n\n (np. piramida DIKW – Data, Information, Knowledge, Wisdom)\n\n\n\n🔹 Informacja\nInformacja powstaje wtedy, gdy dane zostaną zinterpretowane w określonym kontekście. Jeśli wiemy, że „12345” to numer indeksu studenta Jana Kowalskiego, który zapisał się na kurs Bazy danych, mamy już informację.\nW życiu codziennym często mamy mnóstwo danych (np. z mediów społecznościowych), ale niewiele z nich przekłada się na prawdziwą wiedzę.\n⸻\n\n\n🔹 Baza danych\nBaza danych (ang. database) to uporządkowany zbiór danych, przechowywany w sposób umożliwiający szybkie wyszukiwanie, aktualizację i kontrolę spójności. Można ją porównać do dobrze zorganizowanego archiwum, w którym każdy dokument ma swoje miejsce i jest łatwy do odnalezienia.\nWizualizacja bazy danych – zestaw powiązanych tabel w relacyjnym modelu danych.\n\n\n🔹 System zarządzania bazą danych (DBMS)\nSystem zarządzania bazą danych, czyli DBMS (Database Management System), to oprogramowanie pośredniczące między użytkownikiem a bazą danych.\nTo ono umożliwia:\n\ndefiniowanie struktur (np. tabel),\nprzechowywanie i wyszukiwanie danych,\nzapewnienie bezpieczeństwa i spójności,\nobsługę wielu użytkowników jednocześnie.\n\nDo najpopularniejszych DBMS należą: PostgreSQL, Oracle, MySQL, SQLite, MS SQL Server.",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#rodzaje-danych",
-    "href": "lectures/wyklad1.html#rodzaje-danych",
-    "title": "Od pliku do bazy danych",
-    "section": "2️⃣ Rodzaje danych",
-    "text": "2️⃣ Rodzaje danych\nW informatyce dane występują w różnych formach. Można je podzielić według stopnia strukturyzacji.\n\n🔸 Dane ustrukturyzowane\nTo dane zapisane w tabelach – każda kolumna ma nazwę i określony typ. Znajdujemy je np. w arkuszach kalkulacyjnych lub relacyjnych bazach danych.\n\n\n\nID\nImię\nNazwisko\nMiasto\n\n\n\n\n1\nAnna\nNowak\nKraków\n\n\n2\nJan\nKowalski\nWarszawa\n\n\n\n\n\n\n🔸 Dane półustrukturyzowane\nMają pewną strukturę, ale nie tak sztywną jak dane tabelaryczne. Przykładem mogą być pliki JSON lub XML:\n{\n  \"imie\": \"Anna\",\n  \"miasto\": \"Kraków\",\n  \"zainteresowania\": [\"sport\", \"muzyka\"]\n}\n\n\n\n🔸 Dane nieustrukturyzowane\nTo dane, które nie mają jasno zdefiniowanej struktury — na przykład obrazy, pliki audio, wideo czy dokumenty PDF. Ich analiza wymaga specjalistycznych narzędzi (np. rozpoznawania obrazów lub przetwarzania języka naturalnego).\n⸻",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#pliki-jako-forma-przechowywania-danych",
-    "href": "lectures/wyklad1.html#pliki-jako-forma-przechowywania-danych",
-    "title": "Od pliku do bazy danych",
-    "section": "3️⃣ Pliki jako forma przechowywania danych",
-    "text": "3️⃣ Pliki jako forma przechowywania danych\nZanim powstały systemy baz danych, dane przechowywano w prostych plikach tekstowych.\nNa przykład w pliku CSV:\nID,Imię,Nazwisko,Miasto\n1,Anna,Nowak,Kraków\n2,Jan,Kowalski,Warszawa\n3,Piotr,Wiśniewski,Poznań\nChoć taki plik można łatwo otworzyć w Excelu, ma on liczne ograniczenia:\n\nbrak kontroli poprawności danych,\nbrak powiązań między plikami,\nbrak współbieżności przy edycji.\n\n\n## 4️⃣ Problemy pracy z plikami\nSystem plikowy działa poprawnie przy niewielkiej liczbie danych i prostych zastosowaniach. Wraz ze wzrostem ilości informacji i liczbą użytkowników pojawiają się jednak poważne ograniczenia, które utrudniają bezpieczne i efektywne zarządzanie danymi.\n\n⚠️ Typowe problemy\n\n\n\n\n\n\n\nProblem\nOpis\n\n\n\n\n🔁 Redundancja\nTe same dane pojawiają się w wielu miejscach (np. adres klienta powielony w każdym zamówieniu).\n\n\n⚠️ Niespójność\nRóżne wersje tej samej informacji w różnych plikach (np. inny numer telefonu u klienta w dwóch plikach).\n\n\n⛔ Brak współbieżności\nTrudności przy jednoczesnej edycji — ryzyko nadpisania zmian.\n\n\n❌ Brak kontroli dostępu\nBrak ról, uprawnień i mechanizmów audytu.\n\n\n🧩 Słaba integracja\nDane rozproszone po różnych formatach i miejscach, trudne do połączenia.\n\n\n\n\n Schemat: system plików z wieloma niespójnymi plikami vs. centralna baza danych\n\n\nPrzykład (plikowy):\nklienci.txt:\n1;Anna Nowak;Kraków\n2;Jan Kowalski;Warszawa\nzamowienia.txt:\n10;Laptop;1\n11;Monitor;2\n12;Kabel HDMI;1\nDziała to, ale jeśli zmienimy ID klienta lub nazwę produktu, powstaje trudność w utrzymaniu spójności.",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#od-pliku-do-bazy-danych",
-    "href": "lectures/wyklad1.html#od-pliku-do-bazy-danych",
-    "title": "Od pliku do bazy danych",
-    "section": "5️⃣ Od pliku do bazy danych",
-    "text": "5️⃣ Od pliku do bazy danych\nAby rozwiązać problemy związane z plikami płaskimi, wprowadzono koncepcję systemu zarządzania bazą danych (DBMS). Główne idee to:\n\ncentralne repozytorium danych,\nkontrolowany dostęp i uprawnienia,\nmechanizmy zapewniające spójność i integralność,\nobsługa współbieżności i transakcji,\nmożliwość zapytań (np. SQL) zamiast pełnego skanowania plików.\n\n\nPorównanie: plik CSV vs baza danych (SQL)\n\n\n\n\n\n\n\n\nCecha\nPlik CSV\nBaza danych (SQL)\n\n\n\n\nStruktura danych\nTekstowa, dowolna\nŚciśle zdefiniowana (kolumny, typy)\n\n\nSpójność danych\nNie\nZapewniana przez DBMS\n\n\nWspółbieżność\nBrak\nObsługiwana\n\n\nWyszukiwanie\nPełne skanowanie\nZapytania, indeksy (mechanizm poznamy dokładnie na wykładzie 4)\n\n\nBezpieczeństwo\nBrak\nKontrola dostępu\n\n\n\n\n Diagram: „Od pliku do bazy” – ewolucja sposobu przechowywania danych",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#różnice-w-przetwarzaniu-danych-przykład-porównawczy",
-    "href": "lectures/wyklad1.html#różnice-w-przetwarzaniu-danych-przykład-porównawczy",
-    "title": "Od pliku do bazy danych",
-    "section": "6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy",
-    "text": "6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy\nRodzaj przetwarzania zależy od typu danych:\n\n\n\n\n\n\n\n\n\nTyp danych\nPrzykład\nNarzędzie przetwarzania\nTypowe operacje\n\n\n\n\nTabelaryczne\nsprzedaż, klienci\nSQL, Excel\nsortowanie, sumowanie, filtracja\n\n\nTekstowe\nartykuły, maile\nwyszukiwanie pełnotekstowe\nindeksowanie, analiza słów\n\n\nObraz\nzdjęcia, wideo\nbiblioteki CV, AI\nklasyfikacja, rozpoznawanie obiektów\n\n\nDźwięk\nnagrania, mowa\nDSP, ML\nfiltracja, transkrypcja\n\n\n\n\nPytanie do dyskusji: Dlaczego dane tabelaryczne łatwo ująć w relacje, a dźwięk czy obraz — już nie?\n\n\n Ilustracja: porównanie przetwarzania danych tabelarycznych i multimedialnych",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#architektura-systemów-baz-danych-ansisparc",
-    "href": "lectures/wyklad1.html#architektura-systemów-baz-danych-ansisparc",
-    "title": "Od pliku do bazy danych",
-    "section": "7️⃣ Architektura systemów baz danych (ANSI/SPARC)",
-    "text": "7️⃣ Architektura systemów baz danych (ANSI/SPARC)\nAby osiągnąć niezależność danych od aplikacji, wprowadzono model trójwarstwowy ANSI/SPARC:\n\n\n\n\n\n\n\n\nPoziom\nOpis\nPrzykład\n\n\n\n\nZewnętrzny\nWidok użytkownika — sposób, w jaki konkretni użytkownicy widzą dane\nWidok „Studenci z kierunku Informatyka”\n\n\nLogiczny (koncepcyjny)\nGlobalna struktura danych — tabele, relacje, ograniczenia\nSchemat bazy uczelni\n\n\nWewnętrzny (fizyczny)\nFizyczne przechowywanie danych na dysku\nIndeksy, pliki danych, metody dostępu\n\n\n\n\n Schemat trójwarstwowy ANSI/SPARC: użytkownicy ↔︎ DBMS ↔︎ fizyczne dane\n\nKorzyści:\n\nniezależność logiczna danych (zmiana schematu logicznego nie musi wymagać zmian w aplikacjach),\nniezależność fizyczna danych (zmiana sposobu przechowywania nie wpływa na logikę aplikacji).",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#typy-baz-danych",
-    "href": "lectures/wyklad1.html#typy-baz-danych",
-    "title": "Od pliku do bazy danych",
-    "section": "8️⃣ Typy baz danych",
-    "text": "8️⃣ Typy baz danych\nW zależności od modelu danych i sposobu ich użycia wyróżniamy kilka typów baz:\n\n\n\n\n\n\n\n\nTyp bazy\nOpis\nPrzykład\n\n\n\n\nHierarchiczna\nDane ułożone w strukturę drzewa\nIMS (IBM)\n\n\nSieciowa\nRekordy połączone są w złożone grafy\nIDMS\n\n\nRelacyjna\nDane w tabelach, związki przez klucze\nPostgreSQL, MySQL\n\n\nObiektowa\nDane jako obiekty z metodami\nObjectDB\n\n\nDokumentowa (NoSQL)\nDane w formacie dokumentów (JSON)\nMongoDB, CouchDB\n\n\nGrafowa\nModele relacji jako węzły i krawędzie\nNeo4j\n\n\n\n\n Grafika: schematy — drzewo, sieć, tabela, graf\n\nUwaga: Model relacyjny jest najpowszechniej stosowany z uwagi na prostotę i solidne podstawy teoretyczne (algebra relacji).",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#historia-i-ewolucja-baz-danych",
-    "href": "lectures/wyklad1.html#historia-i-ewolucja-baz-danych",
-    "title": "Od pliku do bazy danych",
-    "section": "9️⃣ Historia i ewolucja baz danych",
-    "text": "9️⃣ Historia i ewolucja baz danych\nKrótka oś czasu najważniejszych etapów:\n\nSystemy plikowe (lata 50–60) — proste pliki, brak centralnej kontroli.\nPierwsze DBMS (lata 60–70) — centralizacja, lepsze zarządzanie danymi.\nModele hierarchiczne i sieciowe — stosowane w dużych organizacjach, lecz trudne w utrzymaniu.\nModel relacyjny (E. F. Codd, 1970) — rewolucja: tabele, relacje i algebra relacji.\nSQL i standaryzacja — język pozwalający na zdefiniowanie i manipulację danymi.\nNoSQL i chmura (XXI wiek) — elastyczność, skalowalność, nowe modele danych.\n\n\n Oś czasu: rozwój baz danych od plików do NoSQL i rozwiązań chmurowych",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#zalety-podejścia-relacyjnego",
-    "href": "lectures/wyklad1.html#zalety-podejścia-relacyjnego",
-    "title": "Od pliku do bazy danych",
-    "section": "🔟 Zalety podejścia relacyjnego",
-    "text": "🔟 Zalety podejścia relacyjnego\n\nredukcja redundancji poprzez normalizację i klucze,\nłatwość łączenia danych (JOINy),\nkontrola integralności (ograniczenia, klucze obce),\nmechanizmy bezpieczeństwa i wielodostępności,\nprzewidywalność i zgodność z formalnymi podstawami matematycznymi.\n\n\n Schemat relacji między tabelami: STUDENT → ZAPISY → KURS",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad1.html#wprowadzenie-do-języka-sql",
-    "href": "lectures/wyklad1.html#wprowadzenie-do-języka-sql",
-    "title": "Od pliku do bazy danych",
-    "section": "1️⃣1️⃣ Wprowadzenie do języka SQL",
-    "text": "1️⃣1️⃣ Wprowadzenie do języka SQL\nSQL (Structured Query Language) to standardowy język do komunikacji z relacyjnymi bazami danych. Dzieli się na kilka części:\n\nDDL (Data Definition Language) — definiowanie struktur (CREATE, ALTER, DROP),\nDML (Data Manipulation Language) — operacje na danych (SELECT, INSERT, UPDATE, DELETE),\nDCL (Data Control Language) — kontrola dostępu (GRANT, REVOKE),\nTCL (Transaction Control Language) — kontrola transakcji (COMMIT, ROLLBACK).",
-    "crumbs": [
-      "Wykłady",
-      "Od pliku do bazy danych"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Informacje ogólne",
-    "section": "",
-    "text": "Kod:\nSemestr: zimowy",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#relacyjne-systemy-organizacji-danych",
-    "href": "index.html#relacyjne-systemy-organizacji-danych",
-    "title": "Informacje ogólne",
-    "section": "",
-    "text": "Kod:\nSemestr: zimowy",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#kalendarz",
-    "href": "index.html#kalendarz",
-    "title": "Informacje ogólne",
-    "section": "Kalendarz",
-    "text": "Kalendarz\n\n\nWykład dla grup:\n\nTODO: dzień tygodnia, godzina, sala\n\n\n\nLaboratorium dla grup:\n\nTODO: dzień tygodnia, godzina, sala",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
-    "objectID": "index.html#scenariusze-zajęć",
-    "href": "index.html#scenariusze-zajęć",
-    "title": "Informacje ogólne",
-    "section": "Scenariusze zajęć",
-    "text": "Scenariusze zajęć\nOtwórz zadania i opis projektu.",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
     "objectID": "lectures/wyklad2.html",
     "href": "lectures/wyklad2.html",
     "title": "Model relacyjny i podstawy SQL",
@@ -391,6 +219,331 @@
     "crumbs": [
       "Wykłady",
       "Model relacyjny i podstawy SQL"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Informacje ogólne",
+    "section": "",
+    "text": "Kod:\nSemestr: zimowy",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#relacyjne-systemy-organizacji-danych",
+    "href": "index.html#relacyjne-systemy-organizacji-danych",
+    "title": "Informacje ogólne",
+    "section": "",
+    "text": "Kod:\nSemestr: zimowy",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#kalendarz",
+    "href": "index.html#kalendarz",
+    "title": "Informacje ogólne",
+    "section": "Kalendarz",
+    "text": "Kalendarz\n\n\nWykłady\n\nWykład 3: 21 października 2026 r. — struktura logiczna i normalizacja baz danych.\n\n\n\nLaboratoria\nLaboratoria odbędą się wyłącznie w dwóch ostatnich terminach zajęć, po 8 godzin każde (łącznie 16 godzin). Będą przeznaczone na samodzielną pracę z bazą danych na podstawie zadań i wymagań.",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#scenariusze-zajęć",
+    "href": "index.html#scenariusze-zajęć",
+    "title": "Informacje ogólne",
+    "section": "Scenariusze zajęć",
+    "text": "Scenariusze zajęć\nOtwórz zadania i opis projektu.",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "index.html#materiały-wykładowe-i-praca-laboratoryjna",
+    "href": "index.html#materiały-wykładowe-i-praca-laboratoryjna",
+    "title": "Informacje ogólne",
+    "section": "Materiały wykładowe i praca laboratoryjna",
+    "text": "Materiały wykładowe i praca laboratoryjna\nStrony wykładów zawierają wyjaśnienia pojęć, przykłady i kod SQL do ponownej analizy. Demonstracje ilustrują działanie bazy oraz skutki decyzji projektowych. Laboratoria są przeznaczone na samodzielną realizację zadań: analizę wymagań, projektowanie tabel, wykonywanie operacji i weryfikację wyników. Szczegółowe polecenia oraz kryteria oddania będą podane w materiałach laboratoryjnych.\nWykład 3: struktura logiczna i normalizacja baz danych prowadzi od jednej tabeli dokumentów magazynowych przez 1NF, 2NF i 3NF do odtworzenia raportu. Zawiera również zestaw SQL do odtworzenia demonstracji w osobnej bazie SQLite.",
+    "crumbs": [
+      "Informacje ogólne"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html",
+    "href": "lectures/wyklad1.html",
+    "title": "Od pliku do bazy danych",
+    "section": "",
+    "text": "W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.\nNa końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#cele-wykładu",
+    "href": "lectures/wyklad1.html#cele-wykładu",
+    "title": "Od pliku do bazy danych",
+    "section": "",
+    "text": "W tym module poznasz podstawowe pojęcia związane z danymi i bazami danych. Dowiesz się, czym różni się system plikowy od bazy danych, jak wygląda architektura systemu DBMS oraz dlaczego model relacyjny stał się standardem w przechowywaniu informacji.\nNa końcu wprowadzimy Cię w świat języka SQL – narzędzia, które pozwala komunikować się z bazą danych.\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#dane-informacja-baza-danych",
+    "href": "lectures/wyklad1.html#dane-informacja-baza-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "1️⃣ Dane, informacja, baza danych",
+    "text": "1️⃣ Dane, informacja, baza danych\n\n🔹 Dane\nNa początku warto zadać pytanie: czym właściwie są dane?\nDane to surowe fakty – liczby, teksty, symbole – które same w sobie nie mają znaczenia. Przykładowo, zapis:\n12345\nJan Kowalski\nBazy danych\nnie mówi nam jeszcze nic o tym, co oznacza. Może to być numer indeksu, nazwisko klienta albo temat zajęć.\n\n (np. piramida DIKW – Data, Information, Knowledge, Wisdom)\n\n\n\n🔹 Informacja\nInformacja powstaje wtedy, gdy dane zostaną zinterpretowane w określonym kontekście. Jeśli wiemy, że „12345” to numer indeksu studenta Jana Kowalskiego, który zapisał się na kurs Bazy danych, mamy już informację.\nW życiu codziennym często mamy mnóstwo danych (np. z mediów społecznościowych), ale niewiele z nich przekłada się na prawdziwą wiedzę.\n⸻\n\n\n🔹 Baza danych\nBaza danych (ang. database) to uporządkowany zbiór danych, przechowywany w sposób umożliwiający szybkie wyszukiwanie, aktualizację i kontrolę spójności. Można ją porównać do dobrze zorganizowanego archiwum, w którym każdy dokument ma swoje miejsce i jest łatwy do odnalezienia.\nWizualizacja bazy danych – zestaw powiązanych tabel w relacyjnym modelu danych.\n\n\n🔹 System zarządzania bazą danych (DBMS)\nSystem zarządzania bazą danych, czyli DBMS (Database Management System), to oprogramowanie pośredniczące między użytkownikiem a bazą danych.\nTo ono umożliwia:\n\ndefiniowanie struktur (np. tabel),\nprzechowywanie i wyszukiwanie danych,\nzapewnienie bezpieczeństwa i spójności,\nobsługę wielu użytkowników jednocześnie.\n\nDo najpopularniejszych DBMS należą: PostgreSQL, Oracle, MySQL, SQLite, MS SQL Server.",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#rodzaje-danych",
+    "href": "lectures/wyklad1.html#rodzaje-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "2️⃣ Rodzaje danych",
+    "text": "2️⃣ Rodzaje danych\nW informatyce dane występują w różnych formach. Można je podzielić według stopnia strukturyzacji.\n\n🔸 Dane ustrukturyzowane\nTo dane zapisane w tabelach – każda kolumna ma nazwę i określony typ. Znajdujemy je np. w arkuszach kalkulacyjnych lub relacyjnych bazach danych.\n\n\n\nID\nImię\nNazwisko\nMiasto\n\n\n\n\n1\nAnna\nNowak\nKraków\n\n\n2\nJan\nKowalski\nWarszawa\n\n\n\n\n\n\n🔸 Dane półustrukturyzowane\nMają pewną strukturę, ale nie tak sztywną jak dane tabelaryczne. Przykładem mogą być pliki JSON lub XML:\n{\n  \"imie\": \"Anna\",\n  \"miasto\": \"Kraków\",\n  \"zainteresowania\": [\"sport\", \"muzyka\"]\n}\n\n\n\n🔸 Dane nieustrukturyzowane\nTo dane, które nie mają jasno zdefiniowanej struktury — na przykład obrazy, pliki audio, wideo czy dokumenty PDF. Ich analiza wymaga specjalistycznych narzędzi (np. rozpoznawania obrazów lub przetwarzania języka naturalnego).\n⸻",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#pliki-jako-forma-przechowywania-danych",
+    "href": "lectures/wyklad1.html#pliki-jako-forma-przechowywania-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "3️⃣ Pliki jako forma przechowywania danych",
+    "text": "3️⃣ Pliki jako forma przechowywania danych\nZanim powstały systemy baz danych, dane przechowywano w prostych plikach tekstowych.\nNa przykład w pliku CSV:\nID,Imię,Nazwisko,Miasto\n1,Anna,Nowak,Kraków\n2,Jan,Kowalski,Warszawa\n3,Piotr,Wiśniewski,Poznań\nChoć taki plik można łatwo otworzyć w Excelu, ma on liczne ograniczenia:\n\nbrak kontroli poprawności danych,\nbrak powiązań między plikami,\nbrak współbieżności przy edycji.\n\n\n## 4️⃣ Problemy pracy z plikami\nSystem plikowy działa poprawnie przy niewielkiej liczbie danych i prostych zastosowaniach. Wraz ze wzrostem ilości informacji i liczbą użytkowników pojawiają się jednak poważne ograniczenia, które utrudniają bezpieczne i efektywne zarządzanie danymi.\n\n⚠️ Typowe problemy\n\n\n\n\n\n\n\nProblem\nOpis\n\n\n\n\n🔁 Redundancja\nTe same dane pojawiają się w wielu miejscach (np. adres klienta powielony w każdym zamówieniu).\n\n\n⚠️ Niespójność\nRóżne wersje tej samej informacji w różnych plikach (np. inny numer telefonu u klienta w dwóch plikach).\n\n\n⛔ Brak współbieżności\nTrudności przy jednoczesnej edycji — ryzyko nadpisania zmian.\n\n\n❌ Brak kontroli dostępu\nBrak ról, uprawnień i mechanizmów audytu.\n\n\n🧩 Słaba integracja\nDane rozproszone po różnych formatach i miejscach, trudne do połączenia.\n\n\n\n\n Schemat: system plików z wieloma niespójnymi plikami vs. centralna baza danych\n\n\nPrzykład (plikowy):\nklienci.txt:\n1;Anna Nowak;Kraków\n2;Jan Kowalski;Warszawa\nzamowienia.txt:\n10;Laptop;1\n11;Monitor;2\n12;Kabel HDMI;1\nDziała to, ale jeśli zmienimy ID klienta lub nazwę produktu, powstaje trudność w utrzymaniu spójności.",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#od-pliku-do-bazy-danych",
+    "href": "lectures/wyklad1.html#od-pliku-do-bazy-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "5️⃣ Od pliku do bazy danych",
+    "text": "5️⃣ Od pliku do bazy danych\nAby rozwiązać problemy związane z plikami płaskimi, wprowadzono koncepcję systemu zarządzania bazą danych (DBMS). Główne idee to:\n\ncentralne repozytorium danych,\nkontrolowany dostęp i uprawnienia,\nmechanizmy zapewniające spójność i integralność,\nobsługa współbieżności i transakcji,\nmożliwość zapytań (np. SQL) zamiast pełnego skanowania plików.\n\n\nPorównanie: plik CSV vs baza danych (SQL)\n\n\n\n\n\n\n\n\nCecha\nPlik CSV\nBaza danych (SQL)\n\n\n\n\nStruktura danych\nTekstowa, dowolna\nŚciśle zdefiniowana (kolumny, typy)\n\n\nSpójność danych\nNie\nZapewniana przez DBMS\n\n\nWspółbieżność\nBrak\nObsługiwana\n\n\nWyszukiwanie\nPełne skanowanie\nZapytania, indeksy (mechanizm poznamy dokładnie na wykładzie 4)\n\n\nBezpieczeństwo\nBrak\nKontrola dostępu\n\n\n\n\n Diagram: „Od pliku do bazy” – ewolucja sposobu przechowywania danych",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#różnice-w-przetwarzaniu-danych-przykład-porównawczy",
+    "href": "lectures/wyklad1.html#różnice-w-przetwarzaniu-danych-przykład-porównawczy",
+    "title": "Od pliku do bazy danych",
+    "section": "6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy",
+    "text": "6️⃣ Różnice w przetwarzaniu danych – przykład porównawczy\nRodzaj przetwarzania zależy od typu danych:\n\n\n\n\n\n\n\n\n\nTyp danych\nPrzykład\nNarzędzie przetwarzania\nTypowe operacje\n\n\n\n\nTabelaryczne\nsprzedaż, klienci\nSQL, Excel\nsortowanie, sumowanie, filtracja\n\n\nTekstowe\nartykuły, maile\nwyszukiwanie pełnotekstowe\nindeksowanie, analiza słów\n\n\nObraz\nzdjęcia, wideo\nbiblioteki CV, AI\nklasyfikacja, rozpoznawanie obiektów\n\n\nDźwięk\nnagrania, mowa\nDSP, ML\nfiltracja, transkrypcja\n\n\n\n\nPytanie do dyskusji: Dlaczego dane tabelaryczne łatwo ująć w relacje, a dźwięk czy obraz — już nie?\n\n\n Ilustracja: porównanie przetwarzania danych tabelarycznych i multimedialnych",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#architektura-systemów-baz-danych-ansisparc",
+    "href": "lectures/wyklad1.html#architektura-systemów-baz-danych-ansisparc",
+    "title": "Od pliku do bazy danych",
+    "section": "7️⃣ Architektura systemów baz danych (ANSI/SPARC)",
+    "text": "7️⃣ Architektura systemów baz danych (ANSI/SPARC)\nAby osiągnąć niezależność danych od aplikacji, wprowadzono model trójwarstwowy ANSI/SPARC:\n\n\n\n\n\n\n\n\nPoziom\nOpis\nPrzykład\n\n\n\n\nZewnętrzny\nWidok użytkownika — sposób, w jaki konkretni użytkownicy widzą dane\nWidok „Studenci z kierunku Informatyka”\n\n\nLogiczny (koncepcyjny)\nGlobalna struktura danych — tabele, relacje, ograniczenia\nSchemat bazy uczelni\n\n\nWewnętrzny (fizyczny)\nFizyczne przechowywanie danych na dysku\nIndeksy, pliki danych, metody dostępu\n\n\n\n\n Schemat trójwarstwowy ANSI/SPARC: użytkownicy ↔︎ DBMS ↔︎ fizyczne dane\n\nKorzyści:\n\nniezależność logiczna danych (zmiana schematu logicznego nie musi wymagać zmian w aplikacjach),\nniezależność fizyczna danych (zmiana sposobu przechowywania nie wpływa na logikę aplikacji).",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#typy-baz-danych",
+    "href": "lectures/wyklad1.html#typy-baz-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "8️⃣ Typy baz danych",
+    "text": "8️⃣ Typy baz danych\nW zależności od modelu danych i sposobu ich użycia wyróżniamy kilka typów baz:\n\n\n\n\n\n\n\n\nTyp bazy\nOpis\nPrzykład\n\n\n\n\nHierarchiczna\nDane ułożone w strukturę drzewa\nIMS (IBM)\n\n\nSieciowa\nRekordy połączone są w złożone grafy\nIDMS\n\n\nRelacyjna\nDane w tabelach, związki przez klucze\nPostgreSQL, MySQL\n\n\nObiektowa\nDane jako obiekty z metodami\nObjectDB\n\n\nDokumentowa (NoSQL)\nDane w formacie dokumentów (JSON)\nMongoDB, CouchDB\n\n\nGrafowa\nModele relacji jako węzły i krawędzie\nNeo4j\n\n\n\n\n Grafika: schematy — drzewo, sieć, tabela, graf\n\nUwaga: Model relacyjny jest najpowszechniej stosowany z uwagi na prostotę i solidne podstawy teoretyczne (algebra relacji).",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#historia-i-ewolucja-baz-danych",
+    "href": "lectures/wyklad1.html#historia-i-ewolucja-baz-danych",
+    "title": "Od pliku do bazy danych",
+    "section": "9️⃣ Historia i ewolucja baz danych",
+    "text": "9️⃣ Historia i ewolucja baz danych\nKrótka oś czasu najważniejszych etapów:\n\nSystemy plikowe (lata 50–60) — proste pliki, brak centralnej kontroli.\nPierwsze DBMS (lata 60–70) — centralizacja, lepsze zarządzanie danymi.\nModele hierarchiczne i sieciowe — stosowane w dużych organizacjach, lecz trudne w utrzymaniu.\nModel relacyjny (E. F. Codd, 1970) — rewolucja: tabele, relacje i algebra relacji.\nSQL i standaryzacja — język pozwalający na zdefiniowanie i manipulację danymi.\nNoSQL i chmura (XXI wiek) — elastyczność, skalowalność, nowe modele danych.\n\n\n Oś czasu: rozwój baz danych od plików do NoSQL i rozwiązań chmurowych",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#zalety-podejścia-relacyjnego",
+    "href": "lectures/wyklad1.html#zalety-podejścia-relacyjnego",
+    "title": "Od pliku do bazy danych",
+    "section": "🔟 Zalety podejścia relacyjnego",
+    "text": "🔟 Zalety podejścia relacyjnego\n\nredukcja redundancji poprzez normalizację i klucze,\nłatwość łączenia danych (JOINy),\nkontrola integralności (ograniczenia, klucze obce),\nmechanizmy bezpieczeństwa i wielodostępności,\nprzewidywalność i zgodność z formalnymi podstawami matematycznymi.\n\n\n Schemat relacji między tabelami: STUDENT → ZAPISY → KURS",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad1.html#wprowadzenie-do-języka-sql",
+    "href": "lectures/wyklad1.html#wprowadzenie-do-języka-sql",
+    "title": "Od pliku do bazy danych",
+    "section": "1️⃣1️⃣ Wprowadzenie do języka SQL",
+    "text": "1️⃣1️⃣ Wprowadzenie do języka SQL\nSQL (Structured Query Language) to standardowy język do komunikacji z relacyjnymi bazami danych. Dzieli się na kilka części:\n\nDDL (Data Definition Language) — definiowanie struktur (CREATE, ALTER, DROP),\nDML (Data Manipulation Language) — operacje na danych (SELECT, INSERT, UPDATE, DELETE),\nDCL (Data Control Language) — kontrola dostępu (GRANT, REVOKE),\nTCL (Transaction Control Language) — kontrola transakcji (COMMIT, ROLLBACK).",
+    "crumbs": [
+      "Wykłady",
+      "Od pliku do bazy danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html",
+    "href": "lectures/wyklad3.html",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "",
+    "text": "Termin wykładu: 21 października 2026 r.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#od-zapytań-do-projektu-bazy",
+    "href": "lectures/wyklad3.html#od-zapytań-do-projektu-bazy",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Od zapytań do projektu bazy",
+    "text": "Od zapytań do projektu bazy\nZapytanie SQL może poprawnie odczytać dane, które są wzajemnie sprzeczne. Jeżeli nazwa jednego zespołu została zapisana w wielu wierszach i tylko część z nich zaktualizowano, sam SELECT nie rozstrzyga, która nazwa obowiązuje. Poprawność składni zapytania nie zastępuje poprawnego projektu bazy.\nW poprzednim wykładzie ewidencja magazynu była już podzielona na egzemplarze, zespoły i wydania. Teraz punktem wyjścia jest jedna tabela przypominająca arkusz. Kolejne przekształcenia wyjaśniają, skąd bierze się podział danych i jakie problemy rozwiązuje. Przykład obejmuje strukturę logiczną relacyjnej bazy: encje, atrybuty, związki, klucze i zależności między danymi.\nNormalizacja jest analizą i przekształcaniem schematu na podstawie zależności między atrybutami. Jej celem jest ograniczenie zbędnego powielania faktów oraz związanych z nim anomalii. Nie polega na tworzeniu jak największej liczby tabel.\n\nWykład, materiał na stronie i laboratorium\nMateriał na stronie zawiera wyjaśnienia pojęć, przykład projektowy i zapytania, do których można wracać po zajęciach. Demonstracja wykładowa koncentruje się na zmianach stanu danych oraz uzasadnieniu kolejnych decyzji projektowych.\nNa laboratorium analogiczny sposób rozumowania zostanie zastosowany samodzielnie: od danych wejściowych i wymagań, przez schemat i implementację SQL, do kontroli wyników. Zadanie laboratoryjne będzie zawierało oczekiwany rezultat i kryteria sprawdzenia; nie będzie wymagało jedynie przepisania demonstracji.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#przypadek-dokumenty-wydania-sprzętu",
+    "href": "lectures/wyklad3.html#przypadek-dokumenty-wydania-sprzętu",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Przypadek: dokumenty wydania sprzętu",
+    "text": "Przypadek: dokumenty wydania sprzętu\nMagazyn „Baza Brzoza” prowadzi ewidencję dokumentów wydania. W porównaniu z poprzednim przykładem pojawia się rozróżnienie dokumentu i jego pozycji: jeden dokument może obejmować kilka egzemplarzy sprzętu.\nPrzyjęte reguły określają znaczenie danych:\n\nDokument ma jeden numer, jeden czas wydania i jeden zespół odbierający.\nEgzemplarz ma własny identyfikator, np. R-01. Ten sam egzemplarz może występować na różnych dokumentach w historii, ale najwyżej raz na jednym dokumencie.\nIdentyfikator zespołu wyznacza jego bieżącą nazwę. Identyfikator egzemplarza wyznacza jego bieżący opis. Nazwy nie muszą być unikalne.\nPrzykład dotyczy struktury dokumentów. Nie zawiera ewidencji zwrotów, więc liczba wystąpień egzemplarza nie jest liczbą jego aktywnych wypożyczeń.\n\nDaty są umowne. Poniższe dane nie stanowią migracji bazy z poprzedniego wykładu.\n\n\n\nDokument\nWydano\nZespół ID\nNazwa zespołu\nSprzęt\n\n\n\n\n201\n2027-02-01 08:00\nA\nAlfa\nR-01: Radiostacja; L-01: Latarka\n\n\n202\n2027-02-02 09:00\nB\nBravo\nR-02: Radiostacja zapasowa\n\n\n203\n2027-02-03 10:00\nA\nAlfa\nR-01: Radiostacja\n\n\n\n\nOdtworzenie przykładu w SQLite\nPliki SQL do demonstracji — pobierz ZIP. Archiwum zawiera ponumerowane kroki 00–11, bez dodatkowego oprogramowania.\nW DB Browser for SQLite:\n\nUtwórz nową, pustą bazę przez New Database i zapisz ją pod nową nazwą. Anuluj okno ręcznego tworzenia tabeli.\nRozpakuj archiwum. W Execute SQL otwieraj i wykonuj całe pliki kolejno od 00. Po zmianach korzystaj z Write Changes.\nPlik 00 włącza kontrolę kluczy obcych. Osobno wykonane PRAGMA foreign_keys; powinno zwrócić 1. Ustawienie dotyczy połączenia; po ponownym otwarciu bazy trzeba je ponownie włączyć, poza aktywną transakcją.\nSkrypty wymagają SQLite co najmniej 3.37 ze względu na tabele STRICT. Wersję sprawdza SELECT sqlite_version();.\n\nSkrypty tworzą kolejne tabele etapowe, aby umożliwić porównanie. Nie są przeznaczone do ponownego uruchamiania od początku na tej samej bazie. Nie należy wykonywać ich na bazie magazynu z wykładu 2. Fragmenty SQL poniżej objaśniają poszczególne kroki; pełna sekwencja wykonania znajduje się w archiwum.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#jedna-tabela-i-trzy-rodzaje-anomalii",
+    "href": "lectures/wyklad3.html#jedna-tabela-i-trzy-rodzaje-anomalii",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Jedna tabela i trzy rodzaje anomalii",
+    "text": "Jedna tabela i trzy rodzaje anomalii\nW tabeli początkowej kolumna ze sprzętem przechowuje listę. Ustalenie liczby wydań radiostacji wymaga rozpoznania poszczególnych elementów tego tekstu. Liczba wierszy jest liczbą dokumentów, a nie liczbą wydanych egzemplarzy.\nPo rozpisaniu list na osobne wiersze pojawia się inny problem: nazwy sprzętu, nazwy zespołów i dane dokumentu są wielokrotnie kopiowane. Redundancja oznacza tutaj powtarzanie tego samego faktu, np. bieżącej nazwy zespołu A. Nie każde powtórzenie wartości jest zbędne — identyfikatory w tabeli powiązań przechowują potrzebną informację o związku.\n\n\n\n\n\n\n\n\nAnomalia\nOperacja\nSkutek w pojedynczej tabeli pozycji\n\n\n\n\nAktualizacji\nZmiana nazwy zespołu tylko w jednym wierszu\nTen sam identyfikator ma różne nazwy\n\n\nWstawiania\nDodanie nowego sprzętu, którego jeszcze nie wydano\nBrakuje dokumentu potrzebnego do utworzenia pełnego wiersza\n\n\nUsuwania\nUsunięcie jedynej pozycji dotyczącej R-02\nZnika również jedyna informacja o istnieniu i nazwie R-02\n\n\n\nPrzyczyną jest połączenie w jednej strukturze faktów o różnych obiektach: sprzęcie, zespołach i dokumentach. Normalizacja porządkuje miejsce ich przechowywania.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#pierwsza-postać-normalna-1nf",
+    "href": "lectures/wyklad3.html#pierwsza-postać-normalna-1nf",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Pierwsza postać normalna — 1NF",
+    "text": "Pierwsza postać normalna — 1NF\n1NF — First Normal Form, czyli pierwsza postać normalna, wymaga wartości atomowych w ramach przyjętych dziedzin. W tym przykładzie jednostką opisu jest pojedynczy egzemplarz na dokumencie, a nie lista egzemplarzy w jednej komórce.\nAtomowość zależy od modelu: napis zawierający średnik nie jest automatycznie błędny. Problemem jest wykorzystanie pola tekstowego jako zbioru obiektów, które mają być osobno identyfikowane, wiązane i zliczane.\nPo rozdzieleniu list powstaje tabela issue_lines_1nf:\n\n\n\ndocument_id\nitem_id\nitem_name\nissued_at\nteam_id\nteam_name\n\n\n\n\n201\nL-01\nLatarka\n2027-02-01 08:00\nA\nAlfa\n\n\n201\nR-01\nRadiostacja\n2027-02-01 08:00\nA\nAlfa\n\n\n202\nR-02\nRadiostacja zapasowa\n2027-02-02 09:00\nB\nBravo\n\n\n203\nR-01\nRadiostacja\n2027-02-03 10:00\nA\nAlfa\n\n\n\nTrzy dokumenty dają cztery pozycje. Jest to zmiana jednostki opisu, a nie powstanie dodatkowego wydania. W pliku 01 elementy list zostały jawnie przepisane do wierszy; nie zastosowano uniwersalnego parsera dowolnego tekstu.\nCREATE TABLE issue_lines_1nf (\n    document_id INTEGER NOT NULL,\n    item_id TEXT NOT NULL,\n    item_name TEXT NOT NULL,\n    issued_at TEXT NOT NULL,\n    team_id TEXT NOT NULL,\n    team_name TEXT NOT NULL,\n    PRIMARY KEY (document_id, item_id)\n) STRICT;\nSam document_id nie identyfikuje pozycji, ponieważ dokument 201 ma dwie pozycje. Sam item_id również nie wystarcza, ponieważ R-01 występuje na dwóch dokumentach. Przy przyjętych regułach kluczem jest para (document_id, item_id).\n\nDlaczego 1NF jeszcze nie wystarcza\nPlik 02 celowo zmienia nazwę zespołu w jednej pozycji:\nUPDATE issue_lines_1nf\nSET team_name = 'Alfa Polnoc'\nWHERE document_id = 201 AND item_id = 'R-01';\n\nSELECT document_id, item_id, team_id, team_name\nFROM issue_lines_1nf\nWHERE team_id = 'A'\nORDER BY document_id, item_id;\nWynik zawiera trzy pozycje zespołu A, lecz dwie różne nazwy. Nawet pozycje tego samego dokumentu 201 nie są zgodne. Klucz główny nie blokuje tej zmiany: żadna para identyfikatorów nie została powtórzona. Zapewnienie unikalności wiersza nie oznacza jeszcze zapewnienia wszystkich zależności biznesowych.\nPrzed kolejnym podziałem plik 03 przywraca znaną wartość źródłową „Alfa”. Sprzecznych danych nie należy scalać przez arbitralne wybranie jednej nazwy, np. za pomocą MIN().",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#zależności-funkcjonalne-i-klucze",
+    "href": "lectures/wyklad3.html#zależności-funkcjonalne-i-klucze",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Zależności funkcjonalne i klucze",
+    "text": "Zależności funkcjonalne i klucze\nFD — Functional Dependency, zależność funkcjonalna, jest regułą dotyczącą wartości atrybutów. Zapis X → Y oznacza, że każde dwa wiersze zgodne na atrybutach X muszą być zgodne również na atrybutach Y.\nZależność wynika z reguł opisywanego obszaru, a nie tylko z aktualnego zestawu wierszy. Brak konfliktu w trzech dokumentach nie dowodzi, że podobna reguła obowiązuje dla wszystkich przyszłych danych.\n\n\n\n\n\n\n\nZależność\nUzasadnienie\n\n\n\n\ndocument_id → issued_at, team_id\nDokument ma jeden czas wydania i jeden zespół\n\n\nteam_id → team_name\nZespół ma jedną bieżącą nazwę\n\n\nitem_id → item_name\nEgzemplarz ma jeden bieżący opis\n\n\n(document_id, item_id) → wszystkie atrybuty pozycji\nPara identyfikuje pozycję dokumentu\n\n\n\nNadklucz — superkey to zestaw atrybutów jednoznacznie identyfikujący wiersz. Klucz kandydujący — candidate key jest nadkluczem minimalnym: usunięcie któregokolwiek jego atrybutu powoduje utratę tej właściwości. Jeden z kluczy kandydujących można wybrać jako klucz główny — primary key.\nW tym przykładzie jedynym kluczem kandydującym tabeli pozycji jest para (document_id, item_id). Nazwy i daty nie są przyjętymi identyfikatorami. Atrybut należący do któregokolwiek klucza kandydującego jest atrybutem kluczowym; pozostałe są niekluczowe.\nZależność częściowa zachodzi, gdy atrybut zależy od właściwej części klucza złożonego. Zależność przechodnia pozwala wyznaczyć atrybut za pośrednictwem innego, np. document_id → team_id → team_name.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#druga-postać-normalna-2nf",
+    "href": "lectures/wyklad3.html#druga-postać-normalna-2nf",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Druga postać normalna — 2NF",
+    "text": "Druga postać normalna — 2NF\n2NF — Second Normal Form, druga postać normalna, wymaga 1NF oraz braku zależności atrybutów niekluczowych od właściwej części któregokolwiek klucza kandydującego.\nW tabeli pozycji nazwa sprzętu zależy wyłącznie od item_id. Czas wydania, identyfikator zespołu i jego nazwa zależą od document_id. Do wyznaczenia żadnej z tych informacji nie jest potrzebna cała para identyfikatorów.\nPlik 04 tworzy trzy tabele:\n\n\n\n\n\n\n\n\n\nTabela\nAtrybuty\nKlucz główny\nLiczba wierszy\n\n\n\n\nitems_2nf\nitem_id, item_name\nitem_id\n3\n\n\ndocuments_2nf\ndocument_id, issued_at, team_id, team_name\ndocument_id\n3\n\n\ndocument_items_2nf\ndocument_id, item_id\n(document_id, item_id)\n4\n\n\n\nTabela document_items_2nf zachowuje informację, które egzemplarze należą do poszczególnych dokumentów. Sam katalog dokumentów i katalog sprzętu nie wystarczyłyby do odtworzenia czterech pozycji.\nPo utworzeniu tabel dane przenoszą projekcje:\nINSERT INTO items_2nf\nSELECT DISTINCT item_id, item_name FROM issue_lines_1nf;\n\nINSERT INTO documents_2nf\nSELECT DISTINCT document_id, issued_at, team_id, team_name\nFROM issue_lines_1nf;\n\nINSERT INTO document_items_2nf\nSELECT document_id, item_id FROM issue_lines_1nf;\nDISTINCT usuwa identyczne powtórzenia wybranych kolumn. Nie naprawia różnych nazw przypisanych temu samemu identyfikatorowi. Dlatego zgodność danych musi być sprawdzona przed przeniesieniem.\n\n\n\n\n\n\nNoteIdentyfikator techniczny nie usuwa zależności\n\n\n\nDodanie kolumny id nie sprawia, że powtarzające się nazwy przestają zależeć od item_id lub team_id. Ocena 2NF uwzględnia wszystkie klucze kandydujące, a nie tylko wybrany klucz główny. Jeśli wszystkie klucze kandydujące są jednoatrybutowe, zależności częściowe nie występują; nadal mogą jednak występować zależności przechodnie.\n\n\n\nProblem pozostający w 2NF\nZespół A ma dwa dokumenty. Jego nazwa nadal jest zapisana dwukrotnie w documents_2nf. Plik 05 zmienia nazwę tylko na dokumencie 201:\nUPDATE documents_2nf\nSET team_name = 'Alfa Polnoc'\nWHERE document_id = 201;\n\nSELECT document_id, team_id, team_name\nFROM documents_2nf\nWHERE team_id = 'A'\nORDER BY document_id;\nDokument 201 zawiera „Alfa Polnoc”, a 203 — „Alfa”. Podział do 2NF ograniczył powielanie wewnątrz dokumentu, ale nie rozwiązał problemu nazwy zespołu występującego na różnych dokumentach.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#trzecia-postać-normalna-3nf",
+    "href": "lectures/wyklad3.html#trzecia-postać-normalna-3nf",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Trzecia postać normalna — 3NF",
+    "text": "Trzecia postać normalna — 3NF\n3NF — Third Normal Form, trzecia postać normalna, w omawianym przykładzie prowadzi do usunięcia zależności przechodniej:\ndocument_id → team_id → team_name\nNazwa zespołu opisuje zespół, nie dokument. Jej właściwym miejscem jest tabela zespołów. Dokument zachowuje identyfikator wskazujący zespół.\nFormalnie schemat w 1NF jest w 3NF, jeśli dla każdej nietrywialnej zależności X → A, gdzie A jest pojedynczym atrybutem, X jest nadkluczem lub A jest atrybutem kluczowym. Nietrywialność oznacza, że A nie należy już do X. Warunek obejmuje zależności wynikające z przyjętych reguł, nie tylko jawnie wypisane. W naszym przykładzie team_name nie jest atrybutem kluczowym, a team_id nie identyfikuje dokumentu, więc zależność narusza 3NF tabeli dokumentów.\nPo naprawieniu celowego błędu z poprzedniego kroku plik 06 tworzy końcowy schemat:\nCREATE TABLE teams (\n    team_id TEXT NOT NULL PRIMARY KEY,\n    team_name TEXT NOT NULL\n) STRICT;\n\nCREATE TABLE items (\n    item_id TEXT NOT NULL PRIMARY KEY,\n    item_name TEXT NOT NULL\n) STRICT;\n\nCREATE TABLE documents (\n    document_id INTEGER PRIMARY KEY,\n    issued_at TEXT NOT NULL,\n    team_id TEXT NOT NULL REFERENCES teams(team_id)\n) STRICT;\n\nCREATE TABLE document_items (\n    document_id INTEGER NOT NULL REFERENCES documents(document_id),\n    item_id TEXT NOT NULL REFERENCES items(item_id),\n    PRIMARY KEY (document_id, item_id)\n) STRICT;\nKlucz obcy — foreign key — wiąże identyfikator z istniejącym wierszem w tabeli nadrzędnej. W SQLite jego egzekwowanie wymaga włączonej kontroli PRAGMA foreign_keys = ON.\n\nEncje, atrybuty i związki\nEncja — entity jest wyróżnionym obiektem modelowanego obszaru, np. zespołem lub egzemplarzem. Atrybut — attribute opisuje jego cechę. Związek — relationship przedstawia powiązanie obiektów. Pozycja dokumentu realizuje przypisanie egzemplarza do dokumentu.\nDiagram ERD — Entity–Relationship Diagram, diagram encji i związków, przedstawia poniżej logiczny model z kluczami:\n\n\n\n\n\nerDiagram\n    teams ||--o{ documents : \"odbiera\"\n    documents ||--o{ document_items : \"zawiera\"\n    items ||--o{ document_items : \"wystepuje w\"\n    teams {\n        TEXT team_id PK\n        TEXT team_name\n    }\n    documents {\n        INTEGER document_id PK\n        TEXT issued_at\n        TEXT team_id FK\n    }\n    items {\n        TEXT item_id PK\n        TEXT item_name\n    }\n    document_items {\n        INTEGER document_id PK, FK\n        TEXT item_id PK, FK\n    }\n\n\n\n\n\n\nJeden zespół może mieć wiele dokumentów — związek 1:N. Dokument może zawierać wiele egzemplarzy, a egzemplarz występować na wielu dokumentach w historii — związek N:M, realizowany przez document_items.\nSymbol zera oznacza możliwość braku powiązanych wierszy. Obecny schemat pozwala na dokument bez pozycji: klucz obcy pilnuje, aby pozycja wskazywała dokument, ale nie wymusza istnienia przynajmniej jednej pozycji dla każdego dokumentu. Wymóg niepustego, zatwierdzonego dokumentu wymaga osobnego mechanizmu.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#odtworzenie-raportu-i-kontrola-podziału",
+    "href": "lectures/wyklad3.html#odtworzenie-raportu-i-kontrola-podziału",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Odtworzenie raportu i kontrola podziału",
+    "text": "Odtworzenie raportu i kontrola podziału\nRozdzielenie tabel nie oznacza konieczności oglądania danych wyłącznie osobno. Złączenia odtwarzają raport:\nSELECT d.document_id, i.item_id, i.item_name,\n       d.issued_at, t.team_id, t.team_name\nFROM documents AS d\nJOIN document_items AS di ON di.document_id = d.document_id\nJOIN items AS i ON i.item_id = di.item_id\nJOIN teams AS t ON t.team_id = d.team_id\nORDER BY d.document_id, i.item_id;\nWynik zawiera cztery pozycje zgodne z tabelą po przejściu do 1NF. Plik 06 zapisuje zapytanie jako widok issue_report. Widok — view przechowuje definicję zapytania; ten zwykły widok nie jest dodatkową utrzymywaną kopią wyników.\n\nCzy nie zgubiono albo nie dodano danych?\nPlik 07 porównuje oba zbiory w obu kierunkach, zanim wprowadzane są nowe zmiany:\nSELECT * FROM issue_lines_1nf\nEXCEPT\nSELECT * FROM issue_report;\n\nSELECT * FROM issue_report\nEXCEPT\nSELECT * FROM issue_lines_1nf;\n\nPRAGMA foreign_key_check;\nWszystkie trzy wyniki powinny być puste. Pierwsze zapytanie wykrywa pozycje brakujące w raporcie, drugie — pozycje nadmiarowe lub różniące się wartościami. Trzecie sprawdza odwołania kluczy obcych. EXCEPT porównuje zbiory; w tym przykładzie klucze i sposób złączenia zapewniają jedną pozycję dla każdej pary identyfikatorów. Sama równość liczby wierszy nie potwierdziłaby zgodności treści.\nJest to kontrola danych demonstracyjnych. Ogólne uzasadnienie bezstratności podziału opiera się na zależnościach: pozycja wskazuje jeden dokument i jeden egzemplarz, dokument jeden zespół, a tabela pozycji zachowuje właściwe powiązania. Do odtworzenia raportu nie trzeba odgadywać, które wiersze do siebie należą.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#zachowanie-bazy-po-normalizacji",
+    "href": "lectures/wyklad3.html#zachowanie-bazy-po-normalizacji",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Zachowanie bazy po normalizacji",
+    "text": "Zachowanie bazy po normalizacji\n\nJedna zmiana nazwy\nPlik 08 aktualizuje jeden wiersz tabeli zespołów:\nUPDATE teams\nSET team_name = 'Alfa Polnoc'\nWHERE team_id = 'A';\n\nSELECT * FROM issue_report\nWHERE team_id = 'A'\nORDER BY document_id, item_id;\nWszystkie trzy pozycje raportu zespołu A zawierają nową nazwę. Nie są aktualizowane trzy kopie — zapytanie pobiera nazwę z jednego miejsca. Stare tabele etapowe pozostają porównawczymi kopiami i nie są synchronizowane.\n\n\n\n\n\n\nImportantNazwa bieżąca a nazwa historyczna\n\n\n\nReguła dotyczy bieżącej nazwy zespołu. Jeżeli dokument ma zachować dokładne brzmienie nazwy z chwili wydania, potrzebny jest inny model: np. historia nazw lub jawnie określony zapis danych dokumentu. Powtórzenie tekstu mającego inne znaczenie czasowe nie jest automatycznie błędem normalizacji.\n\n\n\n\nSprzęt bez wydania\nPlik 09 dodaje namiot do katalogu bez tworzenia fikcyjnego dokumentu:\nINSERT INTO items (item_id, item_name)\nVALUES ('N-01', 'Namiot');\n\nSELECT i.item_id, i.item_name, COUNT(di.document_id) AS issue_count\nFROM items AS i\nLEFT JOIN document_items AS di ON di.item_id = i.item_id\nGROUP BY i.item_id, i.item_name\nORDER BY i.item_id;\nN-01 ma zero wydań, R-01 dwa, L-01 i R-02 po jednym. Raport dotyczy historii pozycji dokumentów, nie bieżącej dostępności. COUNT(di.document_id) zlicza dopasowane pozycje; COUNT(*) policzyłoby również wiersz zachowany przez LEFT JOIN dla sprzętu bez wydań.\n\n\nUsunięcie pozycji bez utraty informacji o sprzęcie\nDELETE FROM document_items\nWHERE document_id = 202 AND item_id = 'R-02';\nPo wykonaniu pliku 10 egzemplarz R-02 nadal znajduje się w items, choć nie ma już żadnej pozycji wydania. Istnienie egzemplarza i istnienie jego wydania są odrębnymi faktami. Demonstracja nie ustanawia polityki usuwania dokumentów: w rzeczywistym systemie wymagania audytu mogą nakazywać zachowanie historii.\nPlik 11, wykonany raz po krokach 08–10, przywraca dane do stanu bezpośrednio po podziale. Umożliwia ponowne porównanie raportu z tabelą 1NF.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#bcnf-rozszerzenie",
+    "href": "lectures/wyklad3.html#bcnf-rozszerzenie",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "BCNF — rozszerzenie",
+    "text": "BCNF — rozszerzenie\nBCNF — Boyce–Codd Normal Form, postać normalna Boyce’a–Codda, wymaga, aby w każdej nietrywialnej zależności funkcjonalnej po lewej stronie znajdował się nadklucz. Jest to warunek mocniejszy niż 3NF: nie dopuszcza wyjątku dla atrybutu kluczowego po prawej stronie.\nKońcowe tabele magazynu, przy podanych zależnościach, spełniają również BCNF. Nie ma potrzeby kolejnego sztucznego podziału. Różnicę dobrze ilustruje osobny schemat Przydzial(Student, Przedmiot, Nauczyciel) z regułami:\n\nDla danej pary student–przedmiot przypisany jest jeden nauczyciel: (Student, Przedmiot) → Nauczyciel.\nKażdy nauczyciel uczy tylko jednego przedmiotu: Nauczyciel → Przedmiot.\nNauczyciel może uczyć wielu studentów; przedmiot może mieć wielu nauczycieli.\n\nKluczami kandydującymi są (Student, Przedmiot) i (Student, Nauczyciel). Schemat jest w 3NF, lecz zależność Nauczyciel → Przedmiot narusza BCNF: nauczyciel nie identyfikuje całego wiersza. Bezstratny podział na NauczycielPrzedmiot i StudentNauczyciel usuwa to naruszenie.\nPodział ma jednak koszt: reguła jednego nauczyciela dla pary student–przedmiot nie jest już kontrolowana lokalnie w jednej tabeli. Jej egzekwowanie wymaga sprawdzenia obejmującego obie tabele. Dlatego przy projektowaniu analizuje się zarówno bezstratność podziału, jak i zachowanie zależności.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#granice-normalizacji-i-dalsza-praca",
+    "href": "lectures/wyklad3.html#granice-normalizacji-i-dalsza-praca",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Granice normalizacji i dalsza praca",
+    "text": "Granice normalizacji i dalsza praca\nNormalizacja porządkuje zapis faktów, ale nie zapewnia automatycznie:\n\nzakazu dwóch jednoczesnych wydań tego samego egzemplarza;\nwykonania kilku zmian jako jednej niepodzielnej operacji;\nbezpiecznej współpracy dwóch użytkowników modyfikujących te same dane;\nszybkiego działania wszystkich zapytań.\n\nTe zagadnienia prowadzą do transakcji, współbieżności i optymalizacji. Poprawny schemat jest podstawą, na której dopiero określa się reguły operacji, ograniczenia i sposoby dostępu do danych.\nSamodzielne opracowanie podobnego przypadku wymaga wskazania faktów i zależności, uzasadnienia kluczy, utworzenia schematu oraz sprawdzenia raportu po podziale. Kompletne rozwiązanie powinno pozwalać odtworzyć bazę i wykazać konkretnymi przykładami, które błędy zostały wyeliminowane, a które wymagają dodatkowych mechanizmów.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad3.html#literatura",
+    "href": "lectures/wyklad3.html#literatura",
+    "title": "Struktura logiczna i normalizacja baz danych",
+    "section": "Literatura",
+    "text": "Literatura\n\nRensselaer Polytechnic Institute — CSCI 4380: Normalization: zależności funkcjonalne, klucze, dekompozycja, 3NF i BCNF.\nSQLite — Foreign Key Support: kontrola kluczy obcych i ustawienie foreign_keys.\nSQLite — STRICT Tables: wymagania i zasady tabel STRICT.",
+    "crumbs": [
+      "Wykłady",
+      "Struktura logiczna i normalizacja baz danych"
     ]
   }
 ]
