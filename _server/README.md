@@ -103,3 +103,29 @@ Run `python3 _server/tests/test_assignments.py` from the repository root with PH
 CLI and PDO SQLite installed. The test starts a temporary localhost PHP server
 on port 18763, creates a disposable database and sends synthetic HTTP requests.
 It never connects to the production endpoint.
+
+## PAS combined post-lecture quiz
+
+The PAS page `test-po-wykladach.html` sends one submission with
+`course=pas2026`, `lecture=test-po-wykladach` and ten answers (`q1` through
+`q10`). Deploy the updated `db.php` into the existing `rsod-quiz/` directory.
+Keep `config.local.php`, `submit.php`, `results.php`, `.htaccess` and the database.
+No schema migration is needed.
+
+The configuration loader registers a complete built-in key for the ten questions,
+including on older deployments without any PAS keys. Questions 1-5 come from the
+former lecture-two quiz; questions 6-10 come from the former lecture-three quiz.
+The maximum score is 18. Stable correct option IDs are B; displayed letters are
+shuffled by the client. An explicitly configured `test-po-wykladach` key takes
+precedence. Existing course keys, settings and historical submissions are unchanged.
+
+Use the existing protected viewer with
+`results.php?course=pas2026&lecture=test-po-wykladach`. One successful submission
+creates one row. The existing endpoint does not deduplicate quiz retries or limit
+attempts per email; this change does not introduce either guarantee.
+
+Run `python3 _server/tests/test_pas_combined.py` to verify key registration,
+configuration precedence, legacy compatibility, HTTP scoring and the filtered
+viewer using temporary files and a local PHP server on an ephemeral port.
+Until `db.php` is deployed, the public test may report that it is not activated;
+publishing the static page alone does not activate the server-side key.
