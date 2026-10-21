@@ -399,18 +399,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    team_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">PRIMARY</span> <span class="kw">KEY</span> (document_id, item_id)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>) STRICT;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Wstawienie danych jest osobnym poleceniem. Każdy nawias w <code>VALUES</code> zawiera wszystkie sześć wartości w kolejności jawnie wymienionych kolumn. Dane dokumentu 201 powtarzają się dla jego dwóch egzemplarzy; właśnie te powtórzenia będą punktem wyjścia do następnego podziału.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> issue_lines_1nf (</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    document_id, item_id, item_name, issued_at, team_id, team_name</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">201</span>, <span class="st">'R-01'</span>, <span class="st">'Radiostacja'</span>,          <span class="st">'2027-02-01 08:00'</span>, <span class="st">'A'</span>, <span class="st">'Alfa'</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">201</span>, <span class="st">'L-01'</span>, <span class="st">'Latarka'</span>,             <span class="st">'2027-02-01 08:00'</span>, <span class="st">'A'</span>, <span class="st">'Alfa'</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">202</span>, <span class="st">'R-02'</span>, <span class="st">'Radiostacja zapasowa'</span>, <span class="st">'2027-02-02 09:00'</span>, <span class="st">'B'</span>, <span class="st">'Bravo'</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">203</span>, <span class="st">'R-01'</span>, <span class="st">'Radiostacja'</span>,          <span class="st">'2027-02-03 10:00'</span>, <span class="st">'A'</span>, <span class="st">'Alfa'</span>);</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_lines_1nf <span class="kw">ORDER</span> <span class="kw">BY</span> document_id, item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Kod przepisuje znane dane z kroku 00, nie analizuje automatycznie listy sprzętu. <code>CREATE TABLE</code> i <code>INSERT</code> wykonuje się po jednym razie. Jeśli tabela już istnieje i jest pusta, wystarczy wykonać samo wstawienie danych.</p>
 <p>Sam <code>document_id</code> nie identyfikuje pozycji, ponieważ dokument 201 ma dwie pozycje. Sam <code>item_id</code> również nie wystarcza, ponieważ R-01 występuje na dwóch dokumentach. Przy przyjętych regułach kluczem jest para <code>(document_id, item_id)</code>.</p>
 <section id="dlaczego-1nf-jeszcze-nie-wystarcza" class="level3">
 <h3 class="anchored" data-anchor-id="dlaczego-1nf-jeszcze-nie-wystarcza">Dlaczego 1NF jeszcze nie wystarcza</h3>
 <p>Plik 02 celowo zmienia nazwę zespołu w jednej pozycji:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> issue_lines_1nf</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> team_name <span class="op">=</span> <span class="st">'Alfa Polnoc'</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> document_id <span class="op">=</span> <span class="dv">201</span> <span class="kw">AND</span> item_id <span class="op">=</span> <span class="st">'R-01'</span>;</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> document_id, item_id, team_id, team_name</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> issue_lines_1nf</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> document_id, item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> issue_lines_1nf</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> team_name <span class="op">=</span> <span class="st">'Alfa Polnoc'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> document_id <span class="op">=</span> <span class="dv">201</span> <span class="kw">AND</span> item_id <span class="op">=</span> <span class="st">'R-01'</span>;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> document_id, item_id, team_id, team_name</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> issue_lines_1nf</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> document_id, item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Wynik zawiera trzy pozycje zespołu A, lecz dwie różne nazwy. Nawet pozycje tego samego dokumentu 201 nie są zgodne. Klucz główny nie blokuje tej zmiany: żadna para identyfikatorów nie została powtórzona. Zapewnienie unikalności wiersza nie oznacza jeszcze zapewnienia wszystkich zależności biznesowych.</p>
 <p>Przed kolejnym podziałem plik 03 przywraca znaną wartość źródłową „Alfa”. Sprzecznych danych nie należy scalać przez arbitralne wybranie jednej nazwy, np. za pomocą <code>MIN()</code>.</p>
 </section>
@@ -496,15 +508,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Tabela <code>document_items_2nf</code> zachowuje informację, które egzemplarze należą do poszczególnych dokumentów. Sam katalog dokumentów i katalog sprzętu nie wystarczyłyby do odtworzenia czterech pozycji.</p>
 <p>Po utworzeniu tabel dane przenoszą projekcje:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> items_2nf</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> item_id, item_name <span class="kw">FROM</span> issue_lines_1nf;</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> documents_2nf</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> document_id, issued_at, team_id, team_name</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> issue_lines_1nf;</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> document_items_2nf</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> document_id, item_id <span class="kw">FROM</span> issue_lines_1nf;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> items_2nf</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> item_id, item_name <span class="kw">FROM</span> issue_lines_1nf;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> documents_2nf</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> document_id, issued_at, team_id, team_name</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> issue_lines_1nf;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> document_items_2nf</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> document_id, item_id <span class="kw">FROM</span> issue_lines_1nf;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>DISTINCT</code> usuwa identyczne powtórzenia wybranych kolumn. Nie naprawia różnych nazw przypisanych temu samemu identyfikatorowi. Dlatego zgodność danych musi być sprawdzona przed przeniesieniem.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -522,14 +534,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="problem-pozostający-w-2nf" class="level3">
 <h3 class="anchored" data-anchor-id="problem-pozostający-w-2nf">Problem pozostający w 2NF</h3>
 <p>Zespół A ma dwa dokumenty. Jego nazwa nadal jest zapisana dwukrotnie w <code>documents_2nf</code>. Plik 05 zmienia nazwę tylko na dokumencie 201:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> documents_2nf</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> team_name <span class="op">=</span> <span class="st">'Alfa Polnoc'</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> document_id <span class="op">=</span> <span class="dv">201</span>;</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> document_id, team_id, team_name</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> documents_2nf</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> document_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> documents_2nf</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> team_name <span class="op">=</span> <span class="st">'Alfa Polnoc'</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> document_id <span class="op">=</span> <span class="dv">201</span>;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> document_id, team_id, team_name</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> documents_2nf</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> document_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Dokument 201 zawiera „Alfa Polnoc”, a 203 — „Alfa”. Podział do 2NF ograniczył powielanie wewnątrz dokumentu, ale nie rozwiązał problemu nazwy zespołu występującego na różnych dokumentach.</p>
 </section>
 </section>
@@ -540,27 +552,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Nazwa zespołu opisuje zespół, nie dokument. Jej właściwym miejscem jest tabela zespołów. Dokument zachowuje identyfikator wskazujący zespół.</p>
 <p>Formalnie schemat w 1NF jest w 3NF, jeśli dla każdej nietrywialnej zależności <code>X → A</code>, gdzie A jest pojedynczym atrybutem, X jest nadkluczem <strong>lub</strong> A jest atrybutem kluczowym. Nietrywialność oznacza, że A nie należy już do X. Warunek obejmuje zależności wynikające z przyjętych reguł, nie tylko jawnie wypisane. W naszym przykładzie <code>team_name</code> nie jest atrybutem kluczowym, a <code>team_id</code> nie identyfikuje dokumentu, więc zależność narusza 3NF tabeli dokumentów.</p>
 <p>Po naprawieniu celowego błędu z poprzedniego kroku plik 06 tworzy końcowy schemat:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> teams (</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    team_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    team_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>) STRICT;</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> items (</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    item_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    item_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>) STRICT;</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> documents (</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    document_id <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    issued_at TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    team_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">REFERENCES</span> teams(team_id)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>) STRICT;</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> document_items (</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    document_id <span class="dt">INTEGER</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">REFERENCES</span> documents(document_id),</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    item_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">REFERENCES</span> items(item_id),</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">PRIMARY</span> <span class="kw">KEY</span> (document_id, item_id)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>) STRICT;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> teams (</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    team_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    team_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>) STRICT;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> items (</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    item_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    item_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>) STRICT;</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> documents (</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    document_id <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    issued_at TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    team_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">REFERENCES</span> teams(team_id)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>) STRICT;</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> document_items (</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    document_id <span class="dt">INTEGER</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">REFERENCES</span> documents(document_id),</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    item_id TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">REFERENCES</span> items(item_id),</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">PRIMARY</span> <span class="kw">KEY</span> (document_id, item_id)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>) STRICT;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Klucz obcy — <strong>foreign key</strong> — wiąże identyfikator z istniejącym wierszem w tabeli nadrzędnej. W SQLite jego egzekwowanie wymaga włączonej kontroli <code>PRAGMA foreign_keys = ON</code>.</p>
 <section id="encje-atrybuty-i-związki" class="level3">
 <h3 class="anchored" data-anchor-id="encje-atrybuty-i-związki">Encje, atrybuty i związki</h3>
@@ -605,26 +617,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="odtworzenie-raportu-i-kontrola-podziału" class="level2">
 <h2 class="anchored" data-anchor-id="odtworzenie-raportu-i-kontrola-podziału">Odtworzenie raportu i kontrola podziału</h2>
 <p>Rozdzielenie tabel nie oznacza konieczności oglądania danych wyłącznie osobno. Złączenia odtwarzają raport:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> d.document_id, i.item_id, i.item_name,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>       d.issued_at, t.team_id, t.team_name</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> documents <span class="kw">AS</span> d</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> document_items <span class="kw">AS</span> di <span class="kw">ON</span> di.document_id <span class="op">=</span> d.document_id</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> items <span class="kw">AS</span> i <span class="kw">ON</span> i.item_id <span class="op">=</span> di.item_id</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> teams <span class="kw">AS</span> t <span class="kw">ON</span> t.team_id <span class="op">=</span> d.team_id</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> d.document_id, i.item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> d.document_id, i.item_id, i.item_name,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>       d.issued_at, t.team_id, t.team_name</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> documents <span class="kw">AS</span> d</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> document_items <span class="kw">AS</span> di <span class="kw">ON</span> di.document_id <span class="op">=</span> d.document_id</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> items <span class="kw">AS</span> i <span class="kw">ON</span> i.item_id <span class="op">=</span> di.item_id</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> teams <span class="kw">AS</span> t <span class="kw">ON</span> t.team_id <span class="op">=</span> d.team_id</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> d.document_id, i.item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Wynik zawiera cztery pozycje zgodne z tabelą po przejściu do 1NF. Plik 06 zapisuje zapytanie jako widok <code>issue_report</code>. <strong>Widok — view</strong> przechowuje definicję zapytania; ten zwykły widok nie jest dodatkową utrzymywaną kopią wyników.</p>
 <section id="czy-nie-zgubiono-albo-nie-dodano-danych" class="level3">
 <h3 class="anchored" data-anchor-id="czy-nie-zgubiono-albo-nie-dodano-danych">Czy nie zgubiono albo nie dodano danych?</h3>
 <p>Plik 07 porównuje oba zbiory w obu kierunkach, zanim wprowadzane są nowe zmiany:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_lines_1nf</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">EXCEPT</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_report;</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_report</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">EXCEPT</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_lines_1nf;</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>PRAGMA foreign_key_check;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_lines_1nf</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">EXCEPT</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_report;</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_report</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">EXCEPT</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_lines_1nf;</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>PRAGMA foreign_key_check;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Wszystkie trzy wyniki powinny być puste. Pierwsze zapytanie wykrywa pozycje brakujące w raporcie, drugie — pozycje nadmiarowe lub różniące się wartościami. Trzecie sprawdza odwołania kluczy obcych. <code>EXCEPT</code> porównuje zbiory; w tym przykładzie klucze i sposób złączenia zapewniają jedną pozycję dla każdej pary identyfikatorów. Sama równość liczby wierszy nie potwierdziłaby zgodności treści.</p>
 <p>Jest to kontrola danych demonstracyjnych. Ogólne uzasadnienie <strong>bezstratności podziału</strong> opiera się na zależnościach: pozycja wskazuje jeden dokument i jeden egzemplarz, dokument jeden zespół, a tabela pozycji zachowuje właściwe powiązania. Do odtworzenia raportu nie trzeba odgadywać, które wiersze do siebie należą.</p>
 </section>
@@ -634,13 +646,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="jedna-zmiana-nazwy" class="level3">
 <h3 class="anchored" data-anchor-id="jedna-zmiana-nazwy">Jedna zmiana nazwy</h3>
 <p>Plik 08 aktualizuje jeden wiersz tabeli zespołów:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> teams</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> team_name <span class="op">=</span> <span class="st">'Alfa Polnoc'</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span>;</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_report</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> document_id, item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> teams</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> team_name <span class="op">=</span> <span class="st">'Alfa Polnoc'</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span>;</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> issue_report</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> team_id <span class="op">=</span> <span class="st">'A'</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> document_id, item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Wszystkie trzy pozycje raportu zespołu A zawierają nową nazwę. Nie są aktualizowane trzy kopie — zapytanie pobiera nazwę z jednego miejsca. Stare tabele etapowe pozostają porównawczymi kopiami i nie są synchronizowane.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -659,20 +671,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sprzęt-bez-wydania" class="level3">
 <h3 class="anchored" data-anchor-id="sprzęt-bez-wydania">Sprzęt bez wydania</h3>
 <p>Plik 09 dodaje namiot do katalogu bez tworzenia fikcyjnego dokumentu:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> items (item_id, item_name)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">'N-01'</span>, <span class="st">'Namiot'</span>);</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> i.item_id, i.item_name, <span class="fu">COUNT</span>(di.document_id) <span class="kw">AS</span> issue_count</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> items <span class="kw">AS</span> i</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> document_items <span class="kw">AS</span> di <span class="kw">ON</span> di.item_id <span class="op">=</span> i.item_id</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> i.item_id, i.item_name</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> i.item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> items (item_id, item_name)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">'N-01'</span>, <span class="st">'Namiot'</span>);</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> i.item_id, i.item_name, <span class="fu">COUNT</span>(di.document_id) <span class="kw">AS</span> issue_count</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> items <span class="kw">AS</span> i</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> document_items <span class="kw">AS</span> di <span class="kw">ON</span> di.item_id <span class="op">=</span> i.item_id</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> i.item_id, i.item_name</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> i.item_id;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>N-01 ma zero wydań, R-01 dwa, L-01 i R-02 po jednym. Raport dotyczy historii pozycji dokumentów, nie bieżącej dostępności. <code>COUNT(di.document_id)</code> zlicza dopasowane pozycje; <code>COUNT(*)</code> policzyłoby również wiersz zachowany przez <code>LEFT JOIN</code> dla sprzętu bez wydań.</p>
 </section>
 <section id="usunięcie-pozycji-bez-utraty-informacji-o-sprzęcie" class="level3">
 <h3 class="anchored" data-anchor-id="usunięcie-pozycji-bez-utraty-informacji-o-sprzęcie">Usunięcie pozycji bez utraty informacji o sprzęcie</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> document_items</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> document_id <span class="op">=</span> <span class="dv">202</span> <span class="kw">AND</span> item_id <span class="op">=</span> <span class="st">'R-02'</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> document_items</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> document_id <span class="op">=</span> <span class="dv">202</span> <span class="kw">AND</span> item_id <span class="op">=</span> <span class="st">'R-02'</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Po wykonaniu pliku 10 egzemplarz R-02 nadal znajduje się w <code>items</code>, choć nie ma już żadnej pozycji wydania. Istnienie egzemplarza i istnienie jego wydania są odrębnymi faktami. Demonstracja nie ustanawia polityki usuwania dokumentów: w rzeczywistym systemie wymagania audytu mogą nakazywać zachowanie historii.</p>
 <p>Plik 11, wykonany raz po krokach 08–10, przywraca dane do stanu bezpośrednio po podziale. Umożliwia ponowne porównanie raportu z tabelą 1NF.</p>
 </section>

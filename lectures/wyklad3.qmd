@@ -135,6 +135,28 @@ CREATE TABLE issue_lines_1nf (
 ) STRICT;
 ```
 
+Wstawienie danych jest osobnym poleceniem. Każdy nawias w `VALUES` zawiera
+wszystkie sześć wartości w kolejności jawnie wymienionych kolumn. Dane
+dokumentu 201 powtarzają się dla jego dwóch egzemplarzy; właśnie te
+powtórzenia będą punktem wyjścia do następnego podziału.
+
+```sql
+INSERT INTO issue_lines_1nf (
+    document_id, item_id, item_name, issued_at, team_id, team_name
+)
+VALUES
+    (201, 'R-01', 'Radiostacja',          '2027-02-01 08:00', 'A', 'Alfa'),
+    (201, 'L-01', 'Latarka',             '2027-02-01 08:00', 'A', 'Alfa'),
+    (202, 'R-02', 'Radiostacja zapasowa', '2027-02-02 09:00', 'B', 'Bravo'),
+    (203, 'R-01', 'Radiostacja',          '2027-02-03 10:00', 'A', 'Alfa');
+
+SELECT * FROM issue_lines_1nf ORDER BY document_id, item_id;
+```
+
+Kod przepisuje znane dane z kroku 00, nie analizuje automatycznie listy
+sprzętu. `CREATE TABLE` i `INSERT` wykonuje się po jednym razie. Jeśli tabela
+już istnieje i jest pusta, wystarczy wykonać samo wstawienie danych.
+
 Sam `document_id` nie identyfikuje pozycji, ponieważ dokument 201 ma dwie
 pozycje. Sam `item_id` również nie wystarcza, ponieważ R-01 występuje na dwóch
 dokumentach. Przy przyjętych regułach kluczem jest para
