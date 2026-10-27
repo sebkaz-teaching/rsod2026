@@ -70,42 +70,42 @@ procedural_language:
 lecture_coverage:
   - syllabus_id: W1
     current_files: [lectures/wyklad1.qmd]
-    legacy_files: [../rsod/lectures/wyklad1.qmd]
+    legacy_files: [../../Archiwum-kursow/rsod/lectures/wyklad1.qmd]
     status: "Zasadniczo pokryty."
   - syllabus_id: W2
     current_files: [lectures/wyklad2.qmd, lectures/wyklad3.qmd]
-    legacy_files: [../rsod/lectures/wyklad2.qmd, ../rsod/lectures/wyklad3.qmd]
+    legacy_files: [../../Archiwum-kursow/rsod/lectures/wyklad2.qmd, ../../Archiwum-kursow/rsod/lectures/wyklad3.qmd]
     status: "Pokryty; normalizacja na wykładzie 3 rozwija projektowanie struktury logicznej."
   - syllabus_id: W3
     current_files: [lectures/wyklad2.qmd, lectures/wyklad3.qmd]
-    legacy_files: [../rsod/lectures/wyklad2.qmd]
+    legacy_files: [../../Archiwum-kursow/rsod/lectures/wyklad2.qmd]
     status: "Polecenia są obecne, lecz materiał jest rozłożony między wykładami."
     next_step: "Powiązać SELECT, INSERT, UPDATE i DELETE z jednym wykonywalnym zestawem laboratoryjnym PostgreSQL."
   - syllabus_id: W4
     current_files: [lectures/wyklad4.qmd]
-    legacy_files: [../rsod/lectures/wyklad4.qmd, ../rsod/cwiczenia/cw4.qmd]
+    legacy_files: [../../Archiwum-kursow/rsod/lectures/wyklad4.qmd, ../../Archiwum-kursow/rsod/cwiczenia/cw4.qmd]
     status: "Wykład 4 dostosowany do PL/pgSQL: bloki, zmienne, IF, FOR, WHILE, tabela, funkcja i obsługa naruszenia CHECK."
     next_step: "Przykłady wykonano na PostgreSQL 16; optymalizacja pozostaje osobnym tematem L4. Paczka: assets/sql/rsod4-plpgsql.zip."
   - syllabus_id: W5
     current_files: [lectures/wyklad5.qmd]
-    legacy_files: [../rsod/lectures/wyklad5.qmd]
+    legacy_files: [../../Archiwum-kursow/rsod/lectures/wyklad5.qmd]
     status: "Podstawy transakcji, ACID i izolacji są obecne."
     next_step: "Dodać demonstrację na dwóch połączeniach PostgreSQL z danymi startowymi, kolejnością poleceń i oczekiwanymi wynikami."
 
 legacy_lab_reuse:
-  - file: ../rsod/cwiczenia/cw1.ipynb
+  - file: ../../Archiwum-kursow/rsod/cwiczenia/cw1.ipynb
     contents: "Pliki, SQLite, DDL i normalizacja."
     use_for: [L1, L2]
     adaptation: "Materiał pomocniczy; opracować jawne zadanie diagramowe na 4 godziny i wersję fizyczną PostgreSQL."
-  - file: ../rsod/cwiczenia/cw2.ipynb
+  - file: ../../Archiwum-kursow/rsod/cwiczenia/cw2.ipynb
     contents: "PostgreSQL, pgAdmin, zapytania, podzapytania, indeksy i EXPLAIN ANALYZE."
     use_for: [L2, L3, L4]
     adaptation: "Sprawdzić kompletność schematu i danych wejściowych; ujednolicić z zadaniami edycji 2026."
-  - file: ../rsod/cwiczenia/cw3.qmd
+  - file: ../../Archiwum-kursow/rsod/cwiczenia/cw3.qmd
     contents: "Złączenia, DML, agregacje, podzapytania, CTE, widoki, funkcje okienkowe i operacje zbiorowe."
     use_for: [L3, L4]
     adaptation: "Wybrać zadania podstawowe i dodatkowe, przypisać oczekiwane wyniki oraz operacje algebry relacyjnej."
-  - file: ../rsod/cwiczenia/cw4.qmd
+  - file: ../../Archiwum-kursow/rsod/cwiczenia/cw4.qmd
     contents: "PL/pgSQL: DO, zmienne, IF, pętle, funkcje, triggery i zgłaszanie wyjątków."
     use_for: [W4, L5]
     adaptation: "Uzupełnić przechwytywanie wyjątków; triggery traktować jako rozszerzenie."
