@@ -1,0 +1,37 @@
+RSOD — samodzielne środowisko PostgreSQL i pgAdmin
+
+Uruchom Docker Desktop. W terminalu przejdź do tego katalogu:
+cd /Users/seba/Documents/GitHub/rsod2026/docker
+docker compose up -d
+
+Panel: http://localhost:5051
+Login: admin@example.com
+Hasło do panelu: PgAdmin2026Local
+Serwer jest już dodany; hasło bazy jest wczytywane automatycznie.
+
+Bazy i skrypty:
+- rsod4_pokaz → materials/lectures/wyklad4
+
+W pgAdmin: rozwiń serwer → Databases → wybrana baza → Query Tool.
+Open File → materials → lectures → właściwy wykład.
+RSOD 4 zaczyna od pustej bazy. Uruchom 00_setup.sql jeden raz.
+08_restore_data.sql przywraca ilości 5,3,0. Całe bloki DO wykonuj razem.
+
+Włącz Auto commit. Wyniki: Data Output. Komunikaty: Messages.
+Po błędzie wewnątrz jawnej transakcji: ROLLBACK przed następną próbą.
+
+Po zajęciach: docker compose stop
+Następny start lub zastosowanie zmian: docker compose up -d
+Dane pozostają w woluminach. Nie używaj down -v, jeśli chcesz je zachować.
+Usługa prepare ze statusem Exited (0) oznacza poprawne przygotowanie baz.
+Zmiany własnych kopii SQL w pgAdmin nie są nadpisywane przy starcie.
+
+Cały katalog docker można przenieść na inny komputer z Docker Desktop.
+Dane nie są w Git: nowy komputer odtwarza stan początkowy ze skryptów.
+Katalog nie trafia do stron Quarto. Laboratoria dołożymy osobno.
+Przykładowe hasła służą wyłącznie do lokalnej pracy; panel jest na 127.0.0.1.
+
+Na tym komputerze w starym woluminie RSOD pozostała wcześniejsza baza
+prba6_pokaz jako kopia bezpieczeństwa. Aktualna PRBA działa osobno na
+localhost:5052. Nie pracuj równolegle na obu kopiach. Nowe odtworzenie
+samego zestawu RSOD nie tworzy bazy PRBA.

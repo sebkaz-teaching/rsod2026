@@ -1,0 +1,65 @@
+name: rsod-classroom
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: rsod4_pokaz
+      POSTGRES_USER: rsod
+      POSTGRES_PASSWORD: Rsod2026Local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rsod -d rsod4_pokaz"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  prepare:
+    image: postgres:16
+    environment:
+      PGHOST: postgres
+      PGUSER: rsod
+      PGPASSWORD: Rsod2026Local
+    entrypoint: ["/bin/sh", "/setup/prepare.sh"]
+    volumes:
+      - ./prepare.sh:/setup/prepare.sh:ro
+      - ./databases.txt:/setup/databases.txt:ro
+      - ./materials:/materials:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  pgadmin:
+    image: dpage/pgadmin4:9.18
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        mkdir -p /var/lib/pgadmin/storage/admin_example.com/materials
+        (
+          cd /examples
+          find . -type d -exec mkdir -p /var/lib/pgadmin/storage/admin_example.com/materials/{} \;
+          find . -type f -exec cp -n {} /var/lib/pgadmin/storage/admin_example.com/materials/{} \;
+        )
+        exec /entrypoint.sh
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: PgAdmin2026Local
+      PGADMIN_DISABLE_POSTFIX: "1"
+      PGPASS_FILE: /pgpass
+    ports:
+      - "127.0.0.1:5051:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json:ro
+      - ./pgpass:/pgpass:ro
+      - ./materials:/examples:ro
+    depends_on:
+      prepare:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:
+  pgadmin_data:

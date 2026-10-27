@@ -3,6 +3,7 @@ project:
   output-dir: docs
   resources:
     - assets/sql/**
+    - "!docker/**"
   # Reveal each lecture week by week: comment OUT its "!lectures/..." line
   # below (so it renders) once that lecture is taught, then uncomment the
   # matching entry in website.sidebar.contents further down. Doing only
@@ -10,6 +11,7 @@ project:
   # a direct URL) or links to a page that doesn't exist yet.
   render:
     - "*.qmd"
+    - "!docker/**"
     - "lectures/*.qmd"
     # - "!lectures/wyklad2.qmd"
     # - "!lectures/wyklad3.qmd"

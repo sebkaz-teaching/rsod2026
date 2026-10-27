@@ -1,0 +1,16 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "RSOD — PostgreSQL",
+      "Group": "Zajęcia",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "rsod4_pokaz",
+      "Username": "rsod",
+      "ConnectionParameters": {
+        "sslmode": "prefer",
+        "passfile": ".pgpass"
+      }
+    }
+  }
+}
