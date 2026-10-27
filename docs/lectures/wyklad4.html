@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Wykład 4: Programowanie w bazie danych — PL/pgSQL – Relacyjne Systemy Organizacji Danych</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-94ae530b1fc9924793afbc3bb7de9d3b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/wyklad1.html">Wykłady</a></li><li class="breadcrumb-item"><a href="../lectures/wyklad4.html">Wykład 4: Programowanie w bazie danych — PL/pgSQL</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Relacyjne Systemy Organizacji Danych</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Informacje ogólne</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/wyklad1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Od pliku do bazy danych</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/wyklad2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model relacyjny i podstawy SQL</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/wyklad3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Struktura logiczna i normalizacja baz danych</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/wyklad4.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Wykład 4: Programowanie w bazie danych — PL/pgSQL</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title"><strong>Sections</strong></h2>
+   
+  <ul class="collapse">
+  <li><a href="#od-struktury-danych-do-sposobu-wykonania-operacji" id="toc-od-struktury-danych-do-sposobu-wykonania-operacji" class="nav-link active" data-scroll-target="#od-struktury-danych-do-sposobu-wykonania-operacji">Od struktury danych do sposobu wykonania operacji</a></li>
+  <li><a href="#sql-a-rozszerzenie-proceduralne" id="toc-sql-a-rozszerzenie-proceduralne" class="nav-link" data-scroll-target="#sql-a-rozszerzenie-proceduralne">SQL a rozszerzenie proceduralne</a></li>
+  <li><a href="#gdzie-działa-program-i-jakie-ma-granice" id="toc-gdzie-działa-program-i-jakie-ma-granice" class="nav-link" data-scroll-target="#gdzie-działa-program-i-jakie-ma-granice">Gdzie działa program i jakie ma granice?</a></li>
+  <li><a href="#baza-demonstracyjna-i-uruchamianie-przykładów" id="toc-baza-demonstracyjna-i-uruchamianie-przykładów" class="nav-link" data-scroll-target="#baza-demonstracyjna-i-uruchamianie-przykładów">Baza demonstracyjna i uruchamianie przykładów</a></li>
+  <li><a href="#blok-wspólny-zakres-instrukcji-i-zmiennych" id="toc-blok-wspólny-zakres-instrukcji-i-zmiennych" class="nav-link" data-scroll-target="#blok-wspólny-zakres-instrukcji-i-zmiennych">Blok: wspólny zakres instrukcji i zmiennych</a></li>
+  <li><a href="#zmienne-typy-i-wartość-null" id="toc-zmienne-typy-i-wartość-null" class="nav-link" data-scroll-target="#zmienne-typy-i-wartość-null">Zmienne, typy i wartość NULL</a></li>
+  <li><a href="#warunki-wybór-jednej-ścieżki" id="toc-warunki-wybór-jednej-ścieżki" class="nav-link" data-scroll-target="#warunki-wybór-jednej-ścieżki">Warunki: wybór jednej ścieżki</a></li>
+  <li><a href="#pętle-powtarzanie-instrukcji" id="toc-pętle-powtarzanie-instrukcji" class="nav-link" data-scroll-target="#pętle-powtarzanie-instrukcji">Pętle: powtarzanie instrukcji</a></li>
+  <li><a href="#odczyt-z-tabeli-do-zmiennej" id="toc-odczyt-z-tabeli-do-zmiennej" class="nav-link" data-scroll-target="#odczyt-z-tabeli-do-zmiennej">Odczyt z tabeli do zmiennej</a></li>
+  <li><a href="#funkcja-nazwana-operacja-z-wejściem-i-wynikiem" id="toc-funkcja-nazwana-operacja-z-wejściem-i-wynikiem" class="nav-link" data-scroll-target="#funkcja-nazwana-operacja-z-wejściem-i-wynikiem">Funkcja: nazwana operacja z wejściem i wynikiem</a></li>
+  <li><a href="#zmiana-danych-i-informacja-czy-operacja-się-udała" id="toc-zmiana-danych-i-informacja-czy-operacja-się-udała" class="nav-link" data-scroll-target="#zmiana-danych-i-informacja-czy-operacja-się-udała">Zmiana danych i informacja, czy operacja się udała</a></li>
+  <li><a href="#wyjątek-przerwanie-zwykłej-ścieżki-programu" id="toc-wyjątek-przerwanie-zwykłej-ścieżki-programu" class="nav-link" data-scroll-target="#wyjątek-przerwanie-zwykłej-ścieżki-programu">Wyjątek: przerwanie zwykłej ścieżki programu</a></li>
+  <li><a href="#jak-sprawdzać-krótki-program-bazodanowy" id="toc-jak-sprawdzać-krótki-program-bazodanowy" class="nav-link" data-scroll-target="#jak-sprawdzać-krótki-program-bazodanowy">Jak sprawdzać krótki program bazodanowy?</a></li>
+  <li><a href="#pytania-do-utrwalenia" id="toc-pytania-do-utrwalenia" class="nav-link" data-scroll-target="#pytania-do-utrwalenia">Pytania do utrwalenia</a></li>
+  <li><a href="#dokumentacja-i-dalsza-lektura" id="toc-dokumentacja-i-dalsza-lektura" class="nav-link" data-scroll-target="#dokumentacja-i-dalsza-lektura">Dokumentacja i dalsza lektura</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lectures/wyklad1.html">Wykłady</a></li><li class="breadcrumb-item"><a href="../lectures/wyklad4.html">Wykład 4: Programowanie w bazie danych — PL/pgSQL</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Wykład 4: Programowanie w bazie danych — PL/pgSQL</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="od-struktury-danych-do-sposobu-wykonania-operacji" class="level2">
+<h2 class="anchored" data-anchor-id="od-struktury-danych-do-sposobu-wykonania-operacji">Od struktury danych do sposobu wykonania operacji</h2>
+<p>Poprzedni wykład dotyczył organizacji informacji: zależności między atrybutami, kluczy i podziału tabel zgodnego z postaciami normalnymi. Poprawny model odpowiada na pytanie <strong>co baza pamięta i jakie fakty można z niej odtworzyć</strong>. Sam podział tabel nie opisuje jednak przebiegu operacji: co zrobić, gdy brakuje danych, jak wybrać jedną z kilku odpowiedzi albo jak zareagować na naruszenie reguły.</p>
+<p>Ten wykład wprowadza program wykonywany przez serwer bazy danych. Punktem wyjścia pozostaje SQL (<em>Structured Query Language</em> — strukturalny język zapytań). Do SQL dodamy zmienne, instrukcje warunkowe, pętle i obsługę błędów. Celem jest rozumienie działania krótkiego programu, a nie budowa kompletnego systemu magazynowego podczas jednego spotkania.</p>
+<p>Po wykładzie istotne jest rozróżnianie:</p>
+<ul>
+<li>opisu zbioru danych w SQL i kolejności czynności w programie proceduralnym;</li>
+<li>zmiennej lokalnej i wartości zapisanej w tabeli;</li>
+<li>jednorazowego bloku i funkcji, którą można wielokrotnie wywołać;</li>
+<li>komunikatu informacyjnego i błędu przerywającego wykonanie;</li>
+<li>bloku programu i transakcji bazodanowej.</li>
+</ul>
+</section>
+<section id="sql-a-rozszerzenie-proceduralne" class="level2">
+<h2 class="anchored" data-anchor-id="sql-a-rozszerzenie-proceduralne">SQL a rozszerzenie proceduralne</h2>
+<section id="opis-wyniku-i-opis-przebiegu" class="level3">
+<h3 class="anchored" data-anchor-id="opis-wyniku-i-opis-przebiegu">Opis wyniku i opis przebiegu</h3>
+<p>SQL jest w znacznej części językiem deklaratywnym. Zapytanie określa wymagany wynik, na przykład wszystkie pozycje z dodatnim stanem. Nie wyznacza kolejności sprawdzania wierszy ani sposobu odczytu danych z dysku. Wybór planu wykonania należy do systemu zarządzania bazą danych — SZBD, po angielsku <em>Database Management System</em> (DBMS).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> item_name, quantity</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rsod4_demo.stock</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> quantity <span class="op">&gt;</span> <span class="dv">0</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>W programie proceduralnym ważna jest również kolejność: najpierw przypisanie wartości, potem sprawdzenie warunku, następnie wybrana operacja. Taki program może wykonywać polecenia SQL. Nie zastępuje relacyjnego modelu danych i nie unieważnia ograniczeń tabel.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>SQL</th>
+<th>Konstrukcja proceduralna</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Wybierz wiersze spełniające warunek.</td>
+<td>Jeśli warunek jest prawdziwy, wykonaj wskazany blok.</td>
+</tr>
+<tr class="even">
+<td>Zmień wszystkie pasujące wiersze jednym <code>UPDATE</code>.</td>
+<td>Wykonaj kolejne instrukcje w określonej kolejności.</td>
+</tr>
+<tr class="odd">
+<td>Zwróć zbiór wyników.</td>
+<td>Zapamiętaj wartość w zmiennej, podejmij decyzję, zwróć wynik.</td>
+</tr>
+</tbody>
+</table>
+<p>Rozszerzenie proceduralne jest potrzebne wtedy, gdy operacja ma wyraźny przebieg i reakcje na różne sytuacje. Nie jest wymagane do każdego raportu. Filtrowanie, złączenia i agregacje zwykle nadal najlepiej wyrażać bezpośrednio w SQL.</p>
+</section>
+<section id="dlaczego-plpgsql-a-nie-plsql" class="level3">
+<h3 class="anchored" data-anchor-id="dlaczego-plpgsql-a-nie-plsql">Dlaczego PL/pgSQL, a nie PL/SQL?</h3>
+<p><strong>PL/pgSQL</strong> to proceduralny język systemu PostgreSQL. Skrót <strong>PL</strong> oznacza <em>Procedural Language</em> — język proceduralny; część <strong>pgSQL</strong> wskazuje jego związek z PostgreSQL i SQL. Dokumentacja określa go jako <em>SQL Procedural Language</em>. <strong>PL/SQL</strong>, czyli <em>Procedural Language/SQL</em>, jest odrębnym językiem używanym w Oracle. Podobieństwo nazw i konstrukcji nie oznacza zgodności kodu.</p>
+<p>W programie przedmiotu występuje nazwa PL/SQL. Omawiane idee — bloki, zmienne, warunki, pętle i wyjątki — realizujemy tutaj w <strong>jednej wersji: PostgreSQL z PL/pgSQL</strong>. Pokazane pliki uruchamia się na serwerze PostgreSQL. SQLite z poprzednich demonstracji nie wykona tych bloków, a pgAdmin jest klientem serwera, nie osobnym silnikiem bazodanowym.</p>
+</section>
+</section>
+<section id="gdzie-działa-program-i-jakie-ma-granice" class="level2">
+<h2 class="anchored" data-anchor-id="gdzie-działa-program-i-jakie-ma-granice">Gdzie działa program i jakie ma granice?</h2>
+<p>Aplikacja wysyła do serwera zapytanie lub wywołanie funkcji. Serwer wykonuje kod z dostępem do danych i zwraca wynik albo błąd. Funkcja może więc stanowić wspólne miejsce obliczenia używanego przez kilka aplikacji. Ma to sens, gdy reguła jest związana z danymi, a jej powielanie u każdego klienta utrudniałoby utrzymanie zgodności.</p>
+<p>Nie wynika z tego, że cała aplikacja powinna znaleźć się w bazie. Wyświetlanie formularza, komunikacja z użytkownikiem i obsługa interfejsu pozostają zadaniami aplikacji. Prosta reguła integralności, taka jak zakaz ujemnej ilości, powinna być zapisana jako ograniczenie tabeli. Wtedy chroni dane także przed klientem, który ominie przygotowaną funkcję i wykona bezpośredni <code>UPDATE</code>.</p>
+<p>Przydatne są zatem trzy poziomy odpowiedzialności:</p>
+<ol type="1">
+<li><strong>Tabela i ograniczenia</strong> określają dopuszczalny stan danych.</li>
+<li><strong>SQL i funkcje</strong> odczytują dane, obliczają wyniki lub wykonują operacje.</li>
+<li><strong>Aplikacja</strong> organizuje kontakt z użytkownikiem i interpretuje odpowiedź.</li>
+</ol>
+<p>Procedura składowana i funkcja nie są w PostgreSQL synonimami. Funkcję wywołamy w wyrażeniu, na przykład przez <code>SELECT</code>; procedurę wywołuje się poleceniem <code>CALL</code>. Na tym wykładzie wystarczy funkcja zwracająca jedną wartość. Procedury, wyzwalacze i zarządzanie uprawnieniami nie są potrzebne do pierwszego zrozumienia języka.</p>
+</section>
+<section id="baza-demonstracyjna-i-uruchamianie-przykładów" class="level2">
+<h2 class="anchored" data-anchor-id="baza-demonstracyjna-i-uruchamianie-przykładów">Baza demonstracyjna i uruchamianie przykładów</h2>
+<p><a href="../assets/sql/rsod4-plpgsql.zip">Pobierz komplet plików SQL</a>. Zestaw jest przeznaczony do osobnej bazy dydaktycznej PostgreSQL. Nie wymaga bazy SQLite ani danych z poprzedniego wykładu. W pgAdmin należy wybrać bazę, otworzyć <strong>Query Tool</strong> i uruchomić plik <code>00_setup.sql</code> jeden raz. Tworzy on schemat <code>rsod4_demo</code>, czyli nazwany obszar zawierający obiekty pokazu. Jeśli schemat już istnieje, skrypt zatrzyma się, zamiast nadpisywać wcześniejsze dane.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> rsod4_demo.stock (</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    item_id <span class="dt">integer</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    item_name text <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    quantity <span class="dt">integer</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">CHECK</span> (quantity <span class="op">&gt;=</span> <span class="dv">0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">item_id</th>
+<th>item_name</th>
+<th style="text-align: right;">quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td>Radio</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td>Tent</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td>Battery</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>To uproszczony <strong>stan ilościowy asortymentu</strong>, a nie ewidencja pojedynczych numerowanych egzemplarzy z wcześniejszego pokazu normalizacji. Jedna radiostacja w tej tabeli nie ma osobnego numeru seryjnego. Zmiana poziomu szczegółowości jest celowa: trzy pozycje wystarczają do pokazania przepływu programu. Nie prowadzimy tutaj dokumentów wydań ani historii zmian.</p>
+<p>Wyniki <code>SELECT</code> pojawiają się w <strong>Data Output</strong>. Komunikaty <code>RAISE NOTICE</code> znajdują się w <strong>Messages</strong>. Cały blok <code>DO $$ ... $$;</code> należy wykonywać razem, łącznie z końcowym średnikiem. Zaznaczenie samej linii ze środka bloku nie jest wywołaniem kompletnego programu.</p>
+</section>
+<section id="blok-wspólny-zakres-instrukcji-i-zmiennych" class="level2">
+<h2 class="anchored" data-anchor-id="blok-wspólny-zakres-instrukcji-i-zmiennych">Blok: wspólny zakres instrukcji i zmiennych</h2>
+<p>Blok porządkuje program. Opcjonalna część <code>DECLARE</code> deklaruje zmienne. Część między <code>BEGIN</code> a <code>END</code> zawiera wykonywane instrukcje. Sekcja <code>EXCEPTION</code>, jeżeli występuje, określa reakcję na wybrane błędy.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>DO $$</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DECLARE</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    v_available <span class="dt">integer</span> <span class="op">:=</span> <span class="dv">5</span>;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    v_requested <span class="dt">integer</span> <span class="op">:=</span> <span class="dv">2</span>;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    v_remaining <span class="dt">integer</span>;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    v_remaining <span class="op">:=</span> v_available <span class="op">-</span> v_requested;</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    RAISE NOTICE <span class="st">'Available: %, requested: %, remaining: %'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        v_available, v_requested, v_remaining;</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>DO</code> uruchamia jednorazowy, anonimowy blok: nie nadajemy mu nazwy do późniejszego wywoływania. Znaki <code>$$</code> wyznaczają granice tekstu programu przekazanego do wykonania. Dzięki nim zwykłe apostrofy wewnątrz komunikatu nie wymagają podwajania. Znak <code>%</code> w komunikacie oznacza miejsce wstawienia kolejnego argumentu.</p>
+<p>Wynik to informacja o dostępnych 5 sztukach, żądanych 2 i pozostałych 3. <strong>Tabela nie została zmieniona.</strong> W tym programie wykonano obliczenie wyłącznie na zmiennych. Odczyt <code>SELECT * FROM rsod4_demo.stock</code> nadal pokaże ilość 5. To ważne rozróżnienie między obliczeniem możliwego wyniku a zapisaniem operacji.</p>
+<p><code>BEGIN</code> w PL/pgSQL oznacza początek części wykonywalnej bloku. Nie jest tym samym co polecenie SQL <code>BEGIN</code> rozpoczynające transakcję. Blok może działać wewnątrz transakcji; te dwa poziomy nie opisują tej samej rzeczy.</p>
+</section>
+<section id="zmienne-typy-i-wartość-null" class="level2">
+<h2 class="anchored" data-anchor-id="zmienne-typy-i-wartość-null">Zmienne, typy i wartość NULL</h2>
+<p>Zmienna przechowuje wartość na czas wykonania bloku. Ma nazwę oraz typ, na przykład <code>integer</code>, <code>numeric</code>, <code>text</code> albo <code>boolean</code>. Typ określa, jakie wartości i operacje są dozwolone. Przypisanie <code>:=</code> zmienia wartość zmiennej; porównanie <code>=</code> sprawdza równość. Prefiks <code>v_</code> jest tutaj konwencją nazw zmiennych, a nie obowiązkowym elementem języka.</p>
+<p>Zmienna bez wartości początkowej ma domyślnie <code>NULL</code>. To brak znanej wartości, a nie liczba zero ani pusty tekst. Wyrażenie <code>5 - NULL</code> ma wynik <code>NULL</code>. Również porównanie <code>NULL = 0</code> nie daje prawdy ani fałszu, lecz wartość nieznaną. Dlatego obecność wartości bada się przez <code>IS NULL</code> lub <code>IS NOT NULL</code>.</p>
+<p>Przykładowo brak liczby zamawianych sztuk nie może zostać potraktowany jak poprawne zamówienie. Program powinien zdecydować, czy odrzuci brak danych, czy zastosuje jawnie ustaloną wartość domyślną. Milczące zastępowanie braku zerem mogłoby ukryć błąd formularza.</p>
+</section>
+<section id="warunki-wybór-jednej-ścieżki" class="level2">
+<h2 class="anchored" data-anchor-id="warunki-wybór-jednej-ścieżki">Warunki: wybór jednej ścieżki</h2>
+<p>Instrukcja <code>IF</code> wykonuje gałąź tylko wtedy, gdy warunek ma wartość prawda. <code>ELSIF</code> pozwala sprawdzić kolejny przypadek, a <code>ELSE</code> obsługuje pozostałe sytuacje. Kolejność ma znaczenie: wykonana zostanie pierwsza pasująca gałąź.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>DO $$</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DECLARE</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    v_available <span class="dt">integer</span> <span class="op">:=</span> <span class="dv">5</span>;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    v_requested <span class="dt">integer</span> <span class="op">:=</span> <span class="dv">2</span>;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">IF</span> v_requested <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">OR</span> v_requested <span class="op">&lt;=</span> <span class="dv">0</span> <span class="cf">THEN</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Invalid request'</span>;</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSIF</span> v_requested <span class="op">&gt;</span> v_available <span class="cf">THEN</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Insufficient stock'</span>;</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSE</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Request accepted; remaining: %'</span>, v_available <span class="op">-</span> v_requested;</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span> <span class="cf">IF</span>;</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Najpierw sprawdzamy poprawność żądania. Dopiero dla poprawnej liczby ma sens porównanie jej ze stanem magazynu. Tak uporządkowane warunki oddzielają błąd danych wejściowych od poprawnego żądania, którego nie można zrealizować.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Żądana ilość</th>
+<th>Interpretacja</th>
+<th>Gałąź</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td>Poprawne żądanie mieszczące się w stanie 5.</td>
+<td><code>ELSE</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td>Poprawna liczba, ale niewystarczający zapas.</td>
+<td><code>ELSIF</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0 lub −1</td>
+<td>Żądanie nie opisuje dodatniej liczby sztuk.</td>
+<td>Pierwszy <code>IF</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>NULL</code></td>
+<td>Nie przekazano znanej liczby sztuk.</td>
+<td>Pierwszy <code>IF</code></td>
+</tr>
+</tbody>
+</table>
+<p>Wszystkie cztery przypadki można sprawdzić, zmieniając wyłącznie deklarację <code>v_requested</code> w pliku <code>02_conditions.sql</code>. Program nadal tylko oblicza odpowiedź; nie wykonuje wydania z magazynu.</p>
+</section>
+<section id="pętle-powtarzanie-instrukcji" class="level2">
+<h2 class="anchored" data-anchor-id="pętle-powtarzanie-instrukcji">Pętle: powtarzanie instrukcji</h2>
+<p>Pętla jest potrzebna, gdy określone instrukcje mają zostać wykonane wielokrotnie. Pętla liczbowa <code>FOR</code> jest wygodna dla znanego zakresu, natomiast <code>WHILE</code> powtarza blok tak długo, jak długo warunek pozostaje prawdziwy. W obu przypadkach należy rozumieć, kiedy program zakończy powtarzanie.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>DO $$</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">FOR</span> v_number <span class="kw">IN</span> <span class="dv">1</span><span class="op">..</span><span class="dv">3</span> <span class="cf">LOOP</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'FOR label: %'</span>, v_number;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span> <span class="cf">LOOP</span>;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Zmienna sterująca liczbowej pętli <code>FOR</code> jest deklarowana automatycznie. Pętla wykona trzy iteracje z wartościami 1, 2 i 3. Po ostatniej iteracji program przejdzie do instrukcji po <code>END LOOP</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>DO $$</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DECLARE</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    v_number <span class="dt">integer</span> <span class="op">:=</span> <span class="dv">1</span>;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">WHILE</span> v_number <span class="op">&lt;=</span> <span class="dv">3</span> <span class="cf">LOOP</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'WHILE label: %'</span>, v_number;</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        v_number <span class="op">:=</span> v_number <span class="op">+</span> <span class="dv">1</span>;</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span> <span class="cf">LOOP</span>;</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>W <code>WHILE</code> to program zmienia stan wpływający na warunek. Pominięcie zwiększenia licznika pozostawiłoby warunek prawdziwy i powodowałoby niekończące się powtarzanie. Taki błąd należy omówić na kodzie, bez uruchamiania nieskończonej pętli na serwerze.</p>
+<p>Pętla nie jest domyślnym sposobem przetwarzania tabeli. Jeśli wszystkie pozycje mają zostać zmienione według tego samego wzoru, pojedyncze <code>UPDATE</code> zwykle wyraża zamiar lepiej niż odczyt każdego wiersza i osobna zmiana. SQL operuje na zbiorach; procedura jest uzupełnieniem tego modelu, a nie powodem, by go porzucać.</p>
+</section>
+<section id="odczyt-z-tabeli-do-zmiennej" class="level2">
+<h2 class="anchored" data-anchor-id="odczyt-z-tabeli-do-zmiennej">Odczyt z tabeli do zmiennej</h2>
+<p>Dotychczas wartości były zapisane w programie. Teraz źródłem informacji jest tabela. Wewnątrz PL/pgSQL konstrukcja <code>SELECT ... INTO</code> umieszcza wynik zapytania w zmiennej.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>DO $$</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DECLARE</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    v_item_id <span class="dt">integer</span> <span class="op">:=</span> <span class="dv">1</span>;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    v_quantity <span class="dt">integer</span>;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> quantity <span class="kw">INTO</span> v_quantity</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> rsod4_demo.stock</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">WHERE</span> item_id <span class="op">=</span> v_item_id;</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">IF</span> <span class="kw">NOT</span> FOUND <span class="cf">THEN</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Unknown item: %'</span>, v_item_id;</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSE</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Item %, quantity %'</span>, v_item_id, v_quantity;</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span> <span class="cf">IF</span>;</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>FOUND</code> jest zmienną logiczną dostarczaną przez PL/pgSQL. W tym miejscu informuje, czy poprzedni <code>SELECT INTO</code> znalazł wiersz. Sprawdzamy ją od razu, ponieważ kolejne instrukcje obsługujące dane mogą zmienić jej wartość. Dla identyfikatora 999 zapytanie niczego nie znajdzie. Taki przypadek różni się od istniejącej pozycji Battery z ilością 0.</p>
+<p>Klucz główny <code>item_id</code> gwarantuje najwyżej jeden pasujący wiersz. W ogólnym przypadku <code>SELECT INTO</code> bez <code>STRICT</code> przy braku wiersza przypisuje <code>NULL</code>, a przy wielu wierszach wybiera pierwszy; bez porządku nie należy zakładać, który to będzie. Wariant <code>INTO STRICT</code> wymaga dokładnie jednego wiersza i zgłasza błąd przy zeru lub wielu wynikach. To wybór kontraktu operacji, a nie tylko dodatkowy zapis składni.</p>
+<p>Poza PL/pgSQL polecenie SQL <code>SELECT INTO</code> w PostgreSQL może służyć do tworzenia nowej tabeli. W przedstawionym bloku <code>INTO v_quantity</code> oznacza <strong>przypisanie do zmiennej</strong>. Kontekst użycia ma znaczenie.</p>
+</section>
+<section id="funkcja-nazwana-operacja-z-wejściem-i-wynikiem" class="level2">
+<h2 class="anchored" data-anchor-id="funkcja-nazwana-operacja-z-wejściem-i-wynikiem">Funkcja: nazwana operacja z wejściem i wynikiem</h2>
+<p>Funkcja pozwala zapisać fragment programu raz i wywoływać go z różnymi danymi. Jej kontrakt obejmuje nazwę, parametry, typ wyniku oraz znaczenie odpowiedzi. Poniższa funkcja klasyfikuje stan ilościowy. Otrzymuje liczbę, zwraca tekst i nie zmienia żadnej tabeli.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">FUNCTION</span> rsod4_demo.stock_status(p_quantity <span class="dt">integer</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>RETURNS text</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>LANGUAGE plpgsql</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">AS</span> $$</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">IF</span> p_quantity <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">OR</span> p_quantity <span class="op">&lt;</span> <span class="dv">0</span> <span class="cf">THEN</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">RETURN</span> <span class="st">'invalid'</span>;</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSIF</span> p_quantity <span class="op">=</span> <span class="dv">0</span> <span class="cf">THEN</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">RETURN</span> <span class="st">'unavailable'</span>;</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSE</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">RETURN</span> <span class="st">'available'</span>;</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span> <span class="cf">IF</span>;</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>CREATE OR REPLACE</code> zapisuje definicję funkcji lub zastępuje zgodną istniejącą definicję. Nie jest jej wywołaniem. <code>RETURNS text</code> określa typ wyniku, a <code>RETURN</code> kończy bieżące wywołanie i przekazuje wartość wywołującemu.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> quantity, rsod4_demo.stock_status(quantity) <span class="kw">AS</span> status</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> (<span class="kw">VALUES</span> (<span class="dv">5</span>), (<span class="dv">0</span>), (<span class="op">-</span><span class="dv">1</span>), (<span class="kw">NULL</span>:<span class="ch">:integer</span>)) <span class="kw">AS</span> samples(quantity);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Oczekiwane odpowiedzi to kolejno <code>available</code>, <code>unavailable</code>, <code>invalid</code>, <code>invalid</code>. Zapis <code>NULL::integer</code> jawnie nadaje brakującej wartości typ całkowity. Parametr <code>p_quantity</code> jest wejściem funkcji, a nie wskazaniem kolumny, którą funkcja miałaby zmodyfikować. Aby zmienić dane, potrzebna byłaby instrukcja modyfikująca, na przykład <code>UPDATE</code>.</p>
+<p>Taką prostą klasyfikację można również zapisać wyrażeniem SQL <code>CASE</code>. Przykład służy poznaniu kontraktu funkcji; nie dowodzi, że dla każdej decyzji należy tworzyć funkcję składowaną.</p>
+</section>
+<section id="zmiana-danych-i-informacja-czy-operacja-się-udała" class="level2">
+<h2 class="anchored" data-anchor-id="zmiana-danych-i-informacja-czy-operacja-się-udała">Zmiana danych i informacja, czy operacja się udała</h2>
+<p>Odczyt stanu i późniejsze niezależne zmniejszenie ilości nie stanowią jeszcze pełnej ochrony danych przy wielu klientach. Dobrą podstawą jest zapisanie warunku dostępności w samej instrukcji modyfikującej.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> rsod4_demo.stock</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> quantity <span class="op">=</span> quantity <span class="op">-</span> <span class="dv">2</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> item_id <span class="op">=</span> <span class="dv">1</span> <span class="kw">AND</span> quantity <span class="op">&gt;=</span> <span class="dv">2</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">RETURNING</span> quantity;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Operacja zmniejsza stan tylko wtedy, gdy dany wiersz istnieje i ma co najmniej dwie sztuki. <code>RETURNING</code> zwraca ilość po zmianie. Brak wiersza w wyniku oznacza, że nic nie zmieniono. Sam ten brak nie rozstrzyga, czy nie było pozycji, czy zabrakło sztuk.</p>
+<p>Plik <code>06_update.sql</code> umieszcza tę operację w bloku z parametrami lokalnymi, sprawdzeniem dodatniej liczby i <code>IF FOUND</code>. Przy stanie początkowym 5 i żądaniu 2 pozostaną 3 sztuki. Kolejna udana próba ponownie zmniejsza stan — uruchamianie tego pliku nie jest neutralnym podglądem. Plik <code>08_restore_data.sql</code> przywraca trzy demonstracyjne ilości do 5, 3 i 0.</p>
+<p>Nie jest to kompletny proces wydania: brak tu dokumentu, odbiorcy i historii. Jeżeli operacja wymaga zmiany kilku tabel jako jednej całości, potrzebne jest przetwarzanie transakcyjne. To temat następnego wykładu.</p>
+</section>
+<section id="wyjątek-przerwanie-zwykłej-ścieżki-programu" class="level2">
+<h2 class="anchored" data-anchor-id="wyjątek-przerwanie-zwykłej-ścieżki-programu">Wyjątek: przerwanie zwykłej ścieżki programu</h2>
+<p>Błąd może pochodzić z programu, ograniczenia tabeli lub systemu. Na przykład <code>RAISE EXCEPTION</code> jawnie zgłasza błąd, a naruszenie <code>CHECK</code> powoduje błąd integralności. <code>RAISE NOTICE</code> jest tylko komunikatem i nie przerywa wykonania.</p>
+<p>Obsługa wyjątku powinna wskazywać konkretny problem, na który program umie zareagować. Przechwycenie wszystkich błędów i zgłoszenie sukcesu ukrywałoby awarię zamiast ją obsługiwać.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>DO $$</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">BEGIN</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">BEGIN</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">UPDATE</span> rsod4_demo.stock <span class="kw">SET</span> quantity <span class="op">=</span> quantity <span class="op">+</span> <span class="dv">1</span> <span class="kw">WHERE</span> item_id <span class="op">=</span> <span class="dv">2</span>;</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">UPDATE</span> rsod4_demo.stock <span class="kw">SET</span> quantity <span class="op">=</span> <span class="op">-</span><span class="dv">1</span> <span class="kw">WHERE</span> item_id <span class="op">=</span> <span class="dv">1</span>;</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">EXCEPTION</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">WHEN</span> check_violation <span class="cf">THEN</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            RAISE NOTICE <span class="st">'CHECK rejected negative stock; both inner updates were undone'</span>;</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">END</span>;</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    RAISE NOTICE <span class="st">'Execution continues after the handled error'</span>;</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="cf">END</span>;</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>$$;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pierwsza zmiana w wewnętrznym bloku jest poprawna, ale druga narusza <code>CHECK (quantity &gt;= 0)</code>. Obsługa <code>check_violation</code> przechwytuje ten konkretny błąd. <strong>Zmiany danych wykonane wewnątrz tego bloku zostają wycofane</strong>, także pierwsza, która sama była poprawna. Po obsłużeniu błędu program przechodzi dalej. Odczyt tabeli pokaże taki stan jak przed uruchomieniem bloku.</p>
+<p>Nie oznacza to, że dowolny wcześniej wykonany kod w całej sesji zostanie cofnięty. Znaczenie ma zakres bloku z obsługą wyjątku. Nie oznacza to również cofnięcia lokalnych wartości zmiennych w taki sam sposób jak zmian danych. Na tym etapie najważniejszy jest obserwowalny skutek: błąd nie pozostawia częściowo wykonanej zmiany danych z tego wewnętrznego bloku.</p>
+</section>
+<section id="jak-sprawdzać-krótki-program-bazodanowy" class="level2">
+<h2 class="anchored" data-anchor-id="jak-sprawdzać-krótki-program-bazodanowy">Jak sprawdzać krótki program bazodanowy?</h2>
+<p>Poprawna kompilacja nie dowodzi poprawnego działania. Weryfikacja musi obejmować typowy przypadek, granice oraz brak danych.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Co sprawdzamy?</th>
+<th>Przykład</th>
+<th>Oczekiwany sens wyniku</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Zwykłe działanie</td>
+<td>Dostępne 5, żądane 2.</td>
+<td>Pozostają 3 sztuki, jeśli wykonano zapis.</td>
+</tr>
+<tr class="even">
+<td>Granicę</td>
+<td>Dostępne 5, żądane 5.</td>
+<td>Stan 0 jest legalny.</td>
+</tr>
+<tr class="odd">
+<td>Brak zasobu</td>
+<td>Dostępne 5, żądane 7.</td>
+<td>Brak wydania, bez ujemnego stanu.</td>
+</tr>
+<tr class="even">
+<td>Niepoprawne wejście</td>
+<td>Żądane 0, −1 lub <code>NULL</code>.</td>
+<td>Jawne odrzucenie żądania.</td>
+</tr>
+<tr class="odd">
+<td>Nieistniejący obiekt</td>
+<td>Identyfikator 999.</td>
+<td>Nie mylimy braku pozycji ze stanem 0.</td>
+</tr>
+<tr class="even">
+<td>Ochronę tabeli</td>
+<td>Bezpośredni zapis ilości −1.</td>
+<td><code>CHECK</code> odrzuca zmianę.</td>
+</tr>
+</tbody>
+</table>
+<p>Kontrola wyniku obejmuje zarówno odpowiedź programu, jak i odczyt tabeli. Komunikat „accepted” w bloku operującym wyłącznie na zmiennych nie jest dowodem zapisu do bazy. Z kolei brak wyjątku przy <code>UPDATE</code>, który nie zmienił żadnego wiersza, nie oznacza zrealizowania żądania.</p>
+</section>
+<section id="pytania-do-utrwalenia" class="level2">
+<h2 class="anchored" data-anchor-id="pytania-do-utrwalenia">Pytania do utrwalenia</h2>
+<ol type="1">
+<li>Dlaczego zmiana <code>v_available</code> nie zmienia kolumny <code>quantity</code>?</li>
+<li>Czym różni się brak wiersza od istniejącego wiersza z ilością zero?</li>
+<li>Dlaczego <code>NULL</code> trzeba uwzględnić przed porównaniem żądania ze stanem?</li>
+<li>Kiedy pojedyncze <code>UPDATE</code> jest lepszym opisem operacji niż pętla?</li>
+<li>Co pozostanie w tabeli, gdy druga zmiana wewnętrznego bloku naruszy <code>CHECK</code>?</li>
+<li>Dlaczego warunek w funkcji nie zastępuje ograniczenia tabeli?</li>
+</ol>
+<p>Nie ma tutaj testu początkowego. Pytania służą omówieniu materiału; sprawdzenie końcowe kursu pozostaje osobnym wydarzeniem.</p>
+</section>
+<section id="dokumentacja-i-dalsza-lektura" class="level2">
+<h2 class="anchored" data-anchor-id="dokumentacja-i-dalsza-lektura">Dokumentacja i dalsza lektura</h2>
+<ul>
+<li><a href="https://www.postgresql.org/docs/16/plpgsql-structure.html">PostgreSQL: struktura bloków PL/pgSQL</a>.</li>
+<li><a href="https://www.postgresql.org/docs/16/plpgsql-declarations.html">Deklaracje zmiennych i parametry</a>.</li>
+<li><a href="https://www.postgresql.org/docs/16/plpgsql-statements.html">SQL wewnątrz PL/pgSQL, INTO i FOUND</a>.</li>
+<li><a href="https://www.postgresql.org/docs/16/plpgsql-control-structures.html">Warunki, pętle, zwracanie wyniku i obsługa błędów</a>.</li>
+<li><a href="https://www.postgresql.org/docs/16/sql-createfunction.html">Definiowanie funkcji</a>.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sebkaz-teaching\.github\.io\/rsod2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2026, Sebastian Zając</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

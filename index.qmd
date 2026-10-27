@@ -39,3 +39,9 @@ polecenia oraz kryteria oddania będą podane w materiałach laboratoryjnych.
 prowadzi od jednej tabeli dokumentów magazynowych przez 1NF, 2NF i 3NF do
 odtworzenia raportu. Zawiera również zestaw SQL do odtworzenia demonstracji
 w osobnej bazie SQLite.
+
+
+[Wykład 4: programowanie w bazie danych — PL/pgSQL](lectures/wyklad4.qmd)
+rozwija SQL o bloki, zmienne, warunki, pętle, funkcje i obsługę wyjątków.
+Zawiera kompletny zestaw demonstracyjny dla PostgreSQL i pgAdmin.
+Wykład nie zawiera testu początkowego.

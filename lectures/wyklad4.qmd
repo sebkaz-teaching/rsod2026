@@ -1,568 +1,455 @@
 ---
-title: "Podstawy PL/SQL, optymalizacja zapytań i indeksy"
+title: "Wykład 4: Programowanie w bazie danych — PL/pgSQL"
 ---
 
-## ✅ Sprawdź się z wykładu 3
+## Od struktury danych do sposobu wykonania operacji
 
-<div id="rsod-quiz"></div>
-<script src="../assets/js/quiz-engine.js"></script>
-<script>
-CourseQuiz.mount(document.getElementById('rsod-quiz'), {
-  course: "rsod2026",
-  lecture: "wyklad4",
-  title: "Wykład 3: Normalizacja i projektowanie baz danych",
-  submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
-  questions: [
-    {
-      id: "q1", points: 1, diff: "bardzo łatwe",
-      text: "Co to jest redundancja danych?",
-      options: [
-        {v:"A", t:"Brak danych w tabeli"},
-        {v:"B", t:"Powielanie tych samych informacji w wielu miejscach bazy"},
-        {v:"C", t:"Nadmiar indeksów w tabeli"},
-        {v:"D", t:"Zbyt duża liczba tabel w bazie"}
-      ]
-    },
-    {
-      id: "q2", points: 1, diff: "łatwe",
-      text: "Zapis „NrIndeksu → Imię, Nazwisko” oznacza, że:",
-      options: [
-        {v:"A", t:"Imię i Nazwisko są kluczami obcymi"},
-        {v:"B", t:"Każdemu NrIndeksu odpowiada dokładnie jedna wartość Imię i jedna wartość Nazwisko"},
-        {v:"C", t:"NrIndeksu zależy od Imienia i Nazwiska"},
-        {v:"D", t:"To zapis relacji N:M"}
-      ]
-    },
-    {
-      id: "q3", points: 2, diff: "średnie",
-      text: "Tabela Kursy(Student, NrIndeksu, Kursy), gdzie kolumna Kursy zawiera wartość „Bazy danych, Programowanie”. Którą postać normalną narusza taki zapis?",
-      options: [
-        {v:"A", t:"2NF, bo brakuje klucza złożonego"},
-        {v:"B", t:"3NF, bo istnieje zależność przechodnia"},
-        {v:"C", t:"1NF — wartości w kolumnie Kursy nie są atomowe"},
-        {v:"D", t:"BCNF, bo klucz kandydujący nie jest unikalny"}
-      ]
-    },
-    {
-      id: "q4", points: 2, diff: "trudne",
-      text: "Tabela ZAPISY(StudentID, KursID, Sala), klucz złożony (StudentID, KursID), a Sala zależy wyłącznie od KursID. Jaki to problem i jak go rozwiązać?",
-      options: [
-        {v:"A", t:"Narusza 1NF — trzeba rozbić Sala na osobne wiersze"},
-        {v:"B", t:"Narusza 2NF (zależność częściowa od części klucza) — trzeba wydzielić tabelę KURS(KursID, Sala)"},
-        {v:"C", t:"Narusza 3NF (zależność przechodnia) — trzeba wydzielić SALA(Sala, Budynek)"},
-        {v:"D", t:"To poprawny projekt, nic nie trzeba zmieniać"}
-      ]
-    },
-    {
-      id: "q5", points: 3, diff: "wnioskowanie",
-      text: "Tabela KURS(KursID, Nazwa, Prowadzący, PokojProwadzącego) — pokój zależy od tego, KTO prowadzi (Prowadzący), a nie bezpośrednio od KursID (KursID → Prowadzący → PokojProwadzącego). Jaką postać normalną narusza ta tabela i jak to naprawić?",
-      options: [
-        {v:"A", t:"1NF — PokojProwadzącego nie jest wartością atomową"},
-        {v:"B", t:"2NF — PokojProwadzącego zależy tylko od części klucza złożonego"},
-        {v:"C", t:"3NF (zależność przechodnia) — trzeba wydzielić tabelę PROWADZĄCY(Prowadzący, PokojProwadzącego)"},
-        {v:"D", t:"Żadną — to poprawny projekt"}
-      ]
-    }
-  ]
-});
-</script>
+Poprzedni wykład dotyczył organizacji informacji: zależności między atrybutami,
+kluczy i podziału tabel zgodnego z postaciami normalnymi. Poprawny model odpowiada
+na pytanie **co baza pamięta i jakie fakty można z niej odtworzyć**. Sam podział
+tabel nie opisuje jednak przebiegu operacji: co zrobić, gdy brakuje danych,
+jak wybrać jedną z kilku odpowiedzi albo jak zareagować na naruszenie reguły.
 
----
+Ten wykład wprowadza program wykonywany przez serwer bazy danych. Punktem
+wyjścia pozostaje SQL (*Structured Query Language* — strukturalny język zapytań).
+Do SQL dodamy zmienne, instrukcje warunkowe, pętle i obsługę błędów. Celem jest
+rozumienie działania krótkiego programu, a nie budowa kompletnego systemu
+magazynowego podczas jednego spotkania.
 
-## 1️⃣ Wprowadzenie do PL/SQL
+Po wykładzie istotne jest rozróżnianie:
 
-### 🔹 Czym jest PL/SQL?
+- opisu zbioru danych w SQL i kolejności czynności w programie proceduralnym;
+- zmiennej lokalnej i wartości zapisanej w tabeli;
+- jednorazowego bloku i funkcji, którą można wielokrotnie wywołać;
+- komunikatu informacyjnego i błędu przerywającego wykonanie;
+- bloku programu i transakcji bazodanowej.
 
-- PL/SQL to **proceduralny język rozszerzający SQL** w systemach Oracle i kompatybilnych.  
-- Umożliwia użycie **instrukcji warunkowych, pętli, zmiennych i procedur**, czego SQL nie oferuje w formie deklaratywnej.  
+## SQL a rozszerzenie proceduralne
 
-**Przykład prostego bloku PL/SQL:**
+### Opis wyniku i opis przebiegu
+
+SQL jest w znacznej części językiem deklaratywnym. Zapytanie określa wymagany
+wynik, na przykład wszystkie pozycje z dodatnim stanem. Nie wyznacza kolejności
+sprawdzania wierszy ani sposobu odczytu danych z dysku. Wybór planu wykonania
+należy do systemu zarządzania bazą danych — SZBD, po angielsku *Database
+Management System* (DBMS).
 
 ```sql
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('Witaj w świecie PL/SQL!');
-END;
-/
+SELECT item_name, quantity
+FROM rsod4_demo.stock
+WHERE quantity > 0;
 ```
 
-Kod ten uruchamia blok proceduralny, który wypisuje komunikat. 
+W programie proceduralnym ważna jest również kolejność: najpierw przypisanie
+wartości, potem sprawdzenie warunku, następnie wybrana operacja. Taki program
+może wykonywać polecenia SQL. Nie zastępuje relacyjnego modelu danych i nie
+unieważnia ograniczeń tabel.
 
-`BEGIN` rozpoczyna blok, `END;` kończy, a `/` uruchamia go w SQL*Plus.
+| SQL | Konstrukcja proceduralna |
+|---|---|
+| Wybierz wiersze spełniające warunek. | Jeśli warunek jest prawdziwy, wykonaj wskazany blok. |
+| Zmień wszystkie pasujące wiersze jednym `UPDATE`. | Wykonaj kolejne instrukcje w określonej kolejności. |
+| Zwróć zbiór wyników. | Zapamiętaj wartość w zmiennej, podejmij decyzję, zwróć wynik. |
 
-### 🔹 Zmienne i typy danych
+Rozszerzenie proceduralne jest potrzebne wtedy, gdy operacja ma wyraźny
+przebieg i reakcje na różne sytuacje. Nie jest wymagane do każdego raportu.
+Filtrowanie, złączenia i agregacje zwykle nadal najlepiej wyrażać bezpośrednio
+w SQL.
 
-PL/SQL pozwala tworzyć zmienne i przypisywać im wartości.
+### Dlaczego PL/pgSQL, a nie PL/SQL?
+
+**PL/pgSQL** to proceduralny język systemu PostgreSQL. Skrót **PL** oznacza
+*Procedural Language* — język proceduralny; część **pgSQL** wskazuje jego
+związek z PostgreSQL i SQL. Dokumentacja określa go jako *SQL Procedural
+Language*. **PL/SQL**, czyli *Procedural Language/SQL*, jest odrębnym językiem
+używanym w Oracle. Podobieństwo nazw i konstrukcji nie oznacza zgodności kodu.
+
+W programie przedmiotu występuje nazwa PL/SQL. Omawiane idee — bloki, zmienne,
+warunki, pętle i wyjątki — realizujemy tutaj w **jednej wersji: PostgreSQL
+z PL/pgSQL**. Pokazane pliki uruchamia się na serwerze PostgreSQL. SQLite
+z poprzednich demonstracji nie wykona tych bloków, a pgAdmin jest klientem
+serwera, nie osobnym silnikiem bazodanowym.
+
+## Gdzie działa program i jakie ma granice?
+
+Aplikacja wysyła do serwera zapytanie lub wywołanie funkcji. Serwer wykonuje
+kod z dostępem do danych i zwraca wynik albo błąd. Funkcja może więc stanowić
+wspólne miejsce obliczenia używanego przez kilka aplikacji. Ma to sens, gdy
+reguła jest związana z danymi, a jej powielanie u każdego klienta utrudniałoby
+utrzymanie zgodności.
+
+Nie wynika z tego, że cała aplikacja powinna znaleźć się w bazie. Wyświetlanie
+formularza, komunikacja z użytkownikiem i obsługa interfejsu pozostają zadaniami
+aplikacji. Prosta reguła integralności, taka jak zakaz ujemnej ilości, powinna
+być zapisana jako ograniczenie tabeli. Wtedy chroni dane także przed klientem,
+który ominie przygotowaną funkcję i wykona bezpośredni `UPDATE`.
+
+Przydatne są zatem trzy poziomy odpowiedzialności:
+
+1. **Tabela i ograniczenia** określają dopuszczalny stan danych.
+2. **SQL i funkcje** odczytują dane, obliczają wyniki lub wykonują operacje.
+3. **Aplikacja** organizuje kontakt z użytkownikiem i interpretuje odpowiedź.
+
+Procedura składowana i funkcja nie są w PostgreSQL synonimami. Funkcję
+wywołamy w wyrażeniu, na przykład przez `SELECT`; procedurę wywołuje się
+poleceniem `CALL`. Na tym wykładzie wystarczy funkcja zwracająca jedną wartość.
+Procedury, wyzwalacze i zarządzanie uprawnieniami nie są potrzebne do pierwszego
+zrozumienia języka.
+
+## Baza demonstracyjna i uruchamianie przykładów
+
+[Pobierz komplet plików SQL](../assets/sql/rsod4-plpgsql.zip).
+Zestaw jest przeznaczony do osobnej bazy dydaktycznej PostgreSQL. Nie wymaga
+bazy SQLite ani danych z poprzedniego wykładu. W pgAdmin należy wybrać bazę,
+otworzyć **Query Tool** i uruchomić plik `00_setup.sql` jeden raz. Tworzy on
+schemat `rsod4_demo`, czyli nazwany obszar zawierający obiekty pokazu. Jeśli
+schemat już istnieje, skrypt zatrzyma się, zamiast nadpisywać wcześniejsze dane.
 
 ```sql
+CREATE TABLE rsod4_demo.stock (
+    item_id integer PRIMARY KEY,
+    item_name text NOT NULL,
+    quantity integer NOT NULL CHECK (quantity >= 0)
+);
+```
+
+| item_id | item_name | quantity |
+|---:|---|---:|
+| 1 | Radio | 5 |
+| 2 | Tent | 3 |
+| 3 | Battery | 0 |
+
+To uproszczony **stan ilościowy asortymentu**, a nie ewidencja pojedynczych
+numerowanych egzemplarzy z wcześniejszego pokazu normalizacji. Jedna radiostacja
+w tej tabeli nie ma osobnego numeru seryjnego. Zmiana poziomu szczegółowości jest
+celowa: trzy pozycje wystarczają do pokazania przepływu programu. Nie prowadzimy
+tutaj dokumentów wydań ani historii zmian.
+
+Wyniki `SELECT` pojawiają się w **Data Output**. Komunikaty `RAISE NOTICE`
+znajdują się w **Messages**. Cały blok `DO $$ ... $$;` należy wykonywać razem,
+łącznie z końcowym średnikiem. Zaznaczenie samej linii ze środka bloku nie jest
+wywołaniem kompletnego programu.
+
+## Blok: wspólny zakres instrukcji i zmiennych
+
+Blok porządkuje program. Opcjonalna część `DECLARE` deklaruje zmienne.
+Część między `BEGIN` a `END` zawiera wykonywane instrukcje. Sekcja `EXCEPTION`,
+jeżeli występuje, określa reakcję na wybrane błędy.
+
+```sql
+DO $$
 DECLARE
-    v_imie VARCHAR2(50);
-    v_wiek NUMBER;
+    v_available integer := 5;
+    v_requested integer := 2;
+    v_remaining integer;
 BEGIN
-    v_imie := 'Jan';
-    v_wiek := 25;
-    DBMS_OUTPUT.PUT_LINE('Student: ' || v_imie || ', wiek: ' || v_wiek);
+    v_remaining := v_available - v_requested;
+    RAISE NOTICE 'Available: %, requested: %, remaining: %',
+        v_available, v_requested, v_remaining;
 END;
-/
+$$;
 ```
 
-Zmienne umożliwiają przechowywanie danych tymczasowo w trakcie wykonywania programu.
+`DO` uruchamia jednorazowy, anonimowy blok: nie nadajemy mu nazwy do późniejszego
+wywoływania. Znaki `$$` wyznaczają granice tekstu programu przekazanego do
+wykonania. Dzięki nim zwykłe apostrofy wewnątrz komunikatu nie wymagają
+podwajania. Znak `%` w komunikacie oznacza miejsce wstawienia kolejnego argumentu.
 
-### 🔹 Instrukcje warunkowe i pętle
+Wynik to informacja o dostępnych 5 sztukach, żądanych 2 i pozostałych 3.
+**Tabela nie została zmieniona.** W tym programie wykonano obliczenie wyłącznie
+na zmiennych. Odczyt `SELECT * FROM rsod4_demo.stock` nadal pokaże ilość 5.
+To ważne rozróżnienie między obliczeniem możliwego wyniku a zapisaniem operacji.
 
-PL/SQL pozwala na użycie:
+`BEGIN` w PL/pgSQL oznacza początek części wykonywalnej bloku. Nie jest tym
+samym co polecenie SQL `BEGIN` rozpoczynające transakcję. Blok może działać
+wewnątrz transakcji; te dwa poziomy nie opisują tej samej rzeczy.
 
-> IF…THEN…ELSE:
+## Zmienne, typy i wartość NULL
+
+Zmienna przechowuje wartość na czas wykonania bloku. Ma nazwę oraz typ,
+na przykład `integer`, `numeric`, `text` albo `boolean`. Typ określa, jakie
+wartości i operacje są dozwolone. Przypisanie `:=` zmienia wartość zmiennej;
+porównanie `=` sprawdza równość. Prefiks `v_` jest tutaj konwencją nazw zmiennych,
+a nie obowiązkowym elementem języka.
+
+Zmienna bez wartości początkowej ma domyślnie `NULL`. To brak znanej wartości,
+a nie liczba zero ani pusty tekst. Wyrażenie `5 - NULL` ma wynik `NULL`.
+Również porównanie `NULL = 0` nie daje prawdy ani fałszu, lecz wartość nieznaną.
+Dlatego obecność wartości bada się przez `IS NULL` lub `IS NOT NULL`.
+
+Przykładowo brak liczby zamawianych sztuk nie może zostać potraktowany jak
+poprawne zamówienie. Program powinien zdecydować, czy odrzuci brak danych,
+czy zastosuje jawnie ustaloną wartość domyślną. Milczące zastępowanie braku
+zerem mogłoby ukryć błąd formularza.
+
+## Warunki: wybór jednej ścieżki
+
+Instrukcja `IF` wykonuje gałąź tylko wtedy, gdy warunek ma wartość prawda.
+`ELSIF` pozwala sprawdzić kolejny przypadek, a `ELSE` obsługuje pozostałe
+sytuacje. Kolejność ma znaczenie: wykonana zostanie pierwsza pasująca gałąź.
 
 ```sql
-IF v_wiek >= 18 THEN
-    DBMS_OUTPUT.PUT_LINE('Pełnoletni');
-ELSE
-    DBMS_OUTPUT.PUT_LINE('Niepełnoletni');
-END IF;
-```
-
-> LOOP, WHILE, FOR – do powtarzania operacji:
-  
-```sql
-FOR i IN 1..5 LOOP
-    DBMS_OUTPUT.PUT_LINE('Liczba: ' || i);
-END LOOP;
-```
-
-Instrukcje warunkowe i pętle pozwalają w pełni programować logikę w bazie danych.
-
-## 2️⃣ Operacje na danych w PL/SQL
-
-PL/SQL umożliwia wykonywanie standardowych operacji SQL:
-
-> INSERT, UPDATE, DELETE – bezpośrednio w blokach proceduralnych.
-
-Przykład aktualizacji danych:
-
-```sql
+DO $$
+DECLARE
+    v_available integer := 5;
+    v_requested integer := 2;
 BEGIN
-    UPDATE Studenci
-    SET Wiek = 26
-    WHERE NrIndeksu = 12345;
+    IF v_requested IS NULL OR v_requested <= 0 THEN
+        RAISE NOTICE 'Invalid request';
+    ELSIF v_requested > v_available THEN
+        RAISE NOTICE 'Insufficient stock';
+    ELSE
+        RAISE NOTICE 'Request accepted; remaining: %', v_available - v_requested;
+    END IF;
 END;
-/
+$$;
 ```
 
-można grupować wiele operacji w jednym bloku, co ułatwia zarządzanie spójnością danych.
+Najpierw sprawdzamy poprawność żądania. Dopiero dla poprawnej liczby ma sens
+porównanie jej ze stanem magazynu. Tak uporządkowane warunki oddzielają błąd
+danych wejściowych od poprawnego żądania, którego nie można zrealizować.
 
+| Żądana ilość | Interpretacja | Gałąź |
+|---:|---|---|
+| 2 | Poprawne żądanie mieszczące się w stanie 5. | `ELSE` |
+| 7 | Poprawna liczba, ale niewystarczający zapas. | `ELSIF` |
+| 0 lub −1 | Żądanie nie opisuje dodatniej liczby sztuk. | Pierwszy `IF` |
+| `NULL` | Nie przekazano znanej liczby sztuk. | Pierwszy `IF` |
 
-## 💡 Dlaczego optymalizacja jest ważna?
+Wszystkie cztery przypadki można sprawdzić, zmieniając wyłącznie deklarację
+`v_requested` w pliku `02_conditions.sql`. Program nadal tylko oblicza
+odpowiedź; nie wykonuje wydania z magazynu.
 
-Optymalizacja zapytań SQL to jeden z najważniejszych elementów pracy z bazami danych.  
-Dotyczy zarówno programistów aplikacji, jak i administratorów baz danych (DBA).  
-Celem jest takie przygotowanie zapytań, struktur danych i indeksów, aby **uzyskać maksymalną wydajność przy minimalnym obciążeniu systemu**.
+## Pętle: powtarzanie instrukcji
 
-Każde zapytanie SQL, nawet najprostsze, wymaga od silnika bazy danych wykonania określonych operacji: odczytu danych z dysku, przetworzenia warunków `WHERE`, wykonania `JOIN`, `GROUP BY`, `ORDER BY`, a następnie zwrócenia wyników użytkownikowi.
-
-Jeśli baza danych zawiera **miliony rekordów**, to nawet niewielkie różnice w sposobie wykonania zapytania mogą oznaczać:
-
-- różnicę między **milisekundami a sekundami**,  
-- obciążenie **jednego wątku** zamiast całego serwera,  
-- lub zużycie **gigabajtów pamięci i I/O** bez potrzeby.
-
-> 🧠 *„Optymalizacja zapytań SQL to nie sztuka pisania krótszego kodu,  
-> lecz umiejętność zmuszenia silnika bazy danych do pracy mądrze, a nie ciężko.”*
-
-
-## ⚙️ Jak działa zapytanie w silniku bazy danych?
-
-Aby zrozumieć optymalizację, musimy wiedzieć, **co dzieje się z zapytaniem od momentu jego wysłania do bazy danych**.  
-Silnik SQL analizuje składnię zapytania, przepisuje je logicznie, wybiera najtańszy plan wykonania i dopiero wtedy odczytuje dane.  
-
-
-## 🧩 Co wpływa na wydajność zapytań SQL?
-
-Wydajność zapytań zależy zarówno od **tego, jak zapytanie jest napisane**, jak i **od tego, jak zorganizowane są dane w bazie**:
-
-### 🔹 Struktura zapytania
-
-- Złożoność klauzul `WHERE`, `JOIN`, `ORDER BY`
-- Zagnieżdżone podzapytania (`subqueries`)
-- Użycie funkcji agregujących (`COUNT`, `SUM`, `AVG`)
-
-### 🔹 Architektura danych
-
-- Ilość danych w tabelach  
-- Indeksy (ich liczba, rodzaj i aktualność)  
-- Klucze główne i obce (`PRIMARY KEY`, `FOREIGN KEY`)  
-- Stopień normalizacji lub denormalizacji danych  
-
-### 🔹 Stan środowiska bazy
-
-- Dostępna pamięć RAM  
-- Buforowanie i cache dyskowy  
-- Statystyki tabel (`ANALYZE`, `UPDATE STATISTICS`)  
-- Obciążenie serwera (inne procesy, sesje, transakcje)
-
----
-
-## 📊 Przykład znaczenia optymalizacji
-
-Wyobraźmy sobie tabelę **`orders`** z 10 milionami zamówień.  
-Chcemy znaleźć wszystkie zamówienia z ostatnich 30 dni:
+Pętla jest potrzebna, gdy określone instrukcje mają zostać wykonane wielokrotnie.
+Pętla liczbowa `FOR` jest wygodna dla znanego zakresu, natomiast `WHILE` powtarza
+blok tak długo, jak długo warunek pozostaje prawdziwy. W obu przypadkach
+należy rozumieć, kiedy program zakończy powtarzanie.
 
 ```sql
-SELECT * FROM orders WHERE order_date >= CURRENT_DATE - INTERVAL '30 days';
+DO $$
+BEGIN
+    FOR v_number IN 1..3 LOOP
+        RAISE NOTICE 'FOR label: %', v_number;
+    END LOOP;
+END;
+$$;
 ```
 
-### Scenariusz A – brak indeksu
-
-Silnik musi przeskanować całą tabelę (tzw. **Seq Scan**).
-Każdy wiersz jest sprawdzany, czy spełnia warunek `order_date >= ...`.
-
-- ⏱️ Czas wykonania: ~3.2 s  
-- 💾 Operacje I/O: wysokie  
-
-### Scenariusz B – z indeksem
-
-Dodajemy indeks:
-```sql
-CREATE INDEX idx_orders_date ON orders(order_date);
-```
-
-Silnik teraz korzysta z **Index Scan**, czyli odczytu tylko fragmentu danych pasujących do warunku.
-
-- ⏱️ Czas wykonania: ~0.03 s  
-- 💾 Operacje I/O: minimalne  
-
-➡️ **100× szybsze zapytanie** – bez zmiany jednej linijki logiki, tylko dzięki optymalizacji struktury danych.
-
-
-## ⚙️ Jak działa optymalizator zapytań SQL
-
-Każde zapytanie SQL, które wysyłasz do bazy danych, przechodzi **proces planowania i wykonania**.  
-Silnik SQL **nie wykonuje zapytania dokładnie tak, jak je napisałeś** — najpierw szuka **najbardziej efektywnego sposobu** uzyskania tego samego wyniku.
-
-Tym właśnie zajmuje się **optymalizator zapytań (Query Optimizer)**.
-
-
-## 🧠 Czym jest optymalizator zapytań?
-
-Optymalizator analizuje zapytanie i decyduje, **w jaki sposób najlepiej pobrać dane**.  
-Nie zmienia logiki zapytania, ale może całkowicie zmienić:
-
-- kolejność operacji,  
-- sposób łączenia tabel (`JOIN order`),  
-- wybór indeksów,  
-- metodę sortowania lub agregacji.
-
-> 💡 *Optymalizator to planista — nie wykonuje zapytania sam,  
-> ale układa plan działania tak, by wynik uzyskać jak najszybciej i najtaniej.*
-
-
-## 🔄 Etapy przetwarzania zapytania
-
-Dla przykładu:
+Zmienna sterująca liczbowej pętli `FOR` jest deklarowana automatycznie.
+Pętla wykona trzy iteracje z wartościami 1, 2 i 3. Po ostatniej iteracji program
+przejdzie do instrukcji po `END LOOP`.
 
 ```sql
-SELECT name, salary 
-FROM employees 
-WHERE department_id = 10 AND salary > 5000;
+DO $$
+DECLARE
+    v_number integer := 1;
+BEGIN
+    WHILE v_number <= 3 LOOP
+        RAISE NOTICE 'WHILE label: %', v_number;
+        v_number := v_number + 1;
+    END LOOP;
+END;
+$$;
 ```
 
-Silnik przechodzi przez kilka logicznych etapów:
+W `WHILE` to program zmienia stan wpływający na warunek. Pominięcie zwiększenia
+licznika pozostawiłoby warunek prawdziwy i powodowałoby niekończące się
+powtarzanie. Taki błąd należy omówić na kodzie, bez uruchamiania nieskończonej
+pętli na serwerze.
 
-### 1. Parsing (analiza składniowa)
+Pętla nie jest domyślnym sposobem przetwarzania tabeli. Jeśli wszystkie pozycje
+mają zostać zmienione według tego samego wzoru, pojedyncze `UPDATE` zwykle
+wyraża zamiar lepiej niż odczyt każdego wiersza i osobna zmiana. SQL operuje
+na zbiorach; procedura jest uzupełnieniem tego modelu, a nie powodem, by go
+porzucać.
 
-- sprawdza poprawność składni SQL,  
-- weryfikuje istnienie tabel i kolumn,  
-- tworzy drzewo zapytania (*parse tree*).
+## Odczyt z tabeli do zmiennej
 
-### 2. Rewriting (przepisanie logiczne)
-
-- upraszcza warunki (`WHERE TRUE`, podwójne filtry),  
-- zamienia `IN` na `EXISTS`,  
-- łączy filtry logiczne (`AND`, `OR`),  
-- może przenosić warunki do podzapytań (*predicate pushdown*).
-
-### 3. Optimization (planowanie kosztowe)
-
-Optymalizator analizuje różne plany wykonania:
-
-- który indeks użyć,  
-- w jakiej kolejności łączyć tabele,  
-- jakiego algorytmu użyć (`hash join`, `merge join`, `nested loop`).
-
-Każdy plan ma przypisany **koszt (cost estimate)** oparty na:
-
-- liczbie wierszy,  
-- selektywności warunków,  
-- dostępnych indeksach,  
-- statystykach i kosztach I/O oraz CPU.
-
-> 🧮 Optymalizator nie wykonuje zapytań — **symuluje scenariusze** i wybiera ten o najniższym koszcie.
-
-### 4. Execution Plan (plan wykonania)
-
-Po wyborze najlepszego planu, optymalizator przekazuje go do modułu wykonawczego.  
-Plan opisuje krok po kroku, jak dane zostaną pobrane i przetworzone.
-
-Możemy go podejrzeć poleceniem:
+Dotychczas wartości były zapisane w programie. Teraz źródłem informacji jest
+tabela. Wewnątrz PL/pgSQL konstrukcja `SELECT ... INTO` umieszcza wynik
+zapytania w zmiennej.
 
 ```sql
-EXPLAIN SELECT ...
-```
-lub
-```sql
-EXPLAIN ANALYZE SELECT ...
-```
+DO $$
+DECLARE
+    v_item_id integer := 1;
+    v_quantity integer;
+BEGIN
+    SELECT quantity INTO v_quantity
+    FROM rsod4_demo.stock
+    WHERE item_id = v_item_id;
 
-# 🔍 Analiza planu zapytania (EXPLAIN)
-
-Jednym z najważniejszych narzędzi w optymalizacji SQL jest komenda **`EXPLAIN`**.  
-Pozwala „zajrzeć do środka” silnika bazy danych i zobaczyć, **jak zapytanie zostało zaplanowane i wykonane**.
-
-Dzięki niej możemy:
-
-- zrozumieć, dlaczego zapytanie działa wolno,  
-- sprawdzić, czy używany jest indeks,  
-- ocenić, ile operacji baza musi wykonać, by uzyskać wynik.
-
-> 🧠 *Nie zgaduj, dlaczego Twoje zapytanie jest wolne — zobacz plan wykonania i sprawdź, co naprawdę robi baza.*
-
-
-## ⚙️ Co to jest plan zapytania?
-
-Plan zapytania to **opis kroków**, jakie silnik bazy danych musi wykonać, by uzyskać wynik.  
-Każdy krok reprezentuje konkretną operację — np.:
-
-- **Scan** (odczyt danych z tabeli lub indeksu),
-- **Join** (łączenie danych z kilku tabel),
-- **Sort** (sortowanie wyników),
-- **Aggregate** (sumowanie, grupowanie, liczenie).
-
-Każdy z tych kroków ma przypisany **szacowany koszt** — liczbową wartość określającą, ile operacji CPU, I/O lub pamięci wymaga jego wykonanie.
-
-
-## 🧩 Składnia polecenia `EXPLAIN`
-
-W większości systemów baz danych można użyć `EXPLAIN` na początku dowolnego zapytania:
-
-```sql
-EXPLAIN SELECT * FROM employees WHERE department_id = 10;
+    IF NOT FOUND THEN
+        RAISE NOTICE 'Unknown item: %', v_item_id;
+    ELSE
+        RAISE NOTICE 'Item %, quantity %', v_item_id, v_quantity;
+    END IF;
+END;
+$$;
 ```
 
-Aby uzyskać więcej szczegółów, można dodać:
-```sql
-EXPLAIN ANALYZE SELECT * FROM employees WHERE department_id = 10;
-```
+`FOUND` jest zmienną logiczną dostarczaną przez PL/pgSQL. W tym miejscu
+informuje, czy poprzedni `SELECT INTO` znalazł wiersz. Sprawdzamy ją od razu,
+ponieważ kolejne instrukcje obsługujące dane mogą zmienić jej wartość.
+Dla identyfikatora 999 zapytanie niczego nie znajdzie. Taki przypadek różni się
+od istniejącej pozycji Battery z ilością 0.
 
-📊 Różnica:
+Klucz główny `item_id` gwarantuje najwyżej jeden pasujący wiersz. W ogólnym
+przypadku `SELECT INTO` bez `STRICT` przy braku wiersza przypisuje `NULL`,
+a przy wielu wierszach wybiera pierwszy; bez porządku nie należy zakładać,
+który to będzie. Wariant `INTO STRICT` wymaga dokładnie jednego wiersza
+i zgłasza błąd przy zeru lub wielu wynikach. To wybór kontraktu operacji,
+a nie tylko dodatkowy zapis składni.
 
-- EXPLAIN — pokazuje plan teoretyczny (na podstawie statystyk i kosztów),
-- EXPLAIN ANALYZE — faktycznie wykonuje zapytanie i pokazuje rzeczywisty czas oraz liczbę przetworzonych wierszy.
+Poza PL/pgSQL polecenie SQL `SELECT INTO` w PostgreSQL może służyć do tworzenia
+nowej tabeli. W przedstawionym bloku `INTO v_quantity` oznacza **przypisanie
+do zmiennej**. Kontekst użycia ma znaczenie.
 
-### 🧠 Przykład w PostgreSQL
+## Funkcja: nazwana operacja z wejściem i wynikiem
 
-Załóżmy, że mamy tabelę:
-```sql
-CREATE TABLE orders (
-  id SERIAL PRIMARY KEY,
-  customer_id INTEGER,
-  order_date DATE,
-  total DECIMAL
-);
-
-CREATE INDEX idx_orders_customer ON orders(customer_id);
-
-```
-i wykonujemy zapytanie:
-```sql
-EXPLAIN ANALYZE
-SELECT * FROM orders WHERE customer_id = 42;
-```
-### 🔹 Wynik (plan zapytania):
+Funkcja pozwala zapisać fragment programu raz i wywoływać go z różnymi danymi.
+Jej kontrakt obejmuje nazwę, parametry, typ wyniku oraz znaczenie odpowiedzi.
+Poniższa funkcja klasyfikuje stan ilościowy. Otrzymuje liczbę, zwraca tekst
+i nie zmienia żadnej tabeli.
 
 ```sql
-Index Scan using idx_orders_customer on orders  (cost=0.29..8.50 rows=3 width=48)
-  Index Cond: (customer_id = 42)
-Planning Time: 0.100 ms
-Execution Time: 0.030 ms
+CREATE OR REPLACE FUNCTION rsod4_demo.stock_status(p_quantity integer)
+RETURNS text
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF p_quantity IS NULL OR p_quantity < 0 THEN
+        RETURN 'invalid';
+    ELSIF p_quantity = 0 THEN
+        RETURN 'unavailable';
+    ELSE
+        RETURN 'available';
+    END IF;
+END;
+$$;
 ```
 
-
-| Element              | Znaczenie                                                                 |
-|-----------------------|---------------------------------------------------------------------------|
-| **Index Scan**        | Baza odczytuje dane przy użyciu indeksu (nie pełny skan tabeli).          |
-| **idx_orders_customer** | Nazwa użytego indeksu.                                                   |
-| **cost=0.29..8.50**   | Szacowany koszt (startowy i całkowity). Im mniejszy, tym lepiej.         |
-| **rows=3**            | Szacowana liczba wierszy, które spełnią warunek.                         |
-| **width=48**          | Średni rozmiar jednego wiersza (w bajtach).                              |
-| **Index Cond**        | Warunek, który został użyty do przeszukania indeksu.                     |
-| **Execution Time**    | Faktyczny czas wykonania (tylko w `EXPLAIN ANALYZE`).   
-
-
-### 🔎 Porównanie: brak indeksu
-
-Jeśli usuniemy indeks i uruchomimy to samo zapytanie:
+`CREATE OR REPLACE` zapisuje definicję funkcji lub zastępuje zgodną istniejącą
+definicję. Nie jest jej wywołaniem. `RETURNS text` określa typ wyniku, a `RETURN`
+kończy bieżące wywołanie i przekazuje wartość wywołującemu.
 
 ```sql
-EXPLAIN ANALYZE
-SELECT * FROM orders WHERE customer_id = 42;
+SELECT quantity, rsod4_demo.stock_status(quantity) AS status
+FROM (VALUES (5), (0), (-1), (NULL::integer)) AS samples(quantity);
 ```
 
-otrzymamy:
+Oczekiwane odpowiedzi to kolejno `available`, `unavailable`, `invalid`, `invalid`.
+Zapis `NULL::integer` jawnie nadaje brakującej wartości typ całkowity.
+Parametr `p_quantity` jest wejściem funkcji, a nie wskazaniem kolumny, którą
+funkcja miałaby zmodyfikować. Aby zmienić dane, potrzebna byłaby instrukcja
+modyfikująca, na przykład `UPDATE`.
+
+Taką prostą klasyfikację można również zapisać wyrażeniem SQL `CASE`.
+Przykład służy poznaniu kontraktu funkcji; nie dowodzi, że dla każdej decyzji
+należy tworzyć funkcję składowaną.
+
+## Zmiana danych i informacja, czy operacja się udała
+
+Odczyt stanu i późniejsze niezależne zmniejszenie ilości nie stanowią jeszcze
+pełnej ochrony danych przy wielu klientach. Dobrą podstawą jest zapisanie
+warunku dostępności w samej instrukcji modyfikującej.
 
 ```sql
-Seq Scan on orders  (cost=0.00..450.00 rows=3 width=48)
-  Filter: (customer_id = 42)
-Execution Time: 22.5 ms
+UPDATE rsod4_demo.stock
+SET quantity = quantity - 2
+WHERE item_id = 1 AND quantity >= 2
+RETURNING quantity;
 ```
 
-📉 Różnica:
+Operacja zmniejsza stan tylko wtedy, gdy dany wiersz istnieje i ma co najmniej
+dwie sztuki. `RETURNING` zwraca ilość po zmianie. Brak wiersza w wyniku oznacza,
+że nic nie zmieniono. Sam ten brak nie rozstrzyga, czy nie było pozycji,
+czy zabrakło sztuk.
 
-- Baza musi przeskanować całą tabelę (Seq Scan),
-- Pomimo tego, że wynik jest ten sam, wykonanie jest znacznie wolniejsze.
+Plik `06_update.sql` umieszcza tę operację w bloku z parametrami lokalnymi,
+sprawdzeniem dodatniej liczby i `IF FOUND`. Przy stanie początkowym 5 i żądaniu
+2 pozostaną 3 sztuki. Kolejna udana próba ponownie zmniejsza stan — uruchamianie
+tego pliku nie jest neutralnym podglądem. Plik `08_restore_data.sql` przywraca
+trzy demonstracyjne ilości do 5, 3 i 0.
 
-💬 EXPLAIN pokazuje, że problemem nie jest zapytanie, lecz brak indeksu.
+Nie jest to kompletny proces wydania: brak tu dokumentu, odbiorcy i historii.
+Jeżeli operacja wymaga zmiany kilku tabel jako jednej całości, potrzebne jest
+przetwarzanie transakcyjne. To temat następnego wykładu.
 
-<!-- 
-### 🪶 Przykład w SQLite
+## Wyjątek: przerwanie zwykłej ścieżki programu
 
-SQLite również wspiera EXPLAIN QUERY PLAN, choć w uproszczonej formie.
+Błąd może pochodzić z programu, ograniczenia tabeli lub systemu. Na przykład
+`RAISE EXCEPTION` jawnie zgłasza błąd, a naruszenie `CHECK` powoduje błąd
+integralności. `RAISE NOTICE` jest tylko komunikatem i nie przerywa wykonania.
+
+Obsługa wyjątku powinna wskazywać konkretny problem, na który program umie
+zareagować. Przechwycenie wszystkich błędów i zgłoszenie sukcesu ukrywałoby
+awarię zamiast ją obsługiwać.
 
 ```sql
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY,
-  name TEXT,
-  email TEXT
-);
-
-CREATE INDEX idx_users_email ON users(email);
-
-EXPLAIN QUERY PLAN
-SELECT * FROM users WHERE email = 'john@example.com';
-```
-### 🔹 Wynik:
-
-```sql
-SEARCH users USING INDEX idx_users_email (email=?)
+DO $$
+BEGIN
+    BEGIN
+        UPDATE rsod4_demo.stock SET quantity = quantity + 1 WHERE item_id = 2;
+        UPDATE rsod4_demo.stock SET quantity = -1 WHERE item_id = 1;
+    EXCEPTION
+        WHEN check_violation THEN
+            RAISE NOTICE 'CHECK rejected negative stock; both inner updates were undone';
+    END;
+    RAISE NOTICE 'Execution continues after the handled error';
+END;
+$$;
 ```
 
-Lub — jeśli nie ma indeksu:
+Pierwsza zmiana w wewnętrznym bloku jest poprawna, ale druga narusza
+`CHECK (quantity >= 0)`. Obsługa `check_violation` przechwytuje ten konkretny
+błąd. **Zmiany danych wykonane wewnątrz tego bloku zostają wycofane**, także
+pierwsza, która sama była poprawna. Po obsłużeniu błędu program przechodzi dalej.
+Odczyt tabeli pokaże taki stan jak przed uruchomieniem bloku.
 
-```sql
-SCAN users
-```
+Nie oznacza to, że dowolny wcześniej wykonany kod w całej sesji zostanie
+cofnięty. Znaczenie ma zakres bloku z obsługą wyjątku. Nie oznacza to również
+cofnięcia lokalnych wartości zmiennych w taki sam sposób jak zmian danych.
+Na tym etapie najważniejszy jest obserwowalny skutek: błąd nie pozostawia
+częściowo wykonanej zmiany danych z tego wewnętrznego bloku.
 
+## Jak sprawdzać krótki program bazodanowy?
 
-Proste, ale bardzo czytelne:
+Poprawna kompilacja nie dowodzi poprawnego działania. Weryfikacja musi
+obejmować typowy przypadek, granice oraz brak danych.
 
-- SCAN oznacza pełne przeszukiwanie tabeli,
-- SEARCH ... USING INDEX oznacza, że baza użyła indeksu. -->
+| Co sprawdzamy? | Przykład | Oczekiwany sens wyniku |
+|---|---|---|
+| Zwykłe działanie | Dostępne 5, żądane 2. | Pozostają 3 sztuki, jeśli wykonano zapis. |
+| Granicę | Dostępne 5, żądane 5. | Stan 0 jest legalny. |
+| Brak zasobu | Dostępne 5, żądane 7. | Brak wydania, bez ujemnego stanu. |
+| Niepoprawne wejście | Żądane 0, −1 lub `NULL`. | Jawne odrzucenie żądania. |
+| Nieistniejący obiekt | Identyfikator 999. | Nie mylimy braku pozycji ze stanem 0. |
+| Ochronę tabeli | Bezpośredni zapis ilości −1. | `CHECK` odrzuca zmianę. |
 
-## 🧮 Jak korzystać z EXPLAIN w praktyce
+Kontrola wyniku obejmuje zarówno odpowiedź programu, jak i odczyt tabeli.
+Komunikat „accepted” w bloku operującym wyłącznie na zmiennych nie jest
+dowodem zapisu do bazy. Z kolei brak wyjątku przy `UPDATE`, który nie zmienił
+żadnego wiersza, nie oznacza zrealizowania żądania.
 
-1. Sprawdzaj, czy używany jest indeks
+## Pytania do utrwalenia
 
-Jeśli widzisz Seq Scan lub SCAN TABLE, to znak, że indeks nie jest wykorzystywany.
+1. Dlaczego zmiana `v_available` nie zmienia kolumny `quantity`?
+2. Czym różni się brak wiersza od istniejącego wiersza z ilością zero?
+3. Dlaczego `NULL` trzeba uwzględnić przed porównaniem żądania ze stanem?
+4. Kiedy pojedyncze `UPDATE` jest lepszym opisem operacji niż pętla?
+5. Co pozostanie w tabeli, gdy druga zmiana wewnętrznego bloku naruszy `CHECK`?
+6. Dlaczego warunek w funkcji nie zastępuje ograniczenia tabeli?
 
-2. Zwracaj uwagę na kolejność JOINów
+Nie ma tutaj testu początkowego. Pytania służą omówieniu materiału;
+sprawdzenie końcowe kursu pozostaje osobnym wydarzeniem.
 
-Czasami odwrócenie kolejności tabel w zapytaniu może dać inny plan i lepszy czas.
+## Dokumentacja i dalsza lektura
 
-3. Analizuj koszty (cost=...)
-
-Porównuj plany z różnymi indeksami i filtrami — wybieraj ten o niższym koszcie.
-
-4. Używaj EXPLAIN ANALYZE tylko testowo
-
-W środowisku produkcyjnym EXPLAIN ANALYZE faktycznie wykonuje zapytanie, więc może być kosztowne.
-
-5. Porównuj teoretyczny i rzeczywisty plan
-
-Jeśli szacunki (rows, cost) mocno różnią się od rzeczywistego czasu, oznacza to:
-
-- brak aktualnych statystyk,
-- zły indeks,
-- lub błędne założenia optymalizatora.
-
-
-## 🗂️ Indeksy w SQL
-
-Indeksy to **podstawowe narzędzie optymalizacji zapytań**, które pozwala bazie danych szybko znaleźć potrzebne wiersze, bez konieczności skanowania całej tabeli.  
-Można je porównać do **spisu treści w książce** — zamiast czytać każdy rozdział, patrzymy od razu na właściwą stronę.
-
-### 🔹 Dlaczego indeksy są ważne?
-
-Bez indeksu baza danych musi sprawdzić każdy wiersz tabeli, by znaleźć pasujące rekordy (**sequential scan**).  
-Z indeksem, silnik może odczytać **tylko te dane**, które spełniają warunek — znacznie szybciej i przy mniejszym zużyciu zasobów.
-
-Korzyści z indeksów:
-
-- ⏱️ **Szybsze wyszukiwanie** danych, szczególnie w dużych tabelach  
-- 💾 **Ograniczenie operacji I/O**, bo baza czyta mniej bloków z dysku  
-- 🔄 **Przyspieszenie sortowania i łączenia tabel** (`JOIN`), jeśli indeks obejmuje kolumny używane w warunkach
-
-### 🔹 Rodzaje indeksów
-
-Najczęściej spotykane:
-
-1. **B-Tree (balanced tree)** – najpopularniejszy typ, sprawdza się w większości wyszukiwań, zakresów i sortowań  
-2. **Hash** – szybki dostęp po dokładnej wartości (nie obsługuje zakresów)  
-3. **Bitmap** – efektywny dla kolumn o małej liczbie unikalnych wartości, np. płeć lub status  
-4. **Kompozytowe** – obejmują kilka kolumn, przydatne przy filtrach i sortowaniach wielokolumnowych
-
-### 🔹 Co indeksuje?
-
-- **Kolumny używane w WHERE** – aby szybciej wyszukać dane  
-- **Kolumny używane w JOIN** – przyspiesza łączenie tabel  
-- **Kolumny w ORDER BY lub GROUP BY** – pomaga szybciej sortować i grupować wyniki  
-- **Kolumny unikalne lub klucze główne** – zapewnia integralność danych i przyspiesza wyszukiwanie
-
-### 🔹 Wady nadmiaru indeksów
-
-Indeksy przyspieszają odczyt, ale mają też koszty:
-
-- 🔄 **Spowolnienie operacji INSERT/UPDATE/DELETE**, bo indeksy trzeba aktualizować  
-- 💾 **Zwiększone zużycie pamięci i przestrzeni dyskowej**  
-- ⚖️ Trzeba wybrać **optymalny zestaw indeksów**, żeby nie pogorszyć ogólnej wydajności
-
-## Praktyczne aspekty użycia indeksów
-
-W tej sekcji rozszerzamy temat indeksów, unikając powtórzenia wcześniejszych przykładów z SELECT po `customer_id`.
-
-Przy łączeniu tabel indeksy znacząco przyspieszają zapytania:
-
-```sql
-SELECT o.id, c.name
-FROM orders o
-JOIN customers c ON o.customer_id = c.id
-WHERE c.region = 'Europe';
-```
-
-- Indeks na customers.id i orders.customer_id przyspiesza JOIN
-- Indeks na customers.region przyspiesza filtrowanie po regionie
-
-
-## Indeksy a sortowanie i grupowanie
-
-Indeksy na kolumnach używanych w ORDER BY lub GROUP BY pozwalają uniknąć kosztownych operacji sortowania w pamięci:
-```sql
-SELECT customer_id, SUM(total) 
-FROM orders 
-GROUP BY customer_id 
-ORDER BY SUM(total) DESC;
-```
-
-- Indeks na customer_id może przyspieszyć agregację
-- Indeks kompozytowy z kolumną używaną w ORDER BY może wyeliminować dodatkowe sortowanie
-
-### 🔹 Wpływ indeksów na modyfikacje danych
-
-- Operacje INSERT, UPDATE, DELETE wymagają aktualizacji indeksów
-- Zbyt wiele indeksów może spowolnić zapis danych
-- W praktyce wybieramy najbardziej potrzebne indeksy i monitorujemy ich wpływ
-
-### 🔹 Wskazówki praktyczne
-
-- Twórz indeksy tylko na kolumnach często filtrowanych lub sortowanych
-- Analizuj plany wykonania (EXPLAIN, EXPLAIN ANALYZE)
-- Zwracaj uwagę na koszt operacji (cost=…) i liczbę wierszy (rows=...)
-- Równoważ czas odczytu i zapis danych – nie każdy indeks jest opłacalny
-
+- [PostgreSQL: struktura bloków PL/pgSQL](https://www.postgresql.org/docs/16/plpgsql-structure.html).
+- [Deklaracje zmiennych i parametry](https://www.postgresql.org/docs/16/plpgsql-declarations.html).
+- [SQL wewnątrz PL/pgSQL, INTO i FOUND](https://www.postgresql.org/docs/16/plpgsql-statements.html).
+- [Warunki, pętle, zwracanie wyniku i obsługa błędów](https://www.postgresql.org/docs/16/plpgsql-control-structures.html).
+- [Definiowanie funkcji](https://www.postgresql.org/docs/16/sql-createfunction.html).

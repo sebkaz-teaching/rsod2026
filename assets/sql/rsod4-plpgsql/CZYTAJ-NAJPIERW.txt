@@ -1,0 +1,9 @@
+RSOD 4 — PostgreSQL / pgAdmin
+
+Utwórz osobną bazę dydaktyczną. W Query Tool wykonaj 00_setup.sql jeden raz.
+Potem uruchamiaj pliki 01–07, każdy blok DO w całości. Komunikaty: Messages, tabele: Data Output.
+08_restore_data.sql przywraca ilości 5, 3, 0 bez kasowania tabel i funkcji.
+Każde udane wykonanie 06_update.sql zmienia stan.
+
+00 nie nadpisuje istniejącego schematu. Jeśli wykonałeś go ponownie i transakcja ma błąd, wykonaj ROLLBACK.
+Nie używaj tych plików w SQLite. Materiał publiczny; bez rozwiązań quizu.

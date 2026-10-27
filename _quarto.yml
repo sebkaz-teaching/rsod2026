@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - assets/sql/**
   # Reveal each lecture week by week: comment OUT its "!lectures/..." line
   # below (so it renders) once that lecture is taught, then uncomment the
   # matching entry in website.sidebar.contents further down. Doing only
@@ -11,7 +13,7 @@ project:
     - "lectures/*.qmd"
     # - "!lectures/wyklad2.qmd"
     # - "!lectures/wyklad3.qmd"
-    - "!lectures/wyklad4.qmd"
+    # - "!lectures/wyklad4.qmd"
     - "!lectures/wyklad5.qmd"
 
 website:
@@ -27,7 +29,7 @@ website:
           - lectures/wyklad1.qmd
           - lectures/wyklad2.qmd
           - lectures/wyklad3.qmd
-          # - lectures/wyklad4.qmd
+          - lectures/wyklad4.qmd
           # - lectures/wyklad5.qmd
   page-footer: "Copyright 2026, Sebastian Zając"
 format:
