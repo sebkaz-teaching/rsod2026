@@ -21,3 +21,15 @@ The pgAdmin file workspace preserves edited files; use a new filename for revise
 Named volumes retain database and pgAdmin state across stops. `docker compose down -v` deletes them.
 This directory is excluded from Quarto resources and rendering. It has no host mounts outside itself.
 PostgreSQL is reachable only within the Compose network; only the local pgAdmin port is published.
+
+## Local access
+
+pgAdmin runs in desktop mode with automatic login as the existing local user.
+The localhost-only port binding must remain in place. Each course has a distinct
+session cookie name so opening both panels does not replace the other session.
+Database authentication still uses the local pgpass file. Existing accounts,
+server registrations, database volumes and edited SQL files are retained.
+Open File starts in the container home directory; `materials` links to the
+existing persistent SQL workspace. Close old browser tabs after this update.
+
+Configuration reference: https://www.pgadmin.org/docs/pgadmin4/9.18/container_deployment.html

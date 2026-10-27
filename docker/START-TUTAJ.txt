@@ -5,8 +5,7 @@ cd /Users/seba/Documents/GitHub/rsod2026/docker
 docker compose up -d
 
 Panel: http://localhost:5051
-Login: admin@example.com
-Hasło do panelu: PgAdmin2026Local
+Panel otwiera się bez wpisywania loginu i hasła (lokalny tryb desktop).
 Serwer jest już dodany; hasło bazy jest wczytywane automatycznie.
 
 Bazy i skrypty:
@@ -29,7 +28,11 @@ Zmiany własnych kopii SQL w pgAdmin nie są nadpisywane przy starcie.
 Cały katalog docker można przenieść na inny komputer z Docker Desktop.
 Dane nie są w Git: nowy komputer odtwarza stan początkowy ze skryptów.
 Katalog nie trafia do stron Quarto. Laboratoria dołożymy osobno.
-Przykładowe hasła służą wyłącznie do lokalnej pracy; panel jest na 127.0.0.1.
+Panel bez logowania służy wyłącznie do lokalnej pracy na 127.0.0.1.
+Po tej aktualizacji zamknij stare karty pgAdmin i otwórz panel ponownie.
+Oba kursy mają osobne ciasteczka sesji i mogą działać równocześnie.
+Jeśli Open File pokazuje wcześniejszy katalog, wpisz ścieżkę:
+/home/pgadmin/materials
 
 Na tym komputerze w starym woluminie RSOD pozostała wcześniejsza baza
 prba6_pokaz jako kopia bezpieczeństwa. Aktualna PRBA działa osobno na

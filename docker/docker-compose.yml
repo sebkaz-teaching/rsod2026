@@ -43,16 +43,31 @@ services:
           find . -type d -exec mkdir -p /var/lib/pgadmin/storage/admin_example.com/materials/{} \;
           find . -type f -exec cp -n {} /var/lib/pgadmin/storage/admin_example.com/materials/{} \;
         )
+        cp /pgpass /var/lib/pgadmin/storage/admin_example.com/.pgpass
+        chmod 600 /var/lib/pgadmin/storage/admin_example.com/.pgpass
+        mkdir -p /home/pgadmin
+        if [ ! -e /home/pgadmin/materials ]; then
+          ln -s /var/lib/pgadmin/storage/admin_example.com/materials /home/pgadmin/materials
+        fi
         exec /entrypoint.sh
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: PgAdmin2026Local
+      # Local desktop mode keeps the existing account and skips the login form.
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_DESKTOP_USER: "'admin@example.com'"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      # Cookies are shared across localhost ports, so each course needs its own name.
+      PGADMIN_CONFIG_SESSION_COOKIE_NAME: "'rsod_pgadmin_session'"
+      PGPASSFILE: /var/lib/pgadmin/storage/admin_example.com/.pgpass
       PGADMIN_DISABLE_POSTFIX: "1"
       PGPASS_FILE: /pgpass
     ports:
       - "127.0.0.1:5051:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+      # Desktop file dialogs start at this home directory. Reuse persistent storage.
+      - pgadmin_data:/home/pgadmin
       - ./servers.json:/pgadmin4/servers.json:ro
       - ./pgpass:/pgpass:ro
       - ./materials:/examples:ro
