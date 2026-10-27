@@ -1,5 +1,5 @@
 ---
-title: "Wykład 4: Programowanie w bazie danych — PL/pgSQL"
+title: "Programowanie w bazie danych — PL/pgSQL"
 ---
 
 ## Od struktury danych do sposobu wykonania operacji
