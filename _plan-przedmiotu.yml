@@ -92,6 +92,14 @@ lecture_coverage:
     status: "Ostatni wykład opracowany: ACID, COMMIT, ROLLBACK, SAVEPOINT, READ COMMITTED, REPEATABLE READ, utracona aktualizacja, blokady i ponowienie po błędzie serializacji."
     next_step: "Demonstracje na dwóch połączeniach PostgreSQL 16: assets/sql/rsod5-transakcje.zip. Każdy pokaz zawiera kolejność kroków, reset i oczekiwane wyniki. Poprzedni szkic wraz z lokalnymi poprawkami zachowano w _archiwum/wyklad5-before-transactions.qmd."
 
+supplementary_materials:
+  - file: lectures/indeksy.qmd
+    title: "Indeksy, B-tree i analiza planów zapytań"
+    supports: [L4]
+    origin: "Materiał PRBA 6 zaadaptowany do samodzielnego środowiska RSOD; bez testu początkowego."
+    assets: [lectures/media/seq_vs_index.mp4, assets/sql/rsod-indeksy.zip]
+    database: rsod_indeksy_pokaz
+
 legacy_lab_reuse:
   - file: ../../Archiwum-kursow/rsod/cwiczenia/cw1.ipynb
     contents: "Pliki, SQLite, DDL i normalizacja."

@@ -1,0 +1,572 @@
+---
+title: "Indeksy i plany zapytań — materiał uzupełniający"
+resources:
+  - media/seq_vs_index.mp4
+---
+
+## Jak korzystać z materiału?
+
+To uzupełnienie RSOD o **indeksy, B-tree i analizę planów zapytań**, zaadaptowane
+z przedostatniego wykładu PRBA. Film porównuje skan sekwencyjny z wyszukiwaniem
+przez indeks. Dalszy pokaz pozwala zmierzyć to na działającym PostgreSQL.
+Materiał przyda się przy laboratoryjnych zadaniach wyszukiwania i optymalizacji.
+
+Wykład o transakcjach pozostaje ostatnim spotkaniem kursu. Ten materiał można
+omówić jako dodatkowy blok lub wykorzystać przy przygotowaniu do laboratorium.
+
+Do pokazu wykorzystujemy **osobny model ośrodka szkoleniowego „Dąb”**:
+uczestnicy zapisują się na konkretne edycje kursów. W tej próbce zbadamy,
+jak znaleźć potwierdzonych uczestników jednej edycji wśród 200 tys. zapisów.
+Nie zmieniamy magazynowych danych z poprzednich wykładów RSOD.
+
+[Przejdź bezpośrednio do filmu](#film-o-indeksach) albo
+[pobierz kompletny zestaw SQL](../assets/sql/rsod-indeksy.zip).
+
+## Od modelu logicznego do projektu fizycznego
+
+Znormalizowany model porządkuje fakty o ośrodku „Dąb”. Dane uczestnika znajdują się
+w jednym miejscu, kurs oznacza temat szkolenia, a edycja — jego konkretne
+przeprowadzenie. Zapis łączy uczestnika z edycją i przechowuje status.
+Rozdzielenie tych informacji ogranicza anomalie aktualizacji, wstawiania
+oraz usuwania. **Poprawność takiego projektu nie zależy od tego, czy tabela ma
+trzy wiersze, czy milion.**
+
+Liczba danych ma natomiast znaczenie dla kosztu uzyskania odpowiedzi.
+Raport „potwierdzeni uczestnicy edycji 42” nadal jest logicznie prosty,
+ale odnalezienie właściwych zapisów może wymagać sprawdzenia dużej tabeli.
+W tym materiale przechodzimy od pytania **jakie fakty przechowywać** do pytania
+**jak umożliwić ich sprawne wyszukiwanie przy rzeczywistym obciążeniu**.
+
+Projekt fizyczny obejmuje konkretne typy danych, ograniczenia i struktury
+dostępu dostępne w wybranym systemie. Nie zmienia sam przez się znaczenia
+encji ani związku uczestnik–edycja. Indeks dodany do tabeli zapisów nie tworzy
+nowego faktu biznesowego i nie zastępuje normalizacji.
+
+Po przejściu przez materiał istotna jest umiejętność:
+
+- odróżnienia poprawności modelu od wydajności realizacji zapytań;
+- wyjaśnienia, co przechowuje indeks i za co płacimy przy jego utrzymaniu;
+- uzasadnienia kolejności kolumn w indeksie złożonym;
+- odczytania podstawowych informacji z planu wykonania;
+- zaplanowania porównania przed zmianą i po zmianie bez obietnicy wyniku z góry.
+
+## Model demonstracyjny „Dąb”
+
+W pokazie używamy sześciu tabel projektu „Dąb”:
+
+| Tabela | Przechowywany fakt | Główne powiązanie |
+|---|---|---|
+| `participants` | Uczestnik i jego bieżące dane. | Identyfikator uczestnika. |
+| `courses` | Temat kursu. | Identyfikator kursu. |
+| `rooms` | Sala i jej pojemność. | Identyfikator sali. |
+| `instructors` | Prowadzący. | Identyfikator prowadzącego. |
+| `editions` | Konkretna edycja: termin, kurs, sala, prowadzący i limit. | Klucze obce do trzech tabel. |
+| `enrollments` | Aktualny zapis uczestnika do edycji i jego status. | Para uczestnik–edycja. |
+
+Klucz główny zapisów to `(participant_id, edition_id)`: jedna osoba ma najwyżej
+jeden zapis do danej edycji. Status `cancelled` pozostaje stanem tego samego
+zapisu. Nie tworzymy osobnego rekordu przy każdym ponowieniu zgłoszenia.
+
+Demonstracja używa **syntetycznego zbioru** z liczbowymi identyfikatorami
+edycji 1–1000, 100 tys. uczestników i 200 tys. zapisów. Duży zbiór ułatwia
+obserwowanie kosztu wyszukiwania. Dane są odseparowane od magazynowego
+projektu RSOD i nie zmieniają jego tabel ani stanów.
+
+## Od zapytania do planu wykonania
+
+SQL — *Structured Query Language*, strukturalny język zapytań — opisuje
+wymagany wynik. System musi jeszcze ustalić, jak go obliczyć. Dwa sposoby
+wykonania mogą zwrócić ten sam wynik, ale wymagać innej liczby odczytów,
+porównań i operacji sortowania.
+
+Dla listy uczestników konkretnej edycji mogą pojawić się następujące czynności:
+
+1. Odnalezienie zapisów danej edycji.
+2. Odrzucenie zapisów anulowanych.
+3. Dołączenie danych uczestników.
+4. Uporządkowanie wyniku według identyfikatora.
+
+To opis logiczny potrzeb raportu. Fizyczny plan może łączyć niektóre działania
+albo wykonywać je inną metodą. Przykładowo indeks może dostarczyć wiersze już
+w odpowiednim porządku, więc osobne sortowanie okaże się zbędne.
+
+W uproszczeniu obsługa zapytania obejmuje sprawdzenie składni i nazw obiektów,
+planowanie oraz wykonanie. **Optymalizator** ocenia dostępne warianty na podstawie
+modelu kosztów i statystyk danych. Nie przeprowadza pełnego wykonania każdego
+wariantu tylko po to, by wybrać najszybszy. Jego wybór jest oparty na szacunkach,
+które mogą być niedokładne.
+
+## Skan sekwencyjny: kiedy przeglądanie tabeli ma sens?
+
+Skan sekwencyjny, w planie PostgreSQL oznaczany jako `Seq Scan`, przegląda
+wiersze tabeli i sprawdza warunek. Dla zapytania żądającego wszystkich dopasowań,
+bez ograniczenia liczby wyników, znalezienie pierwszego pasującego wiersza
+nie kończy pracy: dalej mogą znajdować się następne.
+
+Nie jest to z definicji zły plan. Mała tabela może mieścić się na niewielu
+stronach pamięci, a odczyt większości dużej tabeli może być tańszy niż korzystanie
+z wielu odwołań przez indeks. **Strona** jest jednostką organizacji danych
+w pliku i buforach silnika; nie jest pojedynczym wierszem ani stroną WWW.
+Nie trzeba znać szczegółów jej budowy, aby rozumieć, że wiele wierszy może
+zostać odczytanych razem.
+
+Skan staje się kosztowny, gdy duża tabela jest wielokrotnie przeszukiwana po to,
+by za każdym razem zwrócić niewielki fragment. Właśnie tak wygląda lista
+potwierdzonych zapisów jednej edycji w demonstracji.
+
+## Indeks: dodatkowa droga do danych
+
+Indeks jest dodatkową strukturą pozwalającą odnaleźć dane według określonych
+wartości. Można go porównać do uporządkowanego skorowidza: zamiast odczytać
+wszystkie strony książki, najpierw szukamy hasła i dostajemy wskazanie miejsca.
+W bazie struktura jest utrzymywana automatycznie przy zmianach danych.
+
+Najczęstszy indeks PostgreSQL jest oparty na **B-tree**, zrównoważonej
+strukturze drzewiastej przechowującej uporządkowane klucze. „Drzewo” oznacza
+wielopoziomową organizację informacji: na wyższych poziomach wybierany jest
+właściwy zakres, a na niższych odnajdywane są poszukiwane wartości. Nie jest to
+drzewo binarne — węzeł może kierować do wielu zakresów.
+
+Istotne są dwie własności. Po pierwsze, do odnalezienia niewielkiego zakresu
+nie trzeba zwykle przeglądać całej struktury. Po drugie, uporządkowanie kluczy
+pomaga nie tylko przy równości, lecz także przy warunkach zakresowych
+oraz niektórych sortowaniach. Nadal trzeba jednak obsłużyć wszystkie wymagane
+wyniki. Jeśli pasuje bardzo wiele wierszy, koszt ich pobrania może dominować
+nad kosztem samego znalezienia początku zakresu.
+
+Indeks zajmuje miejsce i zwiększa pracę przy zapisie. `INSERT` może wymagać
+dopisania informacji także do kilku indeksów, a zmiana indeksowanej wartości
+wymaga utrzymania ich zgodności. Indeks nie jest bezpłatną kopią, którą należy
+dodać do każdej kolumny.
+
+### Jak zbudowane jest B-tree? {#btree-krok-po-kroku}
+
+**B-tree (B-drzewo) jest uporządkowaną, zrównoważoną strukturą wyszukiwania.**
+Zamiast trzymać wszystkie wartości w jednej długiej liście do przeglądania,
+dzieli je na mniejsze zakresy. Informacje o granicach zakresów pozwalają
+wybrać właściwy fragment, a następnie powtarzać ten wybór na kolejnych poziomach.
+Nazwa nie oznacza *binary tree*: węzeł może mieć znacznie więcej niż dwoje dzieci.
+
+Do zrozumienia schematu wystarczą cztery pojęcia:
+
+| Pojęcie | Znaczenie |
+|---|---|
+| **Korzeń — root** | Punkt rozpoczęcia wyszukiwania; wskazuje, w którym głównym zakresie należy szukać. |
+| **Węzeł wewnętrzny — internal node** | Zawiera wartości rozdzielające zakresy, czyli separatory, oraz odwołania do niższych poziomów. |
+| **Liść — leaf** | Najniższy poziom. W indeksie PostgreSQL zawiera klucze i odwołania do wierszy tabeli. |
+| **Klucz indeksu — index key** | Wartość lub zestaw wartości, według których uporządkowano indeks. Nie musi to być klucz główny tabeli. |
+
+W bazie węzły są przechowywane na stronach indeksu. Jedna strona może zawierać
+wiele wpisów. Na rysunku pokazano ich tylko kilka, aby dało się prześledzić
+algorytm bez znajomości formatu plików PostgreSQL.
+
+```{mermaid}
+flowchart TB
+    R["Korzeń: separatory 30 i 60"]
+    A["Liść A: 10 · 20 · 25"]
+    B["Liść B: 30 · 40 · 42 · 50"]
+    C["Liść C: 60 · 70 · 90"]
+    R -->|"klucz < 30"| A
+    R -->|"30 ≤ klucz < 60"| B
+    R -->|"klucz ≥ 60"| C
+    A <-.-> B
+    B <-.-> C
+    style B fill:#dff2e8,stroke:#187653,stroke-width:3px
+```
+
+To **schemat ideowy indeksu jednej kolumny**, z odręcznie dobranymi granicami.
+Nie jest zrzutem stron naszej bazy ani regułą dokładnego rozmieszczenia wartości
+przez PostgreSQL. Każdej wartości w liściu należy dodatkowo wyobrazić sobie
+odwołanie do odpowiedniego wiersza tabeli. W rzeczywistym nieunikalnym indeksie
+tej samej wartości może odpowiadać wiele wierszy.
+
+W małym drzewie korzeń może wskazywać bezpośrednio liście, jak na rysunku.
+W większym między nimi występują kolejne poziomy węzłów wewnętrznych.
+**Zrównoważenie oznacza, że wszystkie liście znajdują się na tej samej
+odległości od korzenia.** Nie oznacza, że każdy liść ma identyczną liczbę wpisów.
+
+### Szukanie wartości 42 krok po kroku
+
+Załóżmy warunek `edition_id = 42`. Dla uproszczenia rysunek reprezentuje
+indeks tylko po `edition_id`.
+
+1. **Odczyt korzenia.** Widać granice 30 i 60. Liczba 42 należy do środkowego
+   zakresu: jest nie mniejsza niż 30 i mniejsza niż 60.
+2. **Przejście do liścia B.** Nie przeglądamy liści A i C. W liściu B odnajdujemy
+   wpis 42 wśród uporządkowanych wartości 30, 40, 42 i 50.
+3. **Odczyt odwołania do danych.** Wpis indeksowy pozwala odnaleźć wiersz tabeli.
+   Jeżeli kilka zapisów ma tę samą edycję 42, trzeba obsłużyć wszystkie pasujące
+   wpisy, które mogą zajmować także sąsiednie strony.
+4. **Dokończenie zapytania.** Silnik odczytuje potrzebne dane i sprawdza pozostałe
+   wymagania zapytania. Indeks tylko po edycji nie rozstrzyga sam, czy zapis
+   ma status `confirmed`.
+
+Oszczędność polega na pominięciu niepasujących zakresów. W większym drzewie
+kolejny węzeł wewnętrzny ponownie zawęża zakres, zamiast wymagać przeglądu całej
+tabeli. Liczba poziomów rośnie znacznie wolniej niż liczba wpisów. To nie znaczy,
+że wynik zawierający tysiące wierszy staje się równie tani jak wynik jednowierszowy:
+po odnalezieniu początku nadal trzeba odczytać i zwrócić wszystkie dopasowania.
+
+### Dlaczego B-tree pomaga również przy zakresie?
+
+Dla warunku `edition_id BETWEEN 40 AND 70` oba końce zakresu są włączone.
+W pokazanym przykładzie poszukiwane wartości to 40, 42, 50, 60 i 70.
+
+Najpierw schodzimy od korzenia do miejsca, w którym zaczyna się zakres.
+Następnie czytamy kolejne wpisy liścia B i przechodzimy do sąsiedniego liścia C.
+Kończymy po przekroczeniu wartości 70. Nie trzeba rozpoczynać wyszukiwania
+od korzenia osobno dla każdej kolejnej wartości.
+
+Przerywane strzałki na rysunku przedstawiają przejścia między sąsiednimi
+liśćmi. Uporządkowanie i takie połączenia pomagają w odczycie zakresu.
+Wyjaśniają także możliwość dostarczenia wartości w kolejności zgodnej
+z indeksem. Nie gwarantują jednak, że każde `ORDER BY` zostanie obsłużone
+bez sortowania: liczą się kolumny, kierunek porządku i wybrany plan.
+
+### Co dzieje się podczas wstawiania?
+
+Nowy wpis trafia do liścia odpowiedniego dla swojej wartości. Jeśli jest miejsce,
+zostaje umieszczony we właściwym porządku. Jeżeli strona się zapełni, może być
+potrzebny **podział strony — page split**: część wpisów przenoszona jest na nową
+stronę, a poziom wyżej otrzymuje informację o nowym zakresie.
+
+Przykład wyłącznie ilustracyjny: załóżmy, że liść może pomieścić cztery wpisy.
+Przed dopisaniem 45 ma wartości `[30, 40, 42, 50]`. Jednym z możliwych podziałów
+pięciu uporządkowanych wpisów są liście `[30, 40]` i `[42, 45, 50]`.
+Rodzic musi teraz odróżniać zakresy granicą 42. Rzeczywisty wybór podziału
+zależy od implementacji i rozmiarów wpisów, nie od zasady „zawsze po dwa”.
+
+Jeżeli zabraknie miejsca również u rodzica, zmiana może przejść wyżej.
+Podział korzenia zwiększa wysokość drzewa. To część wyjaśnienia kosztu indeksu:
+baza utrzymuje jego uporządkowanie i strukturę także podczas zmian danych.
+Nie trzeba ręcznie przebudowywać całego indeksu po każdym `INSERT`.
+
+Taki opis liści, stron i podziałów odpowiada idei używanej w PostgreSQL.
+W podręcznikach wariant z odwołaniami do danych w liściach oraz połączonymi
+liśćmi jest często omawiany jako **B+ tree**. PostgreSQL nazywa swoją metodę
+indeksowania **B-tree**. W tym materiale istotne są mechanizm wyszukania
+zakresu i koszt utrzymania, a nie implementowanie drzewa od podstaw.
+[Opis struktury indeksu w PostgreSQL](https://www.postgresql.org/docs/16/btree-implementation.html).
+
+### Jak to się łączy z trzema kolumnami naszego indeksu?
+
+W demonstracji kluczem indeksu jest cała trójka:
+
+```text
+(edition_id, status, participant_id)
+```
+
+Trójki porównuje się w kolejności kolumn, podobnie jak osoby na liście według
+nazwiska, potem imienia, a dopiero na końcu dodatkowego identyfikatora.
+Najpierw porównywana jest edycja. Przy równej edycji porównywany jest status.
+Dopiero przy zgodności obu tych elementów porównywany jest uczestnik.
+
+Przykładowy fragment porządku, zapisany dla zilustrowania zasady, wygląda tak:
+
+```text
+(41, confirmed, 9000)
+(42, cancelled,   41)
+(42, cancelled,   42)
+(42, confirmed, 1041)
+(42, confirmed, 1042)
+(43, cancelled,   42)
+```
+
+Mniejszy identyfikator uczestnika nie przesuwa zapisu z edycji 43 przed edycję
+42, bo pierwszeństwo ma pierwsza kolumna. Dwa warunki równości — edycja 42
+oraz status `confirmed` — wskazują spójny fragment takiego porządku.
+W tym fragmencie uczestnicy są już uporządkowani rosnąco. To właśnie powód
+wyboru kolejności kolumn w demonstracji.
+
+**Trzy kolumny nie oznaczają trzech poziomów drzewa.** Korzeń nie jest
+„kolumną edycja”, kolejny poziom „kolumną status”, a liść „kolumną uczestnik”.
+Wpisy są porządkowane według wspólnego klucza, a poziomy wynikają z podziału
+indeksu na strony i z jego rozmiaru. Rysunek wyszukiwania po jednej liczbie
+upraszczał porównywanie kluczy, nie zmieniał tej zasady.
+
+### Co ten rysunek pozwala wywnioskować?
+
+- Szukanie małego zakresu pozwala pominąć dużą część indeksu i tabeli.
+- Znalezienie wartości nie oznacza jeszcze zwrócenia wszystkich potrzebnych danych.
+- Wyszukiwanie po samym statusie słabo pasuje do indeksu zaczynającego się od edycji:
+  ten sam status występuje w wielu oddzielnych grupach edycji.
+- Odczyt prawie całej tabeli nadal oznacza dużo pracy, niezależnie od szybkiego
+  odnalezienia pierwszego pasującego wpisu.
+- Indeks wymaga utrzymania przy zmianach; dlatego dodajemy go dla uzasadnionych
+  potrzeb, a następnie sprawdzamy plan.
+
+### Animacja: skan i wyszukanie przez indeks {#film-o-indeksach}
+
+Poniższa animacja przedstawia **model ideowy** porównania. Liczba kroków na
+rysunku nie jest pomiarem czasu, stron dyskowych ani buforów PostgreSQL.
+Wyszukiwanie pojedynczej wartości jest uproszczeniem; rzeczywisty raport może
+potrzebować wielu pasujących wpisów i dodatkowego odczytu tabeli.
+
+{{< video media/seq_vs_index.mp4 title="Seq Scan vs Index Scan — ilustracja idei" >}}
+
+Po znalezieniu odwołania w indeksie silnik często musi jeszcze sięgnąć do
+wiersza w tabeli. W pewnych warunkach plan może odczytać potrzebne wartości
+z samego indeksu. To wyjaśnia, dlaczego „znaleziono w indeksie” i „gotowy wynik
+zapytania” nie zawsze są tym samym etapem.
+
+## Selektywność i rozkład danych
+
+Dwa warunki na tej samej tabeli mogą oznaczać zupełnie inny nakład pracy:
+
+- `edition_id = 42 AND status = 'confirmed'` — 180 z 200 000 zapisów;
+- `status = 'confirmed'` — 180 000 z 200 000 zapisów.
+
+Pierwszy warunek pozostawia **0,09%** wierszy, drugi **90%**. Dla uniknięcia
+niejednoznaczności słowa „selektywność” zawsze podajemy udział pasujących
+wierszy. Mały udział oznacza silne zawężenie wyniku. Indeks jest szczególnie
+wart rozważenia właśnie wtedy, gdy pozwala ominąć dużą część niepotrzebnych
+danych, choć nie jest to jedyne kryterium jego użyteczności.
+
+Sama liczba różnych wartości kolumny nie wystarcza do oceny. Przy dwóch
+statusach rozkład może wynosić 50%–50% albo 99,9%–0,1%. To samo zapytanie
+z inną wartością parametru może zatem uzasadniać inny plan. Dlatego przykładowe
+dane powinny przypominać rzeczywiste obciążenie, a nie tylko mieć dużą liczbę
+wierszy.
+
+PostgreSQL zbiera statystyki, między innymi informacje przydatne do szacowania
+liczby dopasowań. `ANALYZE` odświeża te statystyki. Po masowym wygenerowaniu
+danych uruchamiamy je jawnie, aby nie porównywać planów opartych wyłącznie
+na nieaktualnych oszacowaniach. `ANALYZE` samo nie tworzy indeksu.
+
+## Indeks złożony: kolejność kolumn wynika z pytań
+
+Klucz główny `(participant_id, edition_id)` chroni przed podwójnym zapisem
+osoby do tej samej edycji. PostgreSQL tworzy dla takiego klucza unikalny indeks
+B-tree. Jego porządek zaczyna się jednak od uczestnika. To naturalne wsparcie
+dla pytania „na jakie edycje zapisana jest osoba 125?”, ale niekoniecznie
+najlepsza droga do pytania „kto jest zapisany na edycję 42?”.
+
+Dla naszego raportu rozważamy:
+
+```sql
+CREATE INDEX enrollments_edition_status_participant_idx
+ON rsod_indexes_demo.enrollments (edition_id, status, participant_id);
+```
+
+Najpierw grupowane są wpisy według edycji, następnie według statusu,
+a w tak wybranej grupie według uczestnika. Można to odczytać jak porządek
+w skorowidzu wielopoziomowym: **edycja → status → uczestnik**.
+
+```sql
+SELECT participant_id
+FROM rsod_indexes_demo.enrollments
+WHERE edition_id = 42 AND status = 'confirmed'
+ORDER BY participant_id;
+```
+
+Dwa pierwsze warunki ustalają pojedyncze wartości. Pozostała część indeksu
+może dostarczyć identyfikatory uczestników w wymaganej kolejności. To uzasadnia
+kandydata na indeks; dopiero plan pokaże, czy silnik faktycznie go wykorzysta
+oraz czy usunie osobne sortowanie.
+
+| Zapytanie | Co wynika z porządku indeksu? |
+|---|---|
+| Jedna edycja i jeden status, sortowanie po uczestniku. | Dobre dopasowanie do wszystkich trzech kolumn. |
+| Jedna edycja bez ograniczenia statusu. | Początek indeksu nadal pasuje; porządek samych uczestników nie musi być globalnie zachowany między statusami. |
+| Sam uczestnik. | Lepiej pasuje istniejący indeks klucza głównego. |
+| Wszystkie potwierdzone zapisy. | Brakuje warunku na pierwszą kolumnę, a wynik obejmuje większość danych. |
+
+Nie przyjmujemy bezwzględnej reguły „indeks działa tylko wtedy, gdy podano
+pierwszą kolumnę”. Możliwe metody zależą od systemu, jego wersji i zapytania.
+Praktyczna zasada jest skromniejsza: **wiodące kolumny i zakres wyniku silnie
+wpływają na użyteczność indeksu**. Dlatego oglądamy plan.
+
+Klucz obcy (*Foreign Key*, FK) nie tworzy w PostgreSQL automatycznie indeksu
+na kolumnie tabeli odwołującej się. Natomiast klucz główny (*Primary Key*, PK)
+i ograniczenie `UNIQUE` są wspierane automatycznie utworzonymi unikalnymi
+indeksami. Nie trzeba powielać identycznego indeksu „na wszelki wypadek”.
+
+## Plan wykonania: szacunek i pomiar
+
+`EXPLAIN` pokazuje plan wybrany przez optymalizator. Zwykły `EXPLAIN` nie wykonuje
+raportowego `SELECT`. Dodanie `ANALYZE` powoduje rzeczywiste wykonanie i pomiar,
+a `BUFFERS` dodaje informacje o pracy z buforami.
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT participant_id
+FROM rsod_indexes_demo.enrollments
+WHERE edition_id = 42 AND status = 'confirmed'
+ORDER BY participant_id;
+```
+
+`ANALYZE tabela` i `EXPLAIN ANALYZE zapytanie` mają inne role: pierwsze zbiera
+statystyki danych, drugie mierzy wykonanie zapytania. Podobna nazwa nie oznacza
+tej samej czynności.
+
+| Element planu | Jak go interpretować? |
+|---|---|
+| `Seq Scan` | Przegląd tabeli i ewentualny filtr. |
+| `Index Scan` | Wyszukiwanie przez indeks z odczytami tabeli. |
+| `Index Only Scan` | Plan korzystający z wartości w indeksie; może nadal wykonywać sprawdzenia tabeli, widoczne jako `Heap Fetches`. |
+| `Bitmap Index Scan` / `Bitmap Heap Scan` | Wyszukanie lokalizacji przez indeks i późniejszy odczyt wskazanych obszarów tabeli. To operacje planu, nie osobny typ indeksu „bitmapowego” do utworzenia w tym pokazie. |
+| `Sort` | Dodatkowe porządkowanie wyniku. |
+| `cost=...` | Koszt szacowany w jednostkach modelu, a nie milisekundy. |
+| `rows=...` | Szacowana liczba wierszy wychodzących z danego węzła. |
+| `actual time`, `actual rows`, `loops` | Pomiar wykonania; przy wielu pętlach czasy i wiersze węzła są prezentowane jako średnie na wykonanie. |
+| `Rows Removed by Filter` | Wiersze odrzucone po sprawdzeniu filtru w danym węźle. |
+| `Buffers: shared hit/read` | Trafienia w bufory PostgreSQL i odczyty do tych buforów; `read` nie dowodzi fizycznego odczytu z nośnika, bo działa też pamięć podręczna systemu operacyjnego. |
+| `Execution Time` | Czas wykonania mierzony przez serwer z narzutem instrumentacji, bez pełnego kosztu prezentacji wyniku u klienta. |
+
+Plan jest drzewem czynności. Wynik operacji niżej położonej staje się wejściem
+operacji nadrzędnej. Czasy węzłów nie są niezależnymi odcinkami, które można
+bezrefleksyjnie zsumować; czas rodzica obejmuje pracę jego dzieci.
+
+Przed oceną czasu warto zapytać: ile wierszy miało przejść według szacunku,
+ile faktycznie przeszło i gdzie odrzucono większość danych? Duża rozbieżność
+może wskazywać, że decyzja optymalizatora opierała się na złym obrazie rozkładu.
+Nie każdy taki problem naprawi kolejny indeks.
+
+::: {.callout-note}
+## Pomiar wykonuje polecenie
+
+`EXPLAIN ANALYZE` wykonuje także polecenie modyfikujące, jeśli takie mu podamy.
+W demonstracji mierzymy wyłącznie `SELECT`. To nie jest polecenie do
+bezpiecznego „podejrzenia” dowolnego `DELETE` bez jego skutków.
+:::
+
+## Demonstracja na projekcie „Dąb”
+
+[Pobierz kompletny zestaw SQL](../assets/sql/rsod-indeksy.zip).
+Pokaz używa **PostgreSQL i pgAdmin**; polecenia planowania i generator danych
+są właściwe dla tego systemu. Tak jak pokazy PL/pgSQL i transakcji w RSOD, ten zestaw działa
+w PostgreSQL 16, w osobnej bazie demonstracyjnej.
+
+W środowisku Compose kursu baza `rsod_indeksy_pokaz` i jej dane startowe są już
+przygotowane po wykonaniu `docker compose up -d` w katalogu `docker` RSOD.
+W Query Tool otwórz bazę `rsod_indeksy_pokaz` i folder
+`materials/lectures/indeksy`; zaczynamy od pliku 01. Przy odtwarzaniu poza Compose
+należy najpierw wykonać `00_setup.sql` w nowej bazie. Tworzy on schemat
+`rsod_indexes_demo` i nie nadpisuje istniejącego schematu o tej nazwie.
+
+| Plik | Co wykonuje? | Co należy porównać? |
+|---|---|---|
+| `00_setup.sql` | Tworzy sześć tabel, 100 tys. uczestników, 1000 edycji i 200 tys. zapisów. | 180 tys. zapisów potwierdzonych; dla edycji 42: 180 potwierdzonych i 20 anulowanych. |
+| `01_before.sql` | Pokazuje istniejący indeks PK i plan raportu. | Miejsce filtrowania, sortowanie, liczba wierszy i czas. |
+| `02_index.sql` | Dodaje indeks zaczynający się od edycji. | Nowy obiekt, bez zmiany treści zapisów. |
+| `03_after.sql` | Mierzy identyczny raport, następnie wersję z nazwami uczestników. | Zmiana metody dostępu; koszt złączenia jako osobny krok. |
+| `04_broad_query.sql` | Mierzy odczyt 90% zapisów i pokazuje rozmiary struktur. | Czy indeks nadal jest opłacalny i ile zajmuje miejsca? |
+| `05_repeat_baseline.sql` | Usuwa wyłącznie dodatkowy indeks pokazu. | Możliwość powtórzenia plików 01–03 bez usuwania danych. |
+
+Generator używa `generate_series`, funkcji PostgreSQL tworzącej ciąg wartości.
+Każdy uczestnik ma dwa zapisy do różnych edycji. Wszystkie edycje mają po 200
+zapisów, w tym 180 potwierdzonych, oraz limit 250. Odbywają się w różnych dniach,
+więc w przygotowanym zbiorze nie nakładają się terminy tej samej sali i osoby
+prowadzącej. Tabela sal zawiera pojemność 250.
+
+To zbiór pomiarowy, a nie pełna implementacja przyjmowania zgłoszeń.
+Skrypt ma klucze, klucze obce i podstawowe ograniczenia, ale nie implementuje
+wszystkich reguł między tabelami, takich jak pilnowanie limitu względem sali,
+konfliktów terminów i liczby potwierdzonych zapisów przy kolejnych zmianach.
+Wygenerowane dane respektują te reguły; samo przyszłe `INSERT` nie jest przez
+pokaz w pełni chronione przed ich naruszeniem.
+
+### Najpierw prosty odczyt, potem złączenie
+
+Pierwszy pomiar zwraca tylko identyfikatory uczestników. Pozwala to odizolować
+wpływ indeksu na odnalezienie zapisów. Następnie dodajemy nazwę uczestnika:
+
+```sql
+SELECT p.participant_id, p.name
+FROM rsod_indexes_demo.enrollments AS e
+JOIN rsod_indexes_demo.participants AS p USING (participant_id)
+WHERE e.edition_id = 42 AND e.status = 'confirmed'
+ORDER BY e.participant_id;
+```
+
+`USING (participant_id)` wskazuje kolumnę o tej samej nazwie w obu tabelach.
+Złączenie odtwarza dane potrzebne w raporcie bez dopisywania nazwy uczestnika
+do każdego zapisu. Dodatkowa operacja w planie nie oznacza automatycznie,
+że normalizacja była błędem. Trzeba ocenić jej rzeczywisty koszt i dostępne
+struktury dostępu.
+
+### Co może się zmienić po dodaniu indeksu?
+
+Może zniknąć przegląd większości tabeli, a osobne sortowanie może okazać się
+zbędne. W planie mogą wystąpić `Index Scan`, `Index Only Scan` albo operacje
+bitmapowe; nie ma obowiązku uzyskania identycznego planu na każdym komputerze.
+Wersja PostgreSQL, statystyki, ustawienia i stan buforów wpływają na wybór.
+
+Wynik logiczny ma pozostać taki sam: **180 identyfikatorów dla edycji 42**.
+Jeżeli przed zmianą i po zmianie porównujemy inne dane, inny filtr albo inną
+liczbę wyników, nie jest to wiarygodny dowód poprawy tej samej operacji.
+
+## Jak porównywać wyniki bez pochopnych wniosków?
+
+Dobry eksperyment zmienia jeden istotny czynnik: obecność konkretnego indeksu.
+Zapytanie, dane i środowisko pozostają te same. Warto zapisać pełne plany,
+a nie tylko najmniejszy zauważony czas.
+
+Pierwszy odczyt może przygotować dane w pamięci podręcznej. Kolejny bywa szybszy
+nawet bez nowego indeksu. Budowanie indeksu również czyta tabelę. Dlatego
+porównujemy kilka powtórzeń po obu stronach, zaznaczamy, czy pierwszy pomiar
+różnił się od następnych, i patrzymy również na metodę dostępu oraz liczbę
+obsłużonych wierszy. Nie trzeba czyścić pamięci całego komputera na zajęciach.
+
+Przykładowa notatka z pomiaru powinna zawierać:
+
+- wersję PostgreSQL, liczbę wierszy i dokładne zapytanie;
+- listę indeksów przed zmianą oraz dodaną definicję;
+- plan przed zmianą i po niej;
+- kilka czasów wykonania oraz informację o trafieniach i odczytach buforów;
+- wniosek ograniczony do badanego zapytania i rozkładu danych.
+
+Wniosek „na tej bazie indeks ograniczył pracę dla raportu jednej edycji” jest
+uzasadniony, jeśli potwierdzają go plany i wyniki. Wniosek „każdy raport będzie
+teraz sto razy szybszy” nie wynika z tego eksperymentu.
+
+## Dobre praktyki projektowe
+
+**Najpierw ustalenie potrzeb.** Indeks powinien wynikać z ważnych filtrów,
+złączeń i sortowań rzeczywiście wykonywanych zapytań. Lista najczęstszych
+raportów jest częścią wiedzy potrzebnej przy projekcie fizycznym.
+
+**Poprawność wyniku przed czasem.** Szybkie zapytanie, które pomija edycje bez
+zapisów albo liczy anulowanych uczestników jako potwierdzonych, nadal jest
+błędne. Wiedza o `LEFT JOIN`, agregacji i znaczeniu statusu pozostaje potrzebna.
+
+**Ograniczenie niepotrzebnej pracy.** Pobieramy potrzebne kolumny, stosujemy
+właściwe filtry i unikamy wykonywania tego samego raportu osobno dla każdej
+pozycji, gdy można uzyskać zbiór jednym zapytaniem. Nie każda funkcja na
+kolumnie czy konwersja typu pozwoli wykorzystać zwykły indeks tej kolumny;
+zgodność wyrażenia i struktury dostępu trzeba sprawdzić.
+
+**Uwzględnienie zapisów.** System zgłoszeń wykonuje również `INSERT` i `UPDATE`.
+Wiele indeksów może pomagać odczytom, a równocześnie zwiększać koszt zmian.
+Projekt ma odpowiadać całemu obciążeniu, nie tylko jednemu pokazowemu `SELECT`.
+
+**Denormalizacja jako świadoma decyzja.** Powielenie nazwy uczestnika w zapisach
+wprowadzi ponownie pytanie, jak synchronizować wiele kopii. Nie należy traktować
+tego jako pierwszej reakcji na wolny raport. Najpierw sprawdzamy zapytanie,
+statystyki, indeksy i plan. Ewentualny zapis danych historycznych, takich jak
+nazwa na wystawionym zaświadczeniu, jest natomiast innym wymaganiem biznesowym,
+a nie zwykłym zabiegiem wydajnościowym.
+
+## Pytania do omówienia
+
+1. Dlaczego indeks PK uczestnik–edycja nie rozwiązuje automatycznie każdego raportu po edycji?
+2. Czy dodanie indeksu zmienia model logiczny albo usuwa potrzebę normalizacji?
+3. Dlaczego odczyt 180 wierszy i odczyt 180 tysięcy mogą mieć inne dobre plany?
+4. Czy `cost=100` oznacza 100 milisekund?
+5. Dlaczego pojedynczy szybszy pomiar nie wystarcza do przypisania poprawy indeksowi?
+6. Co tracimy, indeksując wszystkie kolumny?
+7. Jakie dowody byłyby potrzebne przed świadomą denormalizacją?
+
+Na laboratorium ta sama metoda posłuży do samodzielnego uzasadniania zmian:
+**poprawne zapytanie → plan i pomiar → kandydat na indeks → ponowny pomiar →
+wniosek wraz z ograniczeniami**.
+
+## Dokumentacja i dalsza lektura
+
+- [PostgreSQL: wprowadzenie do indeksów](https://www.postgresql.org/docs/16/indexes-intro.html).
+- [Rodzaje indeksów, w tym B-tree](https://www.postgresql.org/docs/16/indexes-types.html).
+- [Indeksy wielokolumnowe](https://www.postgresql.org/docs/16/indexes-multicolumn.html).
+- [Klucze i ograniczenia tabel](https://www.postgresql.org/docs/16/ddl-constraints.html).
+- [Czytanie EXPLAIN i pomiar wykonania](https://www.postgresql.org/docs/16/using-explain.html).
+- [Statystyki planowania](https://www.postgresql.org/docs/16/planner-stats.html).
+- [Index-only scans i odczyty tabeli](https://www.postgresql.org/docs/16/indexes-index-only-scans.html).

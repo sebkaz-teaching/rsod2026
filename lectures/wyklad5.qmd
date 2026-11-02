@@ -480,6 +480,13 @@ Na laboratorium połączymy cały przebieg: model encji i klucze, ograniczenia t
 operacje SQL, funkcje PL/pgSQL i transakcje. Poprawna baza ma zarówno
 **dobry model danych**, jak i **poprawnie zaprojektowane operacje na tych danych**.
 
+## Uzupełnienie: jak przyspieszyć wyszukiwanie?
+
+[Indeksy i plany zapytań — materiał z filmem](indeksy.qmd) pokazuje,
+jak PostgreSQL odnajduje dane i kiedy indeks ogranicza pracę silnika.
+To osobny pokaz do wykorzystania także na laboratorium; nie zmienia
+przebiegu demonstracji transakcji.
+
 ## Dokumentacja PostgreSQL 16
 
 - [Wprowadzenie do transakcji](https://www.postgresql.org/docs/16/tutorial-transactions.html).

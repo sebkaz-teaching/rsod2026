@@ -33,6 +33,9 @@ website:
           - lectures/wyklad3.qmd
           - lectures/wyklad4.qmd
           - lectures/wyklad5.qmd
+      - section: "Materiały uzupełniające"
+        contents:
+          - lectures/indeksy.qmd
   page-footer: "Copyright 2026, Sebastian Zając"
 format:
   html:
