@@ -45,3 +45,12 @@ w osobnej bazie SQLite.
 rozwija SQL o bloki, zmienne, warunki, pętle, funkcje i obsługę wyjątków.
 Zawiera kompletny zestaw demonstracyjny dla PostgreSQL i pgAdmin.
 Wykład nie zawiera testu początkowego.
+
+
+## Ostatni wykład — przetwarzanie transakcyjne
+
+[ACID, współbieżność i izolacja](lectures/wyklad5.qmd): transakcje,
+`COMMIT`, `ROLLBACK`, `SAVEPOINT` i demonstracje na dwóch połączeniach
+PostgreSQL. Pokazy porównują `READ COMMITTED` i `REPEATABLE READ`,
+ilustrują utraconą aktualizację, blokady oraz ponowienie po błędzie serializacji.
+Kompletny zestaw SQL zawiera kolejność kroków i oczekiwane wyniki.

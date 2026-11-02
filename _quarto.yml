@@ -16,7 +16,7 @@ project:
     # - "!lectures/wyklad2.qmd"
     # - "!lectures/wyklad3.qmd"
     # - "!lectures/wyklad4.qmd"
-    - "!lectures/wyklad5.qmd"
+    # - "!lectures/wyklad5.qmd"
 
 website:
   title: Relacyjne Systemy Organizacji Danych
@@ -32,7 +32,7 @@ website:
           - lectures/wyklad2.qmd
           - lectures/wyklad3.qmd
           - lectures/wyklad4.qmd
-          # - lectures/wyklad5.qmd
+          - lectures/wyklad5.qmd
   page-footer: "Copyright 2026, Sebastian Zając"
 format:
   html:

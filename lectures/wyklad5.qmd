@@ -1,478 +1,488 @@
 ---
-title: "Mechanizmy zapewniania spójności danych i wprowadzenie do widoków"
+title: "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
 ---
 
-## ✅ Sprawdź się z wykładu 4
+## Cel ostatniego wykładu
 
-<div id="rsod-quiz"></div>
-<script src="../assets/js/quiz-engine.js"></script>
-<script>
-CourseQuiz.mount(document.getElementById('rsod-quiz'), {
-  course: "rsod2026",
-  lecture: "wyklad5",
-  title: "Wykład 4: PL/SQL, optymalizacja zapytań i indeksy",
-  submitUrl: "https://sebastianzajac.pl/rsod-quiz/submit.php",
-  questions: [
-    {
-      id: "q1", points: 1, diff: "bardzo łatwe",
-      text: "Jaki znak kończy wykonanie bloku PL/SQL w SQL*Plus (po END;)?",
-      options: [
-        {v:"A", t:";;"},
-        {v:"B", t:"/"},
-        {v:"C", t:"#"},
-        {v:"D", t:"STOP"}
-      ]
-    },
-    {
-      id: "q2", points: 1, diff: "łatwe",
-      text: "Do czego służy indeks w bazie danych?",
-      options: [
-        {v:"A", t:"Do przechowywania kopii zapasowej tabeli"},
-        {v:"B", t:"Do szybkiego znajdowania wierszy bez skanowania całej tabeli (analogia: spis treści książki)"},
-        {v:"C", t:"Do automatycznego usuwania duplikatów"},
-        {v:"D", t:"Do szyfrowania danych w tabeli"}
-      ]
-    },
-    {
-      id: "q3", points: 2, diff: "średnie",
-      text: "Czym różni się EXPLAIN od EXPLAIN ANALYZE?",
-      options: [
-        {v:"A", t:"EXPLAIN działa tylko w Oracle, EXPLAIN ANALYZE tylko w PostgreSQL"},
-        {v:"B", t:"EXPLAIN pokazuje plan teoretyczny (na bazie statystyk), EXPLAIN ANALYZE faktycznie wykonuje zapytanie i pokazuje rzeczywisty czas"},
-        {v:"C", t:"EXPLAIN ANALYZE jest szybszą, uproszczoną wersją EXPLAIN"},
-        {v:"D", t:"Nie ma różnicy, to synonimy"}
-      ]
-    },
-    {
-      id: "q4", points: 2, diff: "trudne",
-      text: "W planie zapytania widzimy: Seq Scan on orders (cost=0.00..450.00 rows=3 width=48). Co to oznacza i co warto zrobić?",
-      options: [
-        {v:"A", t:"Baza użyła indeksu — zapytanie jest już zoptymalizowane"},
-        {v:"B", t:"Baza przeskanowała całą tabelę bez indeksu — warto rozważyć dodanie indeksu na kolumnie z warunku WHERE"},
-        {v:"C", t:"Zapytanie zawiera błąd składniowy"},
-        {v:"D", t:"cost=0.00..450.00 oznacza czas wykonania w milisekundach"}
-      ]
-    },
-    {
-      id: "q5", points: 3, diff: "wnioskowanie",
-      text: "Tabela Studenci ma kolumnę plec (tylko 2 wartości: M/K) i kolumnę nr_indeksu (unikalna). Zapytania często filtrują po jednej z nich w WHERE. Na której kolumnie indeks przyniesie realną korzyść, a na której będzie prawie bezużyteczny — i dlaczego?",
-      options: [
-        {v:"A", t:"Obie kolumny zyskają tak samo na indeksie"},
-        {v:"B", t:"Indeks na nr_indeksu pomoże (wysoka selektywność), indeks na plec niewiele da (niska selektywność — trzeba i tak przejrzeć ok. połowy tabeli)"},
-        {v:"C", t:"Indeks na plec pomoże bardziej, bo ma mniej unikalnych wartości do przeszukania"},
-        {v:"D", t:"Żadna z kolumn nie nadaje się do indeksowania"}
-      ]
-    }
-  ]
-});
-</script>
+Na poprzednim spotkaniu programowaliśmy w bazie: zmienne, warunki, pętle,
+funkcje i wyjątki w **PL/pgSQL**. Teraz pytamy: **co się stanie, gdy dwie osoby
+zmienią te same dane albo jedna z operacji zakończy się błędem?**
 
----
+Pozostajemy przy PostgreSQL 16 i pgAdmin. Na jednym przykładzie magazynowym
+prześledzimy zatwierdzanie i wycofywanie zmian, punkty zapisu, widoczność danych,
+blokady oraz ponawianie transakcji. To ostatni wykład; pytania na końcu służą
+wspólnemu podsumowaniu materiału, a nie testowi początkowemu.
 
-## 1️⃣ Transakcje i ich właściwości (ACID)
+## 1. Przygotowanie pokazu — dwa magazyny, ten sam towar
 
-### 🔹 Co to jest transakcja?
+[**Pobierz kompletny zestaw SQL**](../assets/sql/rsod5-transakcje.zip).
 
-Transakcja to logiczna jednostka pracy w bazie danych, składająca się z jednej lub wielu operacji (INSERT, UPDATE, DELETE, itp.), które powinny być wykonane całościowo.
+W środowisku kursu po aktualizacji wykonaj `docker compose up -d` w katalogu
+`docker`. Otwórz bazę **`rsod5_pokaz`** i folder `materials/lectures/wyklad5`.
+Dane zostaną utworzone automatycznie w osobnym schemacie `rsod5_demo`.
+Pokaz nie zmienia tabel z wykładu 4. Jeśli przygotowujesz pustą bazę ręcznie,
+wykonaj `00_setup.sql` jeden raz.
 
-Transakcja to zbiór operacji, które albo wszystkie się powiodą, albo żadna – nie ma stanu pośredniego.
+W obu magazynach przechowujemy ten sam typ radiotelefonu:
 
-### 🔹 Cztery litery ACID — każda osobno
+| warehouse_id | quantity |
+|---|---:|
+| A | 5 |
+| B | 0 |
 
-| Litera | Właściwość | Co gwarantuje |
-|--------|------------|----------------|
-| **A** | Atomicity (atomowość) | Transakcja wykonuje się w całości albo wcale — dokładnie przykład z Kontami niżej: albo obie aktualizacje sald przejdą, albo żadna. |
-| **C** | Consistency (spójność) | Transakcja przenosi bazę z jednego poprawnego stanu w drugi — więzy integralności (`CHECK`, `FOREIGN KEY`, `UNIQUE`) muszą być spełnione i przed, i po. Jeśli transakcja złamałaby którykolwiek, baza ją odrzuci. |
-| **I** | Isolation (izolacja) | Transakcje wykonywane równocześnie nie "widzą" swoich niedokończonych zmian nawzajem — tyle, ile dokładnie "nie widzą", określa **poziom izolacji** (sekcja 3 niżej). |
-| **D** | Durability (trwałość) | Po `COMMIT` zmiana przetrwa — nawet awarię zasilania zaraz potem. Baza zapisuje to na trwałym nośniku (dziennik/WAL), zanim potwierdzi sukces klientowi. |
+`warehouse_id` to klucz główny, a `quantity` ma ograniczenia
+`NOT NULL` i `CHECK (quantity >= 0)`. W pierwszym pokazie przenosimy
+2 sztuki z A do B: poprawny stan końcowy to **3 i 2**, suma nadal wynosi **5**.
 
-Przykład:
-```sql
-BEGIN;
-UPDATE Konta SET Saldo = Saldo - 100 WHERE NrKonta = 101;
-UPDATE Konta SET Saldo = Saldo + 100 WHERE NrKonta = 202;
-COMMIT;
-```
+Włącz **Auto commit** w pgAdmin. Pojedyncze polecenia poza jawnym blokiem są
+wtedy zatwierdzane osobno; `BEGIN` otwiera transakcję, którą kończy dopiero
+`COMMIT` albo `ROLLBACK`. Cały blok jednoseryjnego pokazu zaznaczaj razem.
+Wyjątkiem są celowe błędy i pokazy A/B — tam wykonuj wskazane kroki osobno.
 
-➡️ Jeśli obie aktualizacje się powiodą – zmiany zostaną zatwierdzone (COMMIT).
+## 2. Transakcja: jedna operacja użytkownika, kilka poleceń
 
-➡️ Jeśli jedna z operacji się nie uda – baza może przywrócić stan sprzed transakcji (ROLLBACK).
+Przeniesienie towaru obejmuje dwa zapisy: odejmowanie w A i dodawanie w B.
+Gdyby każde `UPDATE` było zatwierdzane osobno, awaria między nimi pozostawiłaby
+bazę w stanie niezgodnym z regułą operacji magazynowej. Transakcja wyznacza
+granicę: **zatwierdzamy wszystkie jej zmiany albo żadnej**.
 
+### ACID na naszym przykładzie
 
-### 🔹 Operacje sterujące transakcją
+| Właściwość | Znaczenie w pokazie |
+|---|---|
+| **Atomicity — atomowość** | Nie zatwierdzamy samego odjęcia bez dodania. `ROLLBACK` cofa oba zapisy. |
+| **Consistency — spójność** | Ograniczenia tabel i poprawna logika operacji mają zachować reguły danych. Ujemna ilość jest zabroniona. |
+| **Isolation — izolacja** | Poziom izolacji i mechanizmy współbieżności określają, jakie skutki równoległych transakcji są dopuszczalne. |
+| **Durability — trwałość** | Zatwierdzone zmiany są utrwalane zgodnie z konfiguracją trwałości serwera; standardowo PostgreSQL wykorzystuje dziennik WAL. |
 
-- BEGIN / START TRANSACTION – rozpoczęcie transakcji,
-- COMMIT – zatwierdzenie zmian,
-- ROLLBACK – cofnięcie zmian do stanu początkowego,
-- SAVEPOINT – ustawienie punktu częściowego cofnięcia.
-
-```sql
-BEGIN;
-INSERT INTO Studenci VALUES (1001, 'Anna', 'Nowak', 22);
-SAVEPOINT p1;
-UPDATE Studenci SET Wiek = 23 WHERE NrIndeksu = 1001;
-ROLLBACK TO SAVEPOINT p1;
-COMMIT;
-```
-➡️ Zmieniono wiek Anny, ale cofnięto tylko ostatnią operację (ROLLBACK TO p1).
-
-➡️ Wstawienie rekordu pozostało
-
-
-## 2️⃣ Współbieżność i problemy spójności
-
-### 🔹 Co to jest współbieżność?
-
-Współbieżność (ang. concurrency) to sytuacja, gdy wiele transakcji wykonuje się jednocześnie na tej samej bazie danych.
-
-Dzięki współbieżności baza może obsługiwać wielu użytkowników naraz, ale…
-
-➡️ może dojść do konfliktów, jeśli transakcje modyfikują te same dane.
-
-### 🔹 Przykład konfliktu współbieżności
-
-Transakcja 1
-```sql
-BEGIN;
-UPDATE Konto SET Saldo = Saldo - 500 WHERE ID = 1;
-```
-
-Transakcja 2
-```sql
-BEGIN;
-UPDATE Konto SET Saldo = Saldo - 300 WHERE ID = 1;
-
-```
-
-Obie modyfikują ten sam rekord.
-Jeśli system nie zapewni izolacji — saldo końcowe może być błędne.
-
-
-## 3️⃣ Poziomy izolacji transakcji
-
-Bazy danych zapewniają różne poziomy izolacji, które równoważą spójność danych i
-wydajność — im silniejsza izolacja, tym więcej blokad i tym wolniej działa system
-przy dużej współbieżności. Standard SQL definiuje cztery poziomy, każdy zapobiegający
-kolejnej "anomalii":
-
-| Poziom izolacji | Odczyt "brudnych" danych (dirty read) | Powtórny odczyt daje inny wynik (non-repeatable read) | Nowe wiersze "pojawiają się" w kolejnym odczycie (phantom read) |
-|---|---|---|---|
-| **READ UNCOMMITTED** | ❌ możliwy | ❌ możliwy | ❌ możliwy |
-| **READ COMMITTED** | ✅ zablokowany | ❌ możliwy | ❌ możliwy |
-| **REPEATABLE READ** | ✅ zablokowany | ✅ zablokowany | ❌ możliwy* |
-| **SERIALIZABLE** | ✅ zablokowany | ✅ zablokowany | ✅ zablokowany |
-
-\* W PostgreSQL `REPEATABLE READ` w praktyce blokuje też phantom read (dzięki
-implementacji przez migawkę danych — *snapshot isolation*) — to mocniejsza
-gwarancja, niż wymaga sam standard SQL. Nie zakładajcie tego zachowania w innych
-silnikach bez sprawdzenia dokumentacji.
-
-- **Dirty read** — transakcja A czyta dane, które transakcja B jeszcze nie
-  zacommitowała (i może zaraz wycofać przez `ROLLBACK`) — A oparła decyzję na
-  danych, które "nigdy się nie wydarzyły".
-- **Non-repeatable read** — transakcja A czyta ten sam wiersz dwa razy w trakcie
-  swojego działania i dostaje **różne** wartości, bo transakcja B zdążyła go
-  zmienić i zacommitować pomiędzy odczytami A.
-- **Phantom read** — transakcja A wykonuje ten sam warunek `WHERE` dwa razy i za
-  drugim razem dostaje **inny zestaw wierszy** (nie zmienioną wartość istniejącego
-  wiersza, tylko zupełnie nowy/zniknięty wiersz), bo B wstawiła/usunęła coś w
-  międzyczasie.
-
-### 🔹 Przykład w PostgreSQL:
-
-```sql
-BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
-SELECT * FROM Zamowienia WHERE KlientID = 10;
--- Inna transakcja modyfikuje dane
-SELECT * FROM Zamowienia WHERE KlientID = 10;
-COMMIT;
-
-```
-
-➡️ Na poziomie REPEATABLE READ oba SELECT-y zobaczą ten sam zestaw danych, nawet jeśli inna transakcja je zmieniła w międzyczasie — to właśnie ochrona przed non-repeatable read z tabeli wyżej.
-
-::: {.callout-note}
-## Kompromis, nie "im wyżej, tym lepiej"
-`SERIALIZABLE` daje najsilniejsze gwarancje, ale kosztem wydajności (więcej blokad,
-więcej transakcji odrzuconych do ponowienia przy konflikcie). Domyślny poziom w
-PostgreSQL to `READ COMMITTED` — świadomy wybór "wystarczająco bezpiecznie dla
-większości aplikacji, bez kosztu SERIALIZABLE". Podnosicie poziom izolacji tylko
-tam, gdzie konkretna anomalia z tabeli wyżej realnie zagraża Waszym danym.
+::: {.callout-important}
+## Baza nie zna reguły, której nie zapisaliśmy
+`CHECK (quantity >= 0)` nie pilnuje sumy ilości w obu magazynach.
+Transakcja zawierająca tylko odjęcie i `COMMIT` może być poprawna dla
+ograniczeń tabeli, a błędna biznesowo. Atomowość nie naprawia błędnej logiki.
+W rzeczywistej aplikacji sprawdzamy także, czy oba `UPDATE` zmieniły oczekiwaną
+liczbę wierszy, i wycofujemy całą operację przy niespełnionych warunkach.
 :::
 
-
-
-# 1️⃣3️⃣ Podzapytania (Subqueries) w SQL
-
-Podzapytanie to **zapytanie wewnątrz innego zapytania SQL**. 
-Służy do wykonywania bardziej złożonych operacji, kiedy jedno zapytanie potrzebuje wyników innego.  
-Możemy je traktować jak „mini-zapytania”, które dostarczają danych do zapytania głównego.
-
-Podzapytania mogą występować w różnych miejscach:
-
-- w klauzuli **WHERE** – do filtrowania danych,
-- w klauzuli **FROM** – jako tymczasowa tabela,
-- w klauzuli **SELECT** – do obliczeń w każdej krotce,
-- w konstrukcjach **EXISTS**, **IN**, **ALL**, **ANY** – do testowania warunków logicznych.
-
-
-## 🔹 1. Podzapytanie w klauzuli WHERE (jednowartościowe)
-
-To najczęstszy typ podzapytania.  
-Zapytanie główne wybiera dane na podstawie **wartości zwróconej przez podzapytanie**.
-
-### 🧩 Przykład:
-
-Znajdź książki napisane przez autora o nazwisku *Sienkiewicz*.
+### Pokaz 1 — obejrzyj zmiany i wycofaj
 
 ```sql
-SELECT tytul, rok
-FROM Ksiazki
-WHERE autor_id = (
-    SELECT autor_id
-    FROM Autorzy
-    WHERE nazwisko = 'Sienkiewicz'
-);
+-- Start at A=5, B=0. Move two radios, inspect, then undo the entire transfer.
+BEGIN;
+UPDATE rsod5_demo.stock SET quantity = quantity - 2 WHERE warehouse_id = 'A';
+UPDATE rsod5_demo.stock SET quantity = quantity + 2 WHERE warehouse_id = 'B';
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
+ROLLBACK;
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
 ```
 
-### 📘 Opis działania:
+Pierwszy `SELECT` w tej samej transakcji widzi własne zmiany: **A=3, B=2**.
+Po `ROLLBACK` drugi odczyt daje **A=5, B=0**. Nie cofamy całej historii bazy,
+lecz tylko niezatwierdzone zmiany bieżącej transakcji.
 
-1.	Podzapytanie wewnętrzne szuka identyfikatora autora autor_id, którego nazwisko to Sienkiewicz.
-2.	Zapytanie główne wybiera z tabeli Ksiazki tylko te rekordy, w których autor_id jest równy wynikowi podzapytania.
-
-> 🔸 Takie podzapytanie **powinno** zwrócić jedną wartość (scalar subquery). Co się
-> stanie, gdy zwróci więcej niż jedną, zależy od silnika: **PostgreSQL zgłosi błąd**
-> (`more than one row returned by a subquery used as an expression`) — ale
-> **SQLite nie zgłasza błędu**, tylko po cichu bierze jeden z wierszy (który
-> konkretnie — nie jest gwarantowane) i ignoruje resztę. To niebezpieczne "milczące"
-> zachowanie: kod, który w SQLite "działa", może się wywrócić dopiero po
-> przeniesieniu na PostgreSQL. Nie polegajcie na konkretnym zachowaniu — jeśli
-> podzapytanie może zwrócić więcej niż jeden wiersz, użyjcie `IN` (sekcja niżej) albo
-> dodajcie `LIMIT 1` ze świadomym sortowaniem.
-
-## 🔹 2. Podzapytanie zwracające wiele wartości (operator IN)
-
-Jeśli podzapytanie zwraca więcej niż jeden rekord, używamy operatora IN.
-
-### 🧩 Przykład:
-
-Znajdź wszystkie książki autorów, których nazwiska zaczynają się na literę M.
+### Pokaz 2 — zatwierdź przeniesienie
 
 ```sql
-SELECT tytul, rok
-FROM Ksiazki
-WHERE autor_id IN (
-    SELECT autor_id
-    FROM Autorzy
-    WHERE nazwisko LIKE 'M%'
-);
+-- Start at A=5, B=0. Commit the transfer: A=3, B=2, total=5.
+BEGIN;
+UPDATE rsod5_demo.stock SET quantity = quantity - 2 WHERE warehouse_id = 'A';
+UPDATE rsod5_demo.stock SET quantity = quantity + 2 WHERE warehouse_id = 'B';
+COMMIT;
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
 ```
 
-### 📘 Opis działania:
+Po `COMMIT` stan to **A=3, B=2**. Kolejne `ROLLBACK` nie cofnie już tego
+zatwierdzenia. Potrzebna byłaby nowa operacja kompensująca, np. przeniesienie
+towaru z powrotem. Trwałość nie zastępuje kopii zapasowych ani ochrony
+przed błędnym poleceniem zatwierdzonym przez użytkownika.
 
-- Podzapytanie wewnętrzne zwraca listę identyfikatorów autorów, np. [1, 5, 7].
-- Zapytanie główne wybiera książki, których autor_id znajduje się na tej liście.
+## 3. SAVEPOINT — cofnij część pracy
 
-> 🔸 Operator IN można traktować jak porównanie z „wieloma wartościami jednocześnie”.
-
-
-## 🔹 3. Podzapytanie w klauzuli SELECT
-
-Podzapytanie może też zwracać pojedynczą wartość (skalarną) i być użyte w liście kolumn.
-
-### 🧩 Przykład:
-
-Wyświetl listę autorów wraz z liczbą ich książek.
+Zaczynamy od stanu **3,2** po pokazie 2. Chcemy przenieść jedną sztukę,
+ale przy dodawaniu omyłkowo wpisujemy 99. Punkt zapisu pozwala cofnąć
+część operacji bez utraty wcześniejszego odjęcia.
 
 ```sql
-SELECT
-    a.imie,
-    a.nazwisko,
-    (
-        SELECT COUNT(*)
-        FROM Ksiazki k
-        WHERE k.autor_id = a.autor_id
-    ) AS liczba_ksiazek
-FROM Autorzy a;
-
+-- Start after 02: A=3, B=2. Correct a mistaken increase without losing the debit.
+BEGIN;
+UPDATE rsod5_demo.stock SET quantity = quantity - 1 WHERE warehouse_id = 'A';
+SAVEPOINT after_debit;
+UPDATE rsod5_demo.stock SET quantity = quantity + 99 WHERE warehouse_id = 'B';
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
+ROLLBACK TO SAVEPOINT after_debit;
+UPDATE rsod5_demo.stock SET quantity = quantity + 1 WHERE warehouse_id = 'B';
+COMMIT;
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
 ```
 
-### 📘 Opis działania:
+Kolejne stany to **2,2** po odjęciu, **2,101** po błędnym dodaniu,
+**2,2** po `ROLLBACK TO`, a na końcu **2,3** po poprawce i `COMMIT`.
+Stan pośredni 2,101 jest widoczny we własnej transakcji, ale nie zostaje zatwierdzony.
 
-- Dla każdego autora (a.autor_id) wykonuje się osobne podzapytanie,
-które liczy książki przypisane do tego autora.
-- Wynik jest dodawany jako nowa kolumna liczba_ksiazek.
+`SAVEPOINT` nie zatwierdza wcześniejszych zmian. Pełne `ROLLBACK` nadal
+wycofałoby całą transakcję. `ROLLBACK TO SAVEPOINT` zachowuje transakcję
+otwartą, a `COMMIT` kończy ją i zatwierdza pozostałe zmiany.
 
-> 🔸 To tzw. podzapytanie skorelowane (correlated subquery), ponieważ odnosi się do kolumny z zapytania głównego.
+### Co po błędzie SQL?
 
-## 🔹 4. Podzapytanie w klauzuli FROM (tabela pochodna)
-
-Podzapytanie może tworzyć tymczasową tabelę w sekcji FROM.
-Takie rozwiązanie nazywa się derived table i pozwala na pracę z przetworzonymi danymi.
-
-### 🧩 Przykład:
-
-Policz średni rok wydania książek, a następnie wybierz te, które są starsze od średniej.
+Plik `04_error.sql` zawiera **dwa celowe błędy**. Wykonuj kroki osobno:
 
 ```sql
-SELECT tytul, rok
-FROM (
-    SELECT *
-    FROM Ksiazki
-) AS K
-WHERE K.rok < (
-    SELECT AVG(rok) FROM Ksiazki
-);
+-- Run marked steps separately. Expected SQLSTATEs: 23514, then 25P02.
+-- STEP 1: start a transaction and trigger CHECK failure.
+BEGIN;
+UPDATE rsod5_demo.stock SET quantity = -1 WHERE warehouse_id = 'A';
+-- STEP 2: this SELECT fails because the transaction is aborted.
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
+-- STEP 3: recover the session. State stays A=2, B=3 if following 01-03.
+ROLLBACK;
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
 ```
 
-### 📘 Opis działania:
+Pierwszy błąd to naruszenie `CHECK` (`23514`). Drugi (`25P02`) informuje,
+że transakcja jest w stanie przerwanym — następny `SELECT` nie jest naprawą.
+`ROLLBACK` przywraca sesję do pracy, a dane pozostają **2,3**.
+Jeżeli przed błędnym poleceniem utworzono punkt zapisu, można użyć
+`ROLLBACK TO SAVEPOINT`, a następnie kontynuować transakcję.
 
-- Podzapytanie w FROM tworzy tymczasową tabelę K.
-- W klauzuli WHERE używamy innego podzapytania, które liczy średni rok wydania.
-- Wynik to książki starsze od średniej publikacji.
+W PL/pgSQL blok z `EXCEPTION` pozwala obsłużyć błąd i wycofuje zmiany
+wykonane wewnątrz chronionego bloku. To nie jest zatwierdzenie transakcji.
+Zwykła funkcja wywołana przez `SELECT` działa w transakcji wywołującego;
+nie umieszczamy w niej `COMMIT`. Granicę transakcji ustalamy świadomie.
 
-## 🔹 5. Korelowane podzapytanie (correlated subquery)
+## 4. Przygotuj dwie niezależne sesje
 
-To podzapytanie, które odwołuje się do kolumn z zapytania głównego.
-Wykonuje się dla każdego wiersza osobno – dlatego bywa wolniejsze, ale bardzo elastyczne.
+Otwórz **dwa niezależne Query Tool dla tej samej bazy `rsod5_pokaz`**.
+Nazwij je umownie A i B. Dwie karty edytora współdzielące jedno połączenie
+nie wystarczą. `SELECT pg_backend_pid();` powinien dawać dwa różne numery.
 
-### 🧩 Przykład:
+Przed **każdym** pokazem 5–10:
 
-Znajdź najstarszą książkę każdego autora.
+1. Zakończ wcześniejsze transakcje w obu sesjach (`COMMIT` albo `ROLLBACK`).
+2. W jednej sesji uruchom `99_reset.sql`: wracamy do **A=5, B=0**.
+3. Otwórz odpowiednie pliki A/B i zaznaczaj wyłącznie wskazany krok.
+
+Nie resetuj danych, gdy druga sesja utrzymuje blokadę — reset też jest zapisem
+i może czekać. W pokazach blokowania ustawiamy limit 60 sekund. Po jego
+przekroczeniu wycofaj transakcje, zresetuj dane i powtórz demonstrację.
+
+## 5. READ COMMITTED — świeży obraz dla każdego polecenia
+
+To domyślny poziom izolacji PostgreSQL. Odczyt widzi dane zatwierdzone przed
+rozpoczęciem danego polecenia oraz własne wcześniejsze zmiany. Nowe polecenie
+w tej samej transakcji może zobaczyć nowsze zatwierdzone dane.
+
+### Sesja A — plik 05_read_committed_A.sql
 
 ```sql
-SELECT k.tytul, k.rok, a.nazwisko
-FROM Ksiazki k
-JOIN Autorzy a ON k.autor_id = a.autor_id
-WHERE k.rok = (
-    SELECT MIN(rok)
-    FROM Ksiazki
-    WHERE autor_id = k.autor_id
-);
-
+-- Reset first with 99_reset.sql, then use TWO independent connections.
+-- A1: run this block; A reads 5.
+BEGIN ISOLATION LEVEL READ COMMITTED;
+SELECT pg_backend_pid() AS session_a;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- A2: run after B1 (B has updated but NOT committed); A still reads 5.
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- A3: run after B2 (COMMIT); A now reads 4 in the SAME transaction.
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+COMMIT;
 ```
 
-### 📘 Opis działania:
-
-- Dla każdego wiersza w tabeli Ksiazki podzapytanie szuka najmniejszego roku dla tego samego autora.
-- Porównanie k.rok = (MIN(rok)) sprawia, że zostaje tylko najstarsza książka każdego autora.
-
-## 🔹 6. Podzapytanie z EXISTS
-
-Operator EXISTS sprawdza, czy podzapytanie zwróciło jakiekolwiek wiersze.
-Nie liczy ich — interesuje nas jedynie, czy wynik istnieje (TRUE/FALSE).
-
-### 🧩 Przykład:
-
-Znajdź autorów, którzy napisali przynajmniej jedną książkę.
-```sql
-SELECT imie, nazwisko
-FROM Autorzy a
-WHERE EXISTS (
-    SELECT 1
-    FROM Ksiazki k
-    WHERE k.autor_id = a.autor_id
-);
-
-```
-
-### 📘 Opis działania:
-
-- Dla każdego autora sprawdzane jest, czy istnieje co najmniej jeden wiersz w tabeli Ksiazki z tym samym autor_id.
-- Jeśli tak — warunek EXISTS zwraca TRUE, a autor pojawia się w wyniku.
-
-
-## 🔹 7. Porównania z ALL / ANY
-
-Operator ALL wymaga, aby warunek był spełniony dla wszystkich wyników podzapytania.
-Operator ANY (lub SOME) – aby warunek był spełniony dla przynajmniej jednego.
-
-### 🧩 Przykład:
-
-Znajdź książki wydane wcześniej niż wszystkie książki Prusa.
-```sql
-SELECT tytul, rok
-FROM Ksiazki
-WHERE rok < ALL (
-    SELECT rok
-    FROM Ksiazki
-    WHERE autor_id = (
-        SELECT autor_id FROM Autorzy WHERE nazwisko = 'Prus'
-    )
-);
-```
-
-### 📘 Opis działania:
-
-- Podzapytanie wewnętrzne zwraca lata publikacji książek Prusa.
-- Zapytanie główne wybiera tylko te książki, których rok jest mniejszy niż wszystkie te wartości.
-
-
-
-### 🧮 Podsumowanie typów podzapytań w SQL
-
-| **Typ podzapytania** | **Miejsce użycia** | **Zwracany wynik** | **Typowe operatory** | **Przykład zastosowania** |
-|------------------------|--------------------|--------------------|----------------------|----------------------------|
-| **Jednowartościowe (scalar)** | `WHERE`, `SELECT` | Pojedyncza wartość (1 rekord, 1 kolumna) | `=`, `<`, `>` | Autor o nazwisku „Sienkiewicz” |
-| **Wielowartościowe (multivalue)** | `WHERE` | Lista wartości (wiele rekordów) | `IN`, `NOT IN` | Autorzy, których nazwisko zaczyna się na „M” |
-| **Korelowane (correlated)** | `WHERE`, `SELECT` | Zmienny wynik dla każdego wiersza | `=`, `EXISTS` | Najstarsza książka danego autora |
-| **Zagnieżdżone w FROM (tabela pochodna)** | `FROM` | Zbiór wierszy (tymczasowa tabela) | — | Średni rok wydania książek i porównanie ze średnią |
-| **Z operatorem EXISTS / NOT EXISTS** | `WHERE` | Prawda / Fałsz (czy istnieje wynik) | `EXISTS`, `NOT EXISTS` | Autorzy, którzy napisali przynajmniej jedną książkę |
-| **Z operatorem ALL / ANY / SOME** | `WHERE` | Porównanie z wieloma wartościami | `ALL`, `ANY`, `SOME` | Książki starsze niż wszystkie książki Prusa |
-
-
-## 4️⃣ Widoki (Views)
-
-### 🔹 Czym jest widok?
-
-Widok (VIEW) to wirtualna tabela, która prezentuje dane pochodzące z jednej lub wielu tabel.
-Widok nie przechowuje danych samodzielnie – zawsze opiera się na zapytaniu SQL.
-
-Przykład:
-```sql
-CREATE VIEW StudenciPelnoletni AS
-SELECT Imie, Nazwisko, Wiek
-FROM Studenci
-WHERE Wiek >= 18;
-```
-➡️ Teraz można użyć widoku jak zwykłej tabeli:
-```sql
-SELECT * FROM StudenciPelnoletni;
-```
-### 🔹 Zalety widoków
-
-1.	Abstrakcja danych – użytkownik nie musi znać złożonej struktury tabel.
-2.	Bezpieczeństwo – można ograniczyć dostęp do wrażliwych kolumn.
-3.	Reużywalność – skomplikowane zapytania można zapisać raz jako widok.
-4.	Izolacja logiki – zmiana struktury tabeli nie wymaga zmiany zapytań użytkowników.
-
-
-### 🔹 Widoki z ograniczeniami (WITH CHECK OPTION)
-
-Jeśli chcesz, aby przez widok można było wstawiać dane tylko zgodne z jego definicją, użyj WITH CHECK OPTION.
+### Sesja B — plik 05_read_committed_B.sql
 
 ```sql
-CREATE VIEW StudenciMlodsi AS
-SELECT * FROM Studenci
-WHERE Wiek < 25
-WITH CHECK OPTION;
+-- B1: run after A1. Leave this transaction OPEN, then return to A2.
+BEGIN;
+SELECT pg_backend_pid() AS session_b;
+UPDATE rsod5_demo.stock SET quantity = quantity - 1 WHERE warehouse_id = 'A';
+-- B2: run after A2. Then return to A3.
+COMMIT;
 ```
 
-➡️ Próba wstawienia studenta starszego niż 25 lat zakończy się błędem:
+| Kolejność | Sesja A | Sesja B | Odczyt A |
+|---|---|---|---:|
+| A1 | `BEGIN`, pierwszy `SELECT` | — | 5 |
+| B1 | — | `BEGIN`, odjęcie 1, bez zatwierdzenia | — |
+| A2 | drugi `SELECT` | nadal otwarta transakcja | 5 |
+| B2 | — | `COMMIT` | — |
+| A3 | trzeci `SELECT`, potem `COMMIT` | — | 4 |
+
+A nie zobaczyła niezatwierdzonej czwórki: **nie było brudnego odczytu**.
+Po zatwierdzeniu B odczyt w tej samej transakcji A się zmienił:
+zaobserwowaliśmy **niepowtarzalny odczyt**.
+
+Zwykły `SELECT` nie musi czekać na koniec takiej aktualizacji: PostgreSQL
+korzysta z wielowersyjności (**MVCC**) i czyta widoczną dla niego wersję.
+Odczyt z `FOR UPDATE` ma inne zachowanie, które zobaczymy dalej.
+
+## 6. REPEATABLE READ — zachowaj migawkę transakcji
+
+Reset do 5,0. Zmieniamy tylko poziom izolacji A. Migawka jest ustalana przy
+pierwszym poleceniu wymagającym migawki, a nie przez samo wpisanie `BEGIN`.
+
+### Sesja A
 
 ```sql
-INSERT INTO StudenciMlodsi VALUES (1234, 'Jan', 'Kowalski', 30);
--- ERROR: nie spełnia warunku widoku
+-- Reset first. A1: the first SELECT establishes the transaction snapshot.
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+SELECT pg_backend_pid() AS session_a;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- A2: run after B commits; still 5 in the original snapshot.
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+COMMIT;
+-- A3: outside the old transaction; now 4.
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
 ```
 
-### 🔹 Widoki w praktyce – bezpieczeństwo danych
-
-Przykład ograniczenia dostępu do poufnych danych:
+### Sesja B
 
 ```sql
-CREATE VIEW PracownicyPubliczni AS
-SELECT Imie, Nazwisko, Dzial
-FROM Pracownicy;
+-- Run the whole block after A1 and before A2.
+BEGIN;
+UPDATE rsod5_demo.stock SET quantity = quantity - 1 WHERE warehouse_id = 'A';
+COMMIT;
 ```
-Użytkownicy mogą zobaczyć tylko dane działowe, ale nie np. pensje.
 
+Kolejność: **A1 → cały blok B → A2 → COMMIT A → A3**.
+Odczyty A: **5, 5, 4**. B zatwierdziła zmianę, ale A2 pozostaje przy starej
+migawce. Dopiero A3, poza poprzednią transakcją, zobaczy nowy stan.
+
+Powtarzalny odczyt nie oznacza „zablokowano wszystkim możliwość zapisu”.
+B mogła wykonać i zatwierdzić swoją aktualizację. A czytała wcześniejszą
+widoczną wersję. Silniejsza izolacja nie jest po prostu większą liczbą blokad.
+
+### Poziomy izolacji w PostgreSQL 16
+
+| Poziom | Brudny odczyt | Niepowtarzalny odczyt | Fantomy | Anomalia serializacji |
+|---|---|---|---|---|
+| `READ UNCOMMITTED` | Nie | Możliwy | Możliwe | Możliwa |
+| `READ COMMITTED` | Nie | Możliwy | Możliwe | Możliwa |
+| `REPEATABLE READ` | Nie | Nie | Nie | Możliwa |
+| `SERIALIZABLE` | Nie | Nie | Nie | Nie dla pomyślnie zatwierdzonych transakcji |
+
+To tabela **dla PostgreSQL**, nie uniwersalna tabela wszystkich silników.
+W PostgreSQL `READ UNCOMMITTED` działa jak `READ COMMITTED`, a
+`REPEATABLE READ` zapobiega także fantomom, mocniej niż wymaga standard SQL.
+
+**Fantom** to zmiana zbioru wierszy pasujących do ponownie wykonanego
+warunku, np. nowy rekord magazynu pojawia się po zatwierdzeniu innej transakcji.
+**Anomalia serializacji** oznacza, że wspólnego rezultatu nie da się wyjaśnić
+żadną kolejnością wykonania całych transakcji jedna po drugiej.
+Sama stabilna migawka nie chroni każdej reguły obejmującej kilka wierszy.
+
+## 7. Utracona aktualizacja — odczyt i zapis starej wartości
+
+Dwie osoby chcą niezależnie wydać po jednej sztuce z magazynu A.
+Każda aplikacja odczytuje 5, oblicza `5 - 1 = 4`, a następnie zapisuje **4**.
+
+### Sesja A
+
+```sql
+-- Reset first. A1: an application reads 5 and calculates 5 - 1 = 4.
+BEGIN;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- A2: run after B1 reads 5. Commit before B2.
+UPDATE rsod5_demo.stock SET quantity = 4 WHERE warehouse_id = 'A';
+COMMIT;
+```
+
+### Sesja B
+
+```sql
+-- B1: run after A1, before A2. Another application also reads 5.
+BEGIN;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- B2: run after A2 commits. Reuse the stale calculated value 4.
+UPDATE rsod5_demo.stock SET quantity = 4 WHERE warehouse_id = 'A';
+COMMIT;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+```
+
+Kolejność: **A1 → B1 → A2 → B2**. Oba odczyty dały 5; końcowy stan to **4**,
+a powinien wynosić **3**. Drugi zapis nadpisał skutek pierwszego tą samą,
+nieaktualną wartością. To **utracona aktualizacja**.
+
+Błąd nie wynika z tego, że PostgreSQL pozwolił jednocześnie nadpisywać fizyczny
+wiersz. Wynika z rozdzielenia odczytu i decyzji oraz ponownego użycia starej
+wartości w aplikacji. Samo otoczenie tych kroków `BEGIN`/`COMMIT` przy
+`READ COMMITTED` nie wystarczyło.
+
+## 8. Bezpieczniejszy zapis: aktualizacja względna z warunkiem
+
+Reset do 5,0. Zamiast zapisywać wyliczoną wcześniej czwórkę, prosimy bazę
+o **odjęcie od aktualnej wartości**, o ile towar jest dostępny.
+
+### Sesja A
+
+```sql
+-- Reset first. A1: hold a row lock until COMMIT.
+BEGIN;
+UPDATE rsod5_demo.stock SET quantity = quantity - 1
+WHERE warehouse_id = 'A' AND quantity >= 1
+RETURNING quantity;
+-- A2: run after B1 starts waiting. This unblocks B.
+COMMIT;
+```
+
+### Sesja B
+
+```sql
+-- B1: run after A1. The UPDATE waits for A; the timeout limits accidental hangs.
+BEGIN;
+SET LOCAL lock_timeout = '60s';
+UPDATE rsod5_demo.stock SET quantity = quantity - 1
+WHERE warehouse_id = 'A' AND quantity >= 1
+RETURNING quantity;
+-- B2: run after A2; UPDATE has returned 3. Commit B.
+COMMIT;
+SELECT * FROM rsod5_demo.stock ORDER BY warehouse_id;
+```
+
+Kolejność: **A1 → uruchom B1 → A2 → B1 kończy oczekiwanie → B2**.
+A zwróci **4** i utrzyma blokadę wiersza. B poczeka. Po zatwierdzeniu A
+baza uwzględni nową wersję wiersza, ponownie sprawdzi warunek i odejmie 1:
+B zwróci **3**. Końcowy stan to **3,0**.
+
+`RETURNING` pokazuje zmienioną wartość. Jeżeli nie ma już sztuki do wydania,
+`UPDATE` nie zmieni wiersza i nie zwróci wartości. Aplikacja musi sprawdzić ten
+przypadek — brak błędu SQL nie oznacza automatycznie udanej rezerwacji.
+`CHECK` stanowi dodatkową ochronę, ale nie zastępuje interpretacji wyniku.
+
+## 9. SELECT FOR UPDATE — zablokuj przed decyzją
+
+Gdy logika wymaga kilku kroków po odczycie, można najpierw zablokować wiersz.
+Blokadę utrzymujemy do końca transakcji, a nie tylko do końca `SELECT`.
+
+### Sesja A
+
+```sql
+-- Reset first. A1: lock the row before making an application-side decision.
+BEGIN;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A' FOR UPDATE;
+-- A2: run while B1 waits. Use the value read while holding the lock.
+UPDATE rsod5_demo.stock SET quantity = 4 WHERE warehouse_id = 'A';
+COMMIT;
+```
+
+### Sesja B
+
+```sql
+-- B1: run after A1. SELECT waits; after A2 it returns the NEW value 4.
+BEGIN;
+SET LOCAL lock_timeout = '60s';
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A' FOR UPDATE;
+-- B2: calculate 4 - 1 = 3 only after the locking read returns.
+UPDATE rsod5_demo.stock SET quantity = 3 WHERE warehouse_id = 'A';
+COMMIT;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+```
+
+Kolejność: **A1 → uruchom B1 → A2 → B1 zwraca 4 → B2**.
+B oblicza `4 - 1`, dopiero gdy dostanie aktualną wartość wraz z blokadą.
+Rezultat to **3**. Wszystkie konkurujące ścieżki aplikacji muszą stosować
+protokół zgodny z regułą danych; pojedyncza poprawna ścieżka nie naprawi innych.
+
+Nie utrzymuj transakcji otwartej podczas rozmowy z użytkownikiem ani oczekiwania
+na formularz. W prawdziwej aplikacji transakcje powinny być krótkie.
+Przy blokowaniu kilku wierszy stosuj spójną kolejność, np. rosnący klucz magazynu.
+Ogranicza to ryzyko **zakleszczenia**: A czeka na zasób B, a B na zasób A.
+PostgreSQL wykrywa zakleszczenia i przerywa jedną z transakcji; aplikacja musi
+obsłużyć błąd i w uzasadnionym przypadku ponowić całą operację.
+
+## 10. SERIALIZABLE — konflikt może wymagać ponowienia
+
+Najsilniejszy poziom wymaga, aby rezultat pomyślnie zatwierdzonych transakcji
+był zgodny z pewną kolejnością ich wykonania jedna po drugiej.
+Nie oznacza to, że silnik fizycznie wykonuje wszystkie transakcje po kolei.
+Gdy wykryje konflikt uniemożliwiający zachowanie gwarancji, może odrzucić transakcję.
+
+### Sesja A
+
+```sql
+-- Reset first. A1: both transactions must read the same initial snapshot.
+BEGIN ISOLATION LEVEL SERIALIZABLE;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- A2: run after B1, before B2.
+UPDATE rsod5_demo.stock SET quantity = quantity - 1 WHERE warehouse_id = 'A';
+COMMIT;
+```
+
+### Sesja B
+
+```sql
+-- B1: run after A1, before A2.
+BEGIN ISOLATION LEVEL SERIALIZABLE;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+-- B2: run after A2 commits. Expected serialization failure: SQLSTATE 40001.
+UPDATE rsod5_demo.stock SET quantity = quantity - 1 WHERE warehouse_id = 'A';
+-- B3: recover, then retry the ENTIRE transaction using a new snapshot.
+ROLLBACK;
+BEGIN ISOLATION LEVEL SERIALIZABLE;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+UPDATE rsod5_demo.stock SET quantity = quantity - 1 WHERE warehouse_id = 'A';
+COMMIT;
+SELECT quantity FROM rsod5_demo.stock WHERE warehouse_id = 'A';
+```
+
+Kolejność: **A1 → B1 → A2 → B2 → B3**. B2 otrzymuje błąd serializacji
+**`40001`**, bo próbuje zmienić wiersz zmieniony od czasu jej migawki.
+Po `ROLLBACK` ponawiamy **całą transakcję**, łącznie z odczytem i decyzją.
+Nowy odczyt B daje 4, a zakończona aktualizacja pozostawia **3**.
+
+W tym konkretnym przykładzie konflikt aktualizacji zostałby odrzucony także
+przy `REPEATABLE READ`. Wybieramy `SERIALIZABLE`, aby pokazać sposób obsługi
+błędu na poziomie gwarantującym serializowalność; ta demonstracja sama w sobie
+nie dowodzi różnicy między tymi dwoma poziomami.
+
+W aplikacji ponowienia powinny być ograniczone i zaprojektowane razem
+z operacjami zewnętrznymi. Wycofanie transakcji bazy nie cofa wysłanego e-maila
+ani wywołania zewnętrznego API. Nie powtarzamy takich efektów bez kontroli.
+
+## 11. Który mechanizm wybrać?
+
+| Problem | Punkt wyjścia | Co trzeba jeszcze sprawdzić |
+|---|---|---|
+| Kilka zapisów jednej operacji | Jedna jawna transakcja | Błędy, liczba zmienionych wierszy, reguły biznesowe |
+| Przypadkowa część operacji | `SAVEPOINT` | Co ma pozostać po częściowym cofnięciu? |
+| Proste wydanie jednej sztuki | Warunkowe `UPDATE quantity = quantity - 1` | Brak dopasowania i wynik `RETURNING` |
+| Kilka decyzji na podstawie wiersza | `SELECT ... FOR UPDATE` | Krótka transakcja, kolejność blokowania |
+| Spójny obraz raportu z kilku odczytów | `REPEATABLE READ` | Raport dotyczy jednej migawki; nie rezerwuje zasobów |
+| Złożona reguła współbieżna | Analiza ograniczeń i `SERIALIZABLE` | Obsługa konfliktów i ponowienie całej transakcji |
+
+Silniejszą izolację dobieramy do reguły, której musimy bronić.
+Jej koszty mogą obejmować zarządzanie wersjami, śledzenie zależności,
+oczekiwanie lub ponowienia. Nie zakładamy, że każdy wyższy poziom po prostu
+blokuje całą bazę i zawsze działa wolniej.
+
+## 12. Podsumowanie kursu — pytania do dyskusji
+
+1. Dlaczego dwa poprawne `UPDATE` bez wspólnej transakcji mogą zepsuć przeniesienie?
+2. Czy `COMMIT` gwarantuje zachowanie sumy towaru, jeśli nie zapisaliśmy tej reguły?
+3. Dlaczego przy `READ COMMITTED` A widziała 5, potem 5, a potem 4?
+4. Czy `REPEATABLE READ` uniemożliwił sesji B zatwierdzenie zmiany?
+5. Dlaczego zapis stałej `4` różni się od `quantity = quantity - 1`?
+6. Dlaczego po błędzie `40001` powtarzamy odczyt, a nie samo ostatnie `UPDATE`?
+7. Co stanie się z blokadą `FOR UPDATE` po `ROLLBACK`?
+
+::: {.callout-note collapse="true"}
+## Odpowiedzi do kontroli
+1. Między osobnymi zatwierdzeniami może nastąpić błąd lub awaria.
+2. Nie. Potrzebna jest poprawna logika i odpowiednie zabezpieczenia reguły.
+3. Niezatwierdzona zmiana B była niewidoczna; po jej zatwierdzeniu nowe polecenie A
+   zobaczyło nowszy stan.
+4. Nie. A zachowała migawkę, B mogła zapisać i zatwierdzić dane.
+5. Stała pochodziła ze starego odczytu. Względne `UPDATE` działa na wersji
+   wiersza dostępnej do aktualizacji i ponownie sprawdza warunek po oczekiwaniu.
+6. Decyzja opierała się na starej migawce. Nowa transakcja musi podjąć ją ponownie.
+7. Blokada zostanie zwolniona wraz z zakończeniem transakcji.
+:::
+
+Na laboratorium połączymy cały przebieg: model encji i klucze, ograniczenia tabel,
+operacje SQL, funkcje PL/pgSQL i transakcje. Poprawna baza ma zarówno
+**dobry model danych**, jak i **poprawnie zaprojektowane operacje na tych danych**.
+
+## Dokumentacja PostgreSQL 16
+
+- [Wprowadzenie do transakcji](https://www.postgresql.org/docs/16/tutorial-transactions.html).
+- [Poziomy izolacji i błędy serializacji](https://www.postgresql.org/docs/16/transaction-iso.html).
+- [Blokady i zakleszczenia](https://www.postgresql.org/docs/16/explicit-locking.html).
+- [SAVEPOINT](https://www.postgresql.org/docs/16/sql-savepoint.html).

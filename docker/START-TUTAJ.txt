@@ -10,6 +10,11 @@ Serwer jest już dodany; hasło bazy jest wczytywane automatycznie.
 
 Bazy i skrypty:
 - rsod4_pokaz → materials/lectures/wyklad4
+- rsod5_pokaz → materials/lectures/wyklad5
+RSOD 5 ma gotowe dane: zacznij od 01_rollback.sql.
+Pokazy 05–10 wymagają dwóch niezależnych Query Tool i wykonania kroków A/B
+w kolejności z CZYTAJ-NAJPIERW.txt. Przed każdym pokazem wykonaj 99_reset.sql
+po zakończeniu transakcji w obu sesjach.
 
 W pgAdmin: rozwiń serwer → Databases → wybrana baza → Query Tool.
 Open File → materials → lectures → właściwy wykład.

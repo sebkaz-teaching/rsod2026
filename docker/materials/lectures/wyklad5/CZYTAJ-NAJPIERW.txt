@@ -1,0 +1,28 @@
+RSOD 5 — przetwarzanie transakcyjne (PostgreSQL 16)
+
+Baza rsod5_pokaz, schemat rsod5_demo. Towar: radiotelefony.
+Dwa magazyny: A ma 5 sztuk, B ma 0 sztuk.
+W środowisku Docker dane są przygotowane automatycznie. W pustej bazie
+utworzonej ręcznie wykonaj 00_setup.sql raz. Nie powtarzaj CREATE SCHEMA.
+
+W pgAdmin włącz Auto commit; BEGIN jawnie rozpoczyna blok transakcyjny.
+Najpierw 01 (ROLLBACK -> 5,0), 02 (COMMIT -> 3,2), 03 (SAVEPOINT -> 2,3).
+04: wykonuj osobno kroki 1,2,3; dwa błędy są OCZEKIWANE.
+
+Przed KAŻDYM pokazem 05–10: zakończ obie transakcje i wykonaj 99_reset.sql.
+Otwórz DWA NIEZALEŻNE Query Tool dla tej samej bazy; różne pg_backend_pid()
+potwierdzają dwa połączenia. Nie wystarczą dwie karty edytora jednej sesji.
+W plikach A/B zaznaczaj tylko wskazany krok; nie uruchamiaj całego pliku.
+
+05: A1 -> B1 -> A2 (5) -> B2 -> A3 (4), mimo tej samej transakcji A.
+06: A1 (5) -> cały B -> A2 (5), COMMIT A -> A3 (4).
+07: A1 (5) -> B1 (5) -> A2 -> B2. Stan A=4: utracona aktualizacja.
+08: A1 (4) -> uruchom B1 (czeka) -> A2 -> B1 kończy się (3) -> B2.
+09: A1 (5, blokada) -> uruchom B1 (czeka) -> A2 -> B1 zwraca 4 -> B2 (3).
+10: A1 (5) -> B1 (5) -> A2 -> B2 (błąd 40001) -> B3 (ponowienie, wynik 3).
+
+W pokazach 08 i 09 limit oczekiwania wynosi 60 sekund. Jeśli minie,
+wykonaj ROLLBACK w B, zakończ A, zresetuj dane i powtórz pokaz.
+Błąd wewnątrz BEGIN wymaga ROLLBACK (albo świadomego powrotu do SAVEPOINT).
+Nie resetuj danych, gdy druga sesja utrzymuje blokadę.
+Skrypty nie korzystają z danych wykładu 4 i ich nie zmieniają.

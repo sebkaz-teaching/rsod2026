@@ -1,1 +1,2 @@
 rsod4_pokaz|-|-
+rsod5_pokaz|rsod5_demo.stock|lectures/wyklad5/00_setup.sql

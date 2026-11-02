@@ -2,7 +2,7 @@
 # Paths are relative to this file. Null hours mean not yet specified.
 schema_version: 1
 course: rsod2026
-updated: "2026-10-27"
+updated: "2026-11-02"
 language: pl
 purpose: "Program przekazany przez prowadzącego, pokrycie materiałem i plan wykorzystania poprzedniej edycji."
 source: "Ustalenia z prowadzącym z 22 października 2026."
@@ -14,7 +14,7 @@ organization:
   lab_dates: null
   remaining_lab_hours_distribution: null
   assessment: "Bez testów początkowych na wykładach RSOD; jeden test na ostatnich zajęciach."
-  published_lectures: [1, 2, 3, 4]
+  published_lectures: [1, 2, 3, 4, 5]
   note: "Numery tematów programu nie oznaczają automatycznie numerów istniejących plików wykładów."
 
 syllabus:
@@ -89,8 +89,8 @@ lecture_coverage:
   - syllabus_id: W5
     current_files: [lectures/wyklad5.qmd]
     legacy_files: [../../Archiwum-kursow/rsod/lectures/wyklad5.qmd]
-    status: "Podstawy transakcji, ACID i izolacji są obecne."
-    next_step: "Dodać demonstrację na dwóch połączeniach PostgreSQL z danymi startowymi, kolejnością poleceń i oczekiwanymi wynikami."
+    status: "Ostatni wykład opracowany: ACID, COMMIT, ROLLBACK, SAVEPOINT, READ COMMITTED, REPEATABLE READ, utracona aktualizacja, blokady i ponowienie po błędzie serializacji."
+    next_step: "Demonstracje na dwóch połączeniach PostgreSQL 16: assets/sql/rsod5-transakcje.zip. Każdy pokaz zawiera kolejność kroków, reset i oczekiwane wyniki. Poprzedni szkic wraz z lokalnymi poprawkami zachowano w _archiwum/wyklad5-before-transactions.qmd."
 
 legacy_lab_reuse:
   - file: ../../Archiwum-kursow/rsod/cwiczenia/cw1.ipynb
@@ -114,7 +114,7 @@ legacy_lab_reuse:
 next_steps:
   - "Wykorzystać istniejące materiały rsod, zamiast opracowywać cały kurs od zera."
   - "Przygotować spójny schemat i dane PostgreSQL, instrukcje dla studentów oraz rozwiązania tylko dla prowadzącego."
-  - "Przed publikacją wykładów 4 i 5 usunąć lub przenieść stare testy początkowe zgodnie z ustaleniem jednego testu końcowego."
+  - "Wykłady 4 i 5 opublikowano bez testów początkowych; poprzedni szkic wykładu 5 z testem zachowano w _archiwum."
   - "Zweryfikować wykonywalność przykładów w docelowym systemie; przegląd treści nie zastępuje uruchomienia SQL."
 
 references:
