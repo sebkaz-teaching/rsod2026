@@ -205,7 +205,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title"><strong>Sections</strong></h2>
    
   <ul class="collapse">
-  <li><a href="#cel-ostatniego-wykładu" id="toc-cel-ostatniego-wykładu" class="nav-link active" data-scroll-target="#cel-ostatniego-wykładu">Cel ostatniego wykładu</a></li>
+  <li><a href="#jak-działa-indeks" id="toc-jak-działa-indeks" class="nav-link active" data-scroll-target="#jak-działa-indeks">Jak działa indeks?</a></li>
+  <li><a href="#cel-ostatniego-wykładu" id="toc-cel-ostatniego-wykładu" class="nav-link" data-scroll-target="#cel-ostatniego-wykładu">Cel ostatniego wykładu</a></li>
   <li><a href="#przygotowanie-pokazu-dwa-magazyny-ten-sam-towar" id="toc-przygotowanie-pokazu-dwa-magazyny-ten-sam-towar" class="nav-link" data-scroll-target="#przygotowanie-pokazu-dwa-magazyny-ten-sam-towar">1. Przygotowanie pokazu — dwa magazyny, ten sam towar</a></li>
   <li><a href="#transakcja-jedna-operacja-użytkownika-kilka-poleceń" id="toc-transakcja-jedna-operacja-użytkownika-kilka-poleceń" class="nav-link" data-scroll-target="#transakcja-jedna-operacja-użytkownika-kilka-poleceń">2. Transakcja: jedna operacja użytkownika, kilka poleceń</a></li>
   <li><a href="#savepoint-cofnij-część-pracy" id="toc-savepoint-cofnij-część-pracy" class="nav-link" data-scroll-target="#savepoint-cofnij-część-pracy">3. SAVEPOINT — cofnij część pracy</a></li>
@@ -218,7 +219,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#serializable-konflikt-może-wymagać-ponowienia" id="toc-serializable-konflikt-może-wymagać-ponowienia" class="nav-link" data-scroll-target="#serializable-konflikt-może-wymagać-ponowienia">10. SERIALIZABLE — konflikt może wymagać ponowienia</a></li>
   <li><a href="#który-mechanizm-wybrać" id="toc-który-mechanizm-wybrać" class="nav-link" data-scroll-target="#który-mechanizm-wybrać">11. Który mechanizm wybrać?</a></li>
   <li><a href="#podsumowanie-kursu-pytania-do-dyskusji" id="toc-podsumowanie-kursu-pytania-do-dyskusji" class="nav-link" data-scroll-target="#podsumowanie-kursu-pytania-do-dyskusji">12. Podsumowanie kursu — pytania do dyskusji</a></li>
-  <li><a href="#indeks-btree" id="toc-indeks-btree" class="nav-link" data-scroll-target="#indeks-btree">13. Jak działa indeks B-tree?</a></li>
   <li><a href="#dokumentacja-postgresql-16" id="toc-dokumentacja-postgresql-16" class="nav-link" data-scroll-target="#dokumentacja-postgresql-16">Dokumentacja PostgreSQL 16</a></li>
   </ul>
 </nav>
@@ -245,6 +245,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="jak-działa-indeks" class="level2">
+<h2 class="anchored" data-anchor-id="jak-działa-indeks">Jak działa indeks?</h2>
+<p>Indeks B-tree pozwala znaleźć dane bez przeglądania całej tabeli. Wyszukiwanie zaczyna się od <strong>korzenia</strong>: porównujemy szukaną wartość, np. nazwisko „Nowak”, z granicami zakresów. Kolejne <strong>węzły wewnętrzne</strong> zawężają zakres, aż trafimy do <strong>liścia</strong> z kluczem i odwołaniami do pasujących wierszy tabeli. Wszystkie liście są na tej samej głębokości; węzeł może wskazywać wiele zakresów, więc nie jest to drzewo binarne.</p>
+<p>Film pokazuje różnicę między skanowaniem tabeli a wyszukiwaniem przez indeks. To ilustracja algorytmu, nie pomiar czasu PostgreSQL. Indeks wymaga miejsca i utrzymania przy zapisie; przy odczycie większości tabeli skan może być tańszy.</p>
+<div class="quarto-video"><video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls="" preload="auto" data-setup="{}" title="Skan tabeli i wyszukiwanie przez indeks"><source src="media/seq_vs_index.mp4"></video></div>
+</section>
 <section id="cel-ostatniego-wykładu" class="level2">
 <h2 class="anchored" data-anchor-id="cel-ostatniego-wykładu">Cel ostatniego wykładu</h2>
 <p>Na poprzednim spotkaniu programowaliśmy w bazie: zmienne, warunki, pętle, funkcje i wyjątki w <strong>PL/pgSQL</strong>. Teraz pytamy: <strong>co się stanie, gdy dwie osoby zmienią te same dane albo jedna z operacji zakończy się błędem?</strong></p>
@@ -733,23 +739,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Na laboratorium połączymy cały przebieg: model encji i klucze, ograniczenia tabel, operacje SQL, funkcje PL/pgSQL i transakcje. Poprawna baza ma zarówno <strong>dobry model danych</strong>, jak i <strong>poprawnie zaprojektowane operacje na tych danych</strong>.</p>
-</section>
-<section id="indeks-btree" class="level2">
-<h2 class="anchored" data-anchor-id="indeks-btree">13. Jak działa indeks B-tree?</h2>
-<p>Bez odpowiedniego indeksu baza może szukać danych przez <strong>skan sekwencyjny</strong>: przegląda wiersze tabeli i sprawdza warunek. Indeks B-tree jest dodatkową, uporządkowaną strukturą, która pozwala ominąć niepasujące zakresy. Nie jest drzewem binarnym — jeden węzeł może wskazywać wiele zakresów.</p>
-<p>Wyszukanie wartości, np. nazwiska „Nowak”, przebiega następująco:</p>
-<ol type="1">
-<li><strong>Korzeń:</strong> porównujemy szukaną wartość z granicami zakresów i wybieramy odwołanie do właściwej części drzewa.</li>
-<li><strong>Węzły wewnętrzne:</strong> powtarzamy wybór, zawężając zakres na kolejnych poziomach.</li>
-<li><strong>Liść:</strong> odnajdujemy klucz i odwołania do pasujących wierszy tabeli. Jeśli nazwisko się powtarza, trzeba uwzględnić wszystkie dopasowania.</li>
-<li><strong>Dane:</strong> silnik pobiera potrzebne wiersze i kończy sprawdzanie warunków zapytania. W niektórych planach wymagane wartości można odczytać z samego indeksu.</li>
-</ol>
-<p>Drzewo jest zrównoważone: wszystkie liście znajdują się na tej samej głębokości. Uporządkowanie kluczy pomaga także przy zakresach — odnajdujemy początek, a potem czytamy kolejne wpisy aż do końca zakresu. Indeks zajmuje miejsce i wymaga utrzymania przy zmianach danych. Gdy zapytanie potrzebuje większości tabeli, skan sekwencyjny może być tańszy.</p>
-<section id="film-skan-tabeli-i-wyszukiwanie-przez-indeks" class="level3">
-<h3 class="anchored" data-anchor-id="film-skan-tabeli-i-wyszukiwanie-przez-indeks">Film: skan tabeli i wyszukiwanie przez indeks</h3>
-<div class="quarto-video"><video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls="" preload="auto" data-setup="{}" title="Seq Scan vs Index Scan — ilustracja idei"><source src="media/seq_vs_index.mp4"></video></div>
-<p>Film pokazuje ideę pomijania niepasujących danych. Liczba animowanych kroków nie jest pomiarem czasu działania PostgreSQL.</p>
-</section>
 </section>
 <section id="dokumentacja-postgresql-16" class="level2">
 <h2 class="anchored" data-anchor-id="dokumentacja-postgresql-16">Dokumentacja PostgreSQL 16</h2>

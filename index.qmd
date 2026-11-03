@@ -54,9 +54,3 @@ Wykład nie zawiera testu początkowego.
 PostgreSQL. Pokazy porównują `READ COMMITTED` i `REPEATABLE READ`,
 ilustrują utraconą aktualizację, blokady oraz ponowienie po błędzie serializacji.
 Kompletny zestaw SQL zawiera kolejność kroków i oczekiwane wyniki.
-
-
-## Indeksy — krótki opis i film
-
-[Jak działa indeks B-tree?](lectures/wyklad5.qmd#indeks-btree) — krótki opis
-wyszukiwania w drzewie oraz film na stronie ostatniego wykładu.

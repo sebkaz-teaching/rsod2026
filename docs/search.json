@@ -458,16 +458,6 @@
     ]
   },
   {
-    "objectID": "index.html#indeksy-krótki-opis-i-film",
-    "href": "index.html#indeksy-krótki-opis-i-film",
-    "title": "Informacje ogólne",
-    "section": "Indeksy — krótki opis i film",
-    "text": "Indeksy — krótki opis i film\nJak działa indeks B-tree? — krótki opis wyszukiwania w drzewie oraz film na stronie ostatniego wykładu.",
-    "crumbs": [
-      "Informacje ogólne"
-    ]
-  },
-  {
     "objectID": "lectures/wyklad1.html",
     "href": "lectures/wyklad1.html",
     "title": "Od pliku do bazy danych",
@@ -747,7 +737,18 @@
     "href": "lectures/wyklad5.html",
     "title": "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja",
     "section": "",
-    "text": "Na poprzednim spotkaniu programowaliśmy w bazie: zmienne, warunki, pętle, funkcje i wyjątki w PL/pgSQL. Teraz pytamy: co się stanie, gdy dwie osoby zmienią te same dane albo jedna z operacji zakończy się błędem?\nPozostajemy przy PostgreSQL 16 i pgAdmin. Na jednym przykładzie magazynowym prześledzimy zatwierdzanie i wycofywanie zmian, punkty zapisu, widoczność danych, blokady oraz ponawianie transakcji. To ostatni wykład; pytania na końcu służą wspólnemu podsumowaniu materiału, a nie testowi początkowemu.",
+    "text": "Indeks B-tree pozwala znaleźć dane bez przeglądania całej tabeli. Wyszukiwanie zaczyna się od korzenia: porównujemy szukaną wartość, np. nazwisko „Nowak”, z granicami zakresów. Kolejne węzły wewnętrzne zawężają zakres, aż trafimy do liścia z kluczem i odwołaniami do pasujących wierszy tabeli. Wszystkie liście są na tej samej głębokości; węzeł może wskazywać wiele zakresów, więc nie jest to drzewo binarne.\nFilm pokazuje różnicę między skanowaniem tabeli a wyszukiwaniem przez indeks. To ilustracja algorytmu, nie pomiar czasu PostgreSQL. Indeks wymaga miejsca i utrzymania przy zapisie; przy odczycie większości tabeli skan może być tańszy.",
+    "crumbs": [
+      "Wykłady",
+      "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
+    ]
+  },
+  {
+    "objectID": "lectures/wyklad5.html#jak-działa-indeks",
+    "href": "lectures/wyklad5.html#jak-działa-indeks",
+    "title": "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja",
+    "section": "",
+    "text": "Indeks B-tree pozwala znaleźć dane bez przeglądania całej tabeli. Wyszukiwanie zaczyna się od korzenia: porównujemy szukaną wartość, np. nazwisko „Nowak”, z granicami zakresów. Kolejne węzły wewnętrzne zawężają zakres, aż trafimy do liścia z kluczem i odwołaniami do pasujących wierszy tabeli. Wszystkie liście są na tej samej głębokości; węzeł może wskazywać wiele zakresów, więc nie jest to drzewo binarne.\nFilm pokazuje różnicę między skanowaniem tabeli a wyszukiwaniem przez indeks. To ilustracja algorytmu, nie pomiar czasu PostgreSQL. Indeks wymaga miejsca i utrzymania przy zapisie; przy odczycie większości tabeli skan może być tańszy.",
     "crumbs": [
       "Wykłady",
       "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
@@ -757,8 +758,8 @@
     "objectID": "lectures/wyklad5.html#cel-ostatniego-wykładu",
     "href": "lectures/wyklad5.html#cel-ostatniego-wykładu",
     "title": "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja",
-    "section": "",
-    "text": "Na poprzednim spotkaniu programowaliśmy w bazie: zmienne, warunki, pętle, funkcje i wyjątki w PL/pgSQL. Teraz pytamy: co się stanie, gdy dwie osoby zmienią te same dane albo jedna z operacji zakończy się błędem?\nPozostajemy przy PostgreSQL 16 i pgAdmin. Na jednym przykładzie magazynowym prześledzimy zatwierdzanie i wycofywanie zmian, punkty zapisu, widoczność danych, blokady oraz ponawianie transakcji. To ostatni wykład; pytania na końcu służą wspólnemu podsumowaniu materiału, a nie testowi początkowemu.",
+    "section": "Cel ostatniego wykładu",
+    "text": "Cel ostatniego wykładu\nNa poprzednim spotkaniu programowaliśmy w bazie: zmienne, warunki, pętle, funkcje i wyjątki w PL/pgSQL. Teraz pytamy: co się stanie, gdy dwie osoby zmienią te same dane albo jedna z operacji zakończy się błędem?\nPozostajemy przy PostgreSQL 16 i pgAdmin. Na jednym przykładzie magazynowym prześledzimy zatwierdzanie i wycofywanie zmian, punkty zapisu, widoczność danych, blokady oraz ponawianie transakcji. To ostatni wykład; pytania na końcu służą wspólnemu podsumowaniu materiału, a nie testowi początkowemu.",
     "crumbs": [
       "Wykłady",
       "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
@@ -891,17 +892,6 @@
     "title": "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja",
     "section": "12. Podsumowanie kursu — pytania do dyskusji",
     "text": "12. Podsumowanie kursu — pytania do dyskusji\n\nDlaczego dwa poprawne UPDATE bez wspólnej transakcji mogą zepsuć przeniesienie?\nCzy COMMIT gwarantuje zachowanie sumy towaru, jeśli nie zapisaliśmy tej reguły?\nDlaczego przy READ COMMITTED A widziała 5, potem 5, a potem 4?\nCzy REPEATABLE READ uniemożliwił sesji B zatwierdzenie zmiany?\nDlaczego zapis stałej 4 różni się od quantity = quantity - 1?\nDlaczego po błędzie 40001 powtarzamy odczyt, a nie samo ostatnie UPDATE?\nCo stanie się z blokadą FOR UPDATE po ROLLBACK?\n\n\n\n\n\n\n\nNoteOdpowiedzi do kontroli\n\n\n\n\n\n\nMiędzy osobnymi zatwierdzeniami może nastąpić błąd lub awaria.\nNie. Potrzebna jest poprawna logika i odpowiednie zabezpieczenia reguły.\nNiezatwierdzona zmiana B była niewidoczna; po jej zatwierdzeniu nowe polecenie A zobaczyło nowszy stan.\nNie. A zachowała migawkę, B mogła zapisać i zatwierdzić dane.\nStała pochodziła ze starego odczytu. Względne UPDATE działa na wersji wiersza dostępnej do aktualizacji i ponownie sprawdza warunek po oczekiwaniu.\nDecyzja opierała się na starej migawce. Nowa transakcja musi podjąć ją ponownie.\nBlokada zostanie zwolniona wraz z zakończeniem transakcji.\n\n\n\n\nNa laboratorium połączymy cały przebieg: model encji i klucze, ograniczenia tabel, operacje SQL, funkcje PL/pgSQL i transakcje. Poprawna baza ma zarówno dobry model danych, jak i poprawnie zaprojektowane operacje na tych danych.",
-    "crumbs": [
-      "Wykłady",
-      "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
-    ]
-  },
-  {
-    "objectID": "lectures/wyklad5.html#indeks-btree",
-    "href": "lectures/wyklad5.html#indeks-btree",
-    "title": "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja",
-    "section": "13. Jak działa indeks B-tree?",
-    "text": "13. Jak działa indeks B-tree?\nBez odpowiedniego indeksu baza może szukać danych przez skan sekwencyjny: przegląda wiersze tabeli i sprawdza warunek. Indeks B-tree jest dodatkową, uporządkowaną strukturą, która pozwala ominąć niepasujące zakresy. Nie jest drzewem binarnym — jeden węzeł może wskazywać wiele zakresów.\nWyszukanie wartości, np. nazwiska „Nowak”, przebiega następująco:\n\nKorzeń: porównujemy szukaną wartość z granicami zakresów i wybieramy odwołanie do właściwej części drzewa.\nWęzły wewnętrzne: powtarzamy wybór, zawężając zakres na kolejnych poziomach.\nLiść: odnajdujemy klucz i odwołania do pasujących wierszy tabeli. Jeśli nazwisko się powtarza, trzeba uwzględnić wszystkie dopasowania.\nDane: silnik pobiera potrzebne wiersze i kończy sprawdzanie warunków zapytania. W niektórych planach wymagane wartości można odczytać z samego indeksu.\n\nDrzewo jest zrównoważone: wszystkie liście znajdują się na tej samej głębokości. Uporządkowanie kluczy pomaga także przy zakresach — odnajdujemy początek, a potem czytamy kolejne wpisy aż do końca zakresu. Indeks zajmuje miejsce i wymaga utrzymania przy zmianach danych. Gdy zapytanie potrzebuje większości tabeli, skan sekwencyjny może być tańszy.\n\nFilm: skan tabeli i wyszukiwanie przez indeks\n\nFilm pokazuje ideę pomijania niepasujących danych. Liczba animowanych kroków nie jest pomiarem czasu działania PostgreSQL.",
     "crumbs": [
       "Wykłady",
       "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
