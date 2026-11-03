@@ -1,5 +1,7 @@
 ---
 title: "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
+resources:
+  - media/seq_vs_index.mp4
 ---
 
 ## Cel ostatniego wykładu
@@ -480,12 +482,35 @@ Na laboratorium połączymy cały przebieg: model encji i klucze, ograniczenia t
 operacje SQL, funkcje PL/pgSQL i transakcje. Poprawna baza ma zarówno
 **dobry model danych**, jak i **poprawnie zaprojektowane operacje na tych danych**.
 
-## Uzupełnienie: jak przyspieszyć wyszukiwanie?
+## 13. Jak działa indeks B-tree? {#indeks-btree}
 
-[Indeksy i plany zapytań — materiał z filmem](indeksy.qmd) pokazuje,
-jak PostgreSQL odnajduje dane i kiedy indeks ogranicza pracę silnika.
-To osobny pokaz do wykorzystania także na laboratorium; nie zmienia
-przebiegu demonstracji transakcji.
+Bez odpowiedniego indeksu baza może szukać danych przez **skan sekwencyjny**:
+przegląda wiersze tabeli i sprawdza warunek. Indeks B-tree jest dodatkową,
+uporządkowaną strukturą, która pozwala ominąć niepasujące zakresy.
+Nie jest drzewem binarnym — jeden węzeł może wskazywać wiele zakresów.
+
+Wyszukanie wartości, np. nazwiska „Nowak”, przebiega następująco:
+
+1. **Korzeń:** porównujemy szukaną wartość z granicami zakresów i wybieramy
+   odwołanie do właściwej części drzewa.
+2. **Węzły wewnętrzne:** powtarzamy wybór, zawężając zakres na kolejnych poziomach.
+3. **Liść:** odnajdujemy klucz i odwołania do pasujących wierszy tabeli.
+   Jeśli nazwisko się powtarza, trzeba uwzględnić wszystkie dopasowania.
+4. **Dane:** silnik pobiera potrzebne wiersze i kończy sprawdzanie warunków zapytania.
+   W niektórych planach wymagane wartości można odczytać z samego indeksu.
+
+Drzewo jest zrównoważone: wszystkie liście znajdują się na tej samej głębokości.
+Uporządkowanie kluczy pomaga także przy zakresach — odnajdujemy początek,
+a potem czytamy kolejne wpisy aż do końca zakresu.
+Indeks zajmuje miejsce i wymaga utrzymania przy zmianach danych.
+Gdy zapytanie potrzebuje większości tabeli, skan sekwencyjny może być tańszy.
+
+### Film: skan tabeli i wyszukiwanie przez indeks
+
+{{< video media/seq_vs_index.mp4 title="Seq Scan vs Index Scan — ilustracja idei" >}}
+
+Film pokazuje ideę pomijania niepasujących danych. Liczba animowanych kroków
+nie jest pomiarem czasu działania PostgreSQL.
 
 ## Dokumentacja PostgreSQL 16
 

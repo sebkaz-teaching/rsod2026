@@ -1,3 +1,2 @@
 rsod4_pokaz|-|-
 rsod5_pokaz|rsod5_demo.stock|lectures/wyklad5/00_setup.sql
-rsod_indeksy_pokaz|rsod_indexes_demo.enrollments|lectures/indeksy/00_setup.sql

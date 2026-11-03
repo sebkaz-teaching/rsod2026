@@ -56,9 +56,7 @@ ilustrują utraconą aktualizację, blokady oraz ponowienie po błędzie seriali
 Kompletny zestaw SQL zawiera kolejność kroków i oczekiwane wyniki.
 
 
-## Uzupełnienie — indeksy i plany zapytań
+## Indeksy — krótki opis i film
 
-[Indeksy, B-tree i analiza planów](lectures/indeksy.qmd): materiał z filmem
-porównującym skan tabeli i wyszukiwanie przez indeks, zaadaptowany z PRBA.
-Pokaz na 200 tys. zapisów pozwala porównać plany przed dodaniem indeksu
-i po nim. Zestaw SQL działa w osobnej bazie PostgreSQL środowiska RSOD.
+[Jak działa indeks B-tree?](lectures/wyklad5.qmd#indeks-btree) — krótki opis
+wyszukiwania w drzewie oraz film na stronie ostatniego wykładu.

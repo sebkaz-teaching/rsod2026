@@ -93,12 +93,12 @@ lecture_coverage:
     next_step: "Demonstracje na dwóch połączeniach PostgreSQL 16: assets/sql/rsod5-transakcje.zip. Każdy pokaz zawiera kolejność kroków, reset i oczekiwane wyniki. Poprzedni szkic wraz z lokalnymi poprawkami zachowano w _archiwum/wyklad5-before-transactions.qmd."
 
 supplementary_materials:
-  - file: lectures/indeksy.qmd
-    title: "Indeksy, B-tree i analiza planów zapytań"
+  - file: lectures/wyklad5.qmd
+    section: indeks-btree
+    title: "Krótki opis algorytmu indeksu B-tree i film"
     supports: [L4]
-    origin: "Materiał PRBA 6 zaadaptowany do samodzielnego środowiska RSOD; bez testu początkowego."
-    assets: [lectures/media/seq_vs_index.mp4, assets/sql/rsod-indeksy.zip]
-    database: rsod_indeksy_pokaz
+    origin: "Skrócone uzupełnienie na podstawie PRBA 6; bez kodu porównywania planów."
+    assets: [lectures/media/seq_vs_index.mp4]
 
 legacy_lab_reuse:
   - file: ../../Archiwum-kursow/rsod/cwiczenia/cw1.ipynb

@@ -11,10 +11,6 @@ Serwer jest już dodany; hasło bazy jest wczytywane automatycznie.
 Bazy i skrypty:
 - rsod4_pokaz → materials/lectures/wyklad4
 - rsod5_pokaz → materials/lectures/wyklad5
-- rsod_indeksy_pokaz → materials/lectures/indeksy
-Indeksy: dane są gotowe po docker compose up -d. Zacznij od 01_before.sql,
-potem 02_index.sql, 03_after.sql i 04_broad_query.sql.
-05_repeat_baseline.sql usuwa tylko dodatkowy indeks pokazu i pozwala go powtórzyć.
 RSOD 5 ma gotowe dane: zacznij od 01_rollback.sql.
 Pokazy 05–10 wymagają dwóch niezależnych Query Tool i wykonania kroków A/B
 w kolejności z CZYTAJ-NAJPIERW.txt. Przed każdym pokazem wykonaj 99_reset.sql
