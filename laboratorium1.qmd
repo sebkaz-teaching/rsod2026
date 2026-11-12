@@ -5,7 +5,7 @@ lang: pl
 
 ## Cel i sposób pracy
 
-Na tych zajęciach nauczysz się obsługiwać pgAdmin: uruchamiać środowisko,
+Na tych zajęciach nauczysz się obsługiwać pgAdmin: sprawdzać połączenie z serwerem,
 poruszać się po obiektach, tworzyć bazę, schemat i tabele, wpisywać i zmieniać
 dane oraz usuwać obiekty ćwiczebne. Większość pracy wykonasz **przez interfejs
 graficzny**. W Query Tool użyjemy tylko `SELECT * FROM ...;`.
@@ -22,58 +22,82 @@ wyświetlanej po najechaniu kursorem.
 ## Pracuj we własnej bazie
 
 W nazwie `rsod_lab1_12345` zastąp `12345` swoim numerem albumu.
-Wszystkie dalsze zadania wykonuj w tej bazie. Bazy `rsod4_pokaz` i
-`rsod5_pokaz` służą do demonstracji wykładowych — nie zmieniaj ich zawartości.
+Wszystkie dalsze zadania wykonuj w tej bazie. Nie zmieniaj zawartości
+baz systemowych ani baz przygotowanych do innych zajęć.
 Na stanowisku współdzielonym nie edytuj obiektów innych osób.
 :::
 
-## A. Uruchomienie środowiska i orientacja
+## A. Windows — sprawdzenie środowiska i połączenia
 
-### Zadanie 1. Uruchom środowisko
+Pracujemy na Windows z **już zainstalowanymi PostgreSQL i pgAdmin 4**.
+PostgreSQL jest serwerem bazy danych, a pgAdmin aplikacją do jego obsługi.
+Otwarcie pgAdmin samo w sobie nie potwierdza, że serwer PostgreSQL działa.
+Nazwy usług, wersje oraz dane logowania mogą różnić się między stanowiskami.
 
-1. Uruchom Docker Desktop i poczekaj, aż będzie gotowy.
-2. Otwórz terminal w katalogu `rsod2026/docker` otrzymanego repozytorium.
-3. Wykonaj:
+### Zadanie 1. Sprawdź usługę PostgreSQL
 
-```bash
-docker compose up -d
-```
+1. Naciśnij **Win + R**, wpisz `services.msc` i zatwierdź Enterem.
+2. Na liście **Usługi** znajdź usługę PostgreSQL. Jej nazwa może wyglądać
+   np. jak `postgresql-x64-16`; numer zależy od zainstalowanej wersji.
+3. Sprawdź kolumnę **Stan**. Oczekiwany stan to **Uruchomiono / Running**.
+4. Jeżeli usługa jest zatrzymana, zgłoś to prowadzącemu. Jej uruchomienie
+   może wymagać uprawnień administratora stanowiska.
+5. Opcjonalnie otwórz **Menedżer zadań** przez **Ctrl + Shift + Esc**
+   i w zakładce **Szczegóły** odszukaj procesy `postgres.exe`.
 
-4. Sprawdź stan usług:
-
-```bash
-docker compose ps -a
-```
-
-**Sprawdź:** `postgres` i `pgadmin` działają. Usługa `prepare` może mieć stan
-`Exited (0)` — to poprawne zakończenie przygotowania baz. Pierwszy start może
-trwać dłużej ze względu na pobieranie obrazów.
+**Sprawdź:** usługa PostgreSQL działa. Kilka procesów `postgres.exe` jest
+normalnym zjawiskiem; nie kończ ich ręcznie. Jeśli nie widzisz usługi lub
+procesów, zanotuj ten fakt i pokaż go prowadzącemu — sam brak procesu na liście
+nie rozstrzyga problemu. Ostateczną kontrolą będzie połączenie w zadaniu 3.
 
 ### Zadanie 2. Otwórz pgAdmin
 
-1. Otwórz w przeglądarce [http://localhost:5051](http://localhost:5051).
-2. Poczekaj na załadowanie panelu. Jeśli start kontenerów jeszcze trwa, ponów
-   próbę po chwili.
-3. Znajdź panel **Object Explorer** po lewej i obszar kart po prawej.
+1. W menu **Start** wyszukaj i uruchom **pgAdmin 4**.
+2. Poczekaj na otwarcie aplikacji.
+3. Jeśli pojawi się pytanie o **Master Password**, użyj hasła ustalonego
+   dla pgAdmin na tym stanowisku lub poproś prowadzącego o pomoc.
+4. Znajdź panel **Object Explorer** po lewej i obszar kart po prawej.
 
-**Sprawdź:** widzisz interfejs pgAdmin. W przygotowanym środowisku działa
-lokalny tryb desktop: formularz logowania do pgAdmin nie powinien być potrzebny.
+**Sprawdź:** widzisz interfejs pgAdmin. Hasło główne pgAdmin chroni zapisane
+hasła połączeń; nie musi być tym samym hasłem co hasło użytkownika PostgreSQL.
+W zależności od wersji i ustawień pytanie o nie może się nie pojawić.
 
 ### Zadanie 3. Połącz się z serwerem
 
-1. Rozwiń **Servers**, a następnie **RSOD — PostgreSQL**.
-2. Poczekaj na połączenie i rozwiń **Databases**.
-3. Jeżeli pojawi się pytanie o hasło serwera, użyj lokalnego hasła
-   `Rsod2026Local`. Nazwa użytkownika to `rsod`.
+1. Rozwiń **Servers** i wybierz istniejący wpis lokalnego PostgreSQL.
+   Jego nazwa może być np. `PostgreSQL 16` — to etykieta połączenia.
+2. Jeśli serwer jest rozłączony, kliknij PPM → **Connect Server**.
+3. Podaj hasło użytkownika PostgreSQL otrzymane dla tego stanowiska.
+4. Rozwiń **Databases** i sprawdź, czy lista baz jest dostępna.
 
-**Sprawdź:** widzisz listę baz, w tym przygotowane bazy wykładowe.
-Serwer został zarejestrowany automatycznie; nie dodawaj drugiego połączenia.
+Jeśli **Servers** jest puste, zarejestruj istniejący serwer:
+
+1. Kliknij PPM na **Servers** → **Register** → **Server…**.
+2. W **General** ustaw **Name** na `Local PostgreSQL`.
+3. W **Connection** uzupełnij parametry poniżej. Jeżeli prowadzący podał
+   inne dane, zastosuj konfigurację stanowiska.
+
+| Pole | Wartość dla typowej lokalnej instalacji |
+|---|---|
+| Host name/address | `localhost` |
+| Port | `5432` — o ile podczas instalacji nie wybrano innego |
+| Maintenance database | `postgres` |
+| Username | Konto wskazane przez prowadzącego, często `postgres` |
+| Password | Hasło tego konta ustawione na stanowisku |
+
+4. Kliknij **Save** i rozwiń **Databases**.
+
+**Sprawdź:** widzisz listę baz. To potwierdza, że pgAdmin potrafi połączyć się
+z serwerem i uwierzytelnić użytkownika. Rejestracja wpisu w pgAdmin nie instaluje
+ani nie uruchamia nowego serwera. Nie znamy hasła Twojej instalacji — nie wpisuj
+przypadkowego hasła z przykładów.
 
 ### Zadanie 4. Obejrzyj drzewo obiektów
 
-1. Rozwiń bazę `rsod4_pokaz`, następnie **Schemas** i **public**.
-2. Znajdź gałąź **Tables**. Może być pusta, jeśli pokazów jeszcze nie wykonano.
-3. Zwiń bazę wykładową.
+1. Rozwiń bazę `postgres`, następnie **Schemas** i **public**.
+   Jeśli na stanowisku wskazano inną bazę do oglądania, użyj jej.
+2. Znajdź gałąź **Tables**. Może być pusta.
+3. Zwiń tę bazę; nie twórz w niej obiektów do ćwiczeń.
 
 **Sprawdź:** umiesz wskazać hierarchię: serwer → baza → schemat → tabela.
 Schemat jest przestrzenią nazw wewnątrz bazy, a nie kolejnym serwerem.
@@ -84,7 +108,7 @@ Schemat jest przestrzenią nazw wewnątrz bazy, a nie kolejnym serwerem.
 2. Wybierz **Refresh**.
 3. Rozwiń i zwiń ponownie tę gałąź.
 
-**Sprawdź:** potrafisz odświeżyć listę obiektów bez restartowania kontenerów.
+**Sprawdź:** potrafisz odświeżyć listę obiektów bez ponownego uruchamiania pgAdmin.
 Odświeżenie drzewa nie zapisuje zmian w danych.
 
 ## B. Własna baza i schemat
@@ -94,10 +118,13 @@ Odświeżenie drzewa nie zapisuje zmian w danych.
 1. Kliknij PPM na **Databases** → **Create** → **Database…**.
 2. W zakładce **General**, w polu **Database**, wpisz `rsod_lab1_12345`
    z własnym numerem albumu.
-3. Pozostaw właściciela **Owner** ustawionego na `rsod`.
+3. Pozostaw domyślnego właściciela **Owner** zgodnego z kontem używanym
+   na stanowisku (np. `postgres`).
 4. Kliknij **Save**. W razie potrzeby odśwież **Databases**.
 
-**Sprawdź:** Twoja baza pojawiła się na liście. Jeżeli taka nazwa już istnieje,
+**Sprawdź:** Twoja baza pojawiła się na liście. Jeśli otrzymasz błąd braku
+uprawnień do tworzenia bazy, pokaż go prowadzącemu — potrzebne jest konto
+z uprawnieniem `CREATEDB` lub przygotowanie bazy przez prowadzącego. Jeżeli taka nazwa już istnieje,
 nie usuwaj bazy — sprawdź, czy to wynik Twojej wcześniejszej pracy.
 
 ### Zadanie 7. Obejrzyj właściwości bazy
@@ -114,7 +141,7 @@ utworzono już Twoje tabele.
 
 1. W swojej bazie kliknij PPM na **Schemas** → **Create** → **Schema…**.
 2. W polu **Name** wpisz `lab1`.
-3. Pozostaw właściciela `rsod` i kliknij **Save**.
+3. Pozostaw domyślnego właściciela zgodnego z kontem na stanowisku i kliknij **Save**.
 4. Odśwież **Schemas**, jeśli nowy obiekt nie jest widoczny.
 
 **Sprawdź:** schematy `public` i `lab1` znajdują się w tej samej bazie.
@@ -533,29 +560,16 @@ Luka w numeracji po usunięciu rekordu nie jest błędem.
 
 ### Zadanie 45. Zakończ i wznów pracę
 
-1. Zapisz wszystkie zmiany w siatkach, a następnie zamknij karty edycji.
-2. W terminalu, w katalogu `rsod2026/docker`, zatrzymaj środowisko:
-
-```bash
-docker compose stop
-```
-
-3. Uruchom je ponownie:
-
-```bash
-docker compose up -d
-```
-
-4. Otwórz ponownie pgAdmin, połącz się z serwerem i odszukaj swoją bazę.
+1. Zapisz wszystkie zmiany przyciskiem **Save Data** i sprawdź komunikaty.
+2. Zamknij karty edycji, a następnie zamknij pgAdmin.
+3. Ponownie uruchom **pgAdmin 4** z menu Start.
+4. Połącz się z tym samym serwerem i odszukaj swoją bazę.
 5. Obejrzyj obie ewidencje i wykonaj dla każdej znany `SELECT *`.
 
-**Sprawdź:** dane przetrwały zatrzymanie kontenerów. Po ostatecznym zakończeniu
-pracy możesz ponownie użyć `docker compose stop`.
-
-::: {.callout-warning}
-Nie używaj `docker compose down -v` do zwykłego kończenia zajęć.
-Opcja `-v` usuwa woluminy, w których przechowywane są dane środowiska.
-:::
+**Sprawdź:** zapisane dane pozostały w bazie po zamknięciu aplikacji.
+Zamknięcie pgAdmin nie usuwa danych ani nie zatrzymuje usługi PostgreSQL.
+Na koniec zajęć zamknij pgAdmin i wyloguj się z Windows zgodnie z zasadami
+pracowni. Nie zatrzymuj usługi PostgreSQL ani procesów `postgres.exe`.
 
 ## Kontrola końcowa i materiał do oddania
 
@@ -597,14 +611,17 @@ powinna być usunięta.
 6. Dlaczego powtórzenie wartości `equipment_id` spowodowało błąd?
 7. Czym różni się usunięcie wszystkich wierszy od usunięcia tabeli?
 8. Czy odtworzenie tabeli o tej samej nazwie przywraca poprzednie dane?
-9. Czy zamknięcie przeglądarki zatrzymuje PostgreSQL w Dockerze?
-10. Jak zakończyć pracę z kontenerami i zachować dane na kolejne zajęcia?
+9. Czy zamknięcie pgAdmin zatrzymuje usługę PostgreSQL w Windows?
+10. Gdzie w Windows sprawdzisz stan usługi PostgreSQL i jak potwierdzisz połączenie z serwerem?
 
 ## Gdy coś nie działa
 
 | Objaw | Co sprawdzić |
 |---|---|
-| Strona na porcie 5051 się nie otwiera | Czy Docker działa? Sprawdź `docker compose ps -a` w katalogu `docker`; jeśli usługa nie startuje, odczytaj `docker compose logs pgadmin prepare postgres`. |
+| pgAdmin się nie otwiera | Uruchom pgAdmin 4 z menu Start; jeśli aplikacja zgłasza błąd, pokaż komunikat prowadzącemu. |
+| Nie można połączyć się z PostgreSQL | Sprawdź stan usługi w `services.msc`, host oraz port połączenia. |
+| Komunikat o błędnym haśle | Sprawdź nazwę użytkownika i hasło PostgreSQL dla stanowiska; nie myl go z Master Password pgAdmin. |
+| Brak uprawnień do utworzenia bazy | Pokaż komunikat prowadzącemu; nie zmieniaj samodzielnie uprawnień kont. |
 | Obiekt nie pojawia się w drzewie | Odśwież gałąź i sprawdź właściwą bazę oraz schemat. |
 | Tabela jest widoczna, ale zapytanie zgłasza brak obiektu | Sprawdź połączenie Query Tool i pełną nazwę, np. `lab1.equipment`. |
 | Nie można edytować rekordów | Otwórz tabelę przez **View/Edit Data** i sprawdź, czy ma klucz główny. |
@@ -614,13 +631,16 @@ powinna być usunięta.
 | Zapis zgłasza duplikat klucza | Popraw identyfikator nowego wiersza; nie usuwaj poprawnego istniejącego rekordu. |
 | Zapis zgłasza brak wymaganej wartości | Uzupełnij kolumny z **Not NULL**, a następnie ponów zapis. |
 
-Nie usuwaj bazy ani woluminów w celu naprawienia pojedynczego błędu.
+Nie usuwaj bazy ani katalogu danych PostgreSQL w celu naprawienia pojedynczego błędu.
 Jeżeli nie wiesz, jak bezpiecznie poprawić stan, pokaż prowadzącemu komunikat
 oraz nazwę bazy i tabeli.
 
 ## Dokumentacja pomocnicza
 
-Formularze opisuje dokumentacja wersji używanej w środowisku:
+[Parametry połączenia z serwerem](https://www.pgadmin.org/docs/pgadmin4/latest/server_dialog.html).
+
+Formularze opisuje dokumentacja pgAdmin (poniżej wersja 9.18; układ na
+stanowisku może się nieznacznie różnić):
 [tworzenie i właściwości tabeli](https://www.pgadmin.org/docs/pgadmin4/9.18/table_dialog.html)
 oraz [tworzenie i właściwości kolumny](https://www.pgadmin.org/docs/pgadmin4/9.18/column_dialog.html).
 

@@ -221,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul class="collapse">
   <li><a href="#cel-i-sposób-pracy" id="toc-cel-i-sposób-pracy" class="nav-link active" data-scroll-target="#cel-i-sposób-pracy">Cel i sposób pracy</a></li>
-  <li><a href="#a.-uruchomienie-środowiska-i-orientacja" id="toc-a.-uruchomienie-środowiska-i-orientacja" class="nav-link" data-scroll-target="#a.-uruchomienie-środowiska-i-orientacja">A. Uruchomienie środowiska i orientacja</a></li>
+  <li><a href="#a.-windows-sprawdzenie-środowiska-i-połączenia" id="toc-a.-windows-sprawdzenie-środowiska-i-połączenia" class="nav-link" data-scroll-target="#a.-windows-sprawdzenie-środowiska-i-połączenia">A. Windows — sprawdzenie środowiska i połączenia</a></li>
   <li><a href="#b.-własna-baza-i-schemat" id="toc-b.-własna-baza-i-schemat" class="nav-link" data-scroll-target="#b.-własna-baza-i-schemat">B. Własna baza i schemat</a></li>
   <li><a href="#c.-pierwsza-tabela-przez-formularz" id="toc-c.-pierwsza-tabela-przez-formularz" class="nav-link" data-scroll-target="#c.-pierwsza-tabela-przez-formularz">C. Pierwsza tabela przez formularz</a></li>
   <li><a href="#d.-dodawanie-i-poprawianie-danych" id="toc-d.-dodawanie-i-poprawianie-danych" class="nav-link" data-scroll-target="#d.-dodawanie-i-poprawianie-danych">D. Dodawanie i poprawianie danych</a></li>
@@ -260,7 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="cel-i-sposób-pracy" class="level2">
 <h2 class="anchored" data-anchor-id="cel-i-sposób-pracy">Cel i sposób pracy</h2>
-<p>Na tych zajęciach nauczysz się obsługiwać pgAdmin: uruchamiać środowisko, poruszać się po obiektach, tworzyć bazę, schemat i tabele, wpisywać i zmieniać dane oraz usuwać obiekty ćwiczebne. Większość pracy wykonasz <strong>przez interfejs graficzny</strong>. W Query Tool użyjemy tylko <code>SELECT * FROM ...;</code>.</p>
+<p>Na tych zajęciach nauczysz się obsługiwać pgAdmin: sprawdzać połączenie z serwerem, poruszać się po obiektach, tworzyć bazę, schemat i tabele, wpisywać i zmieniać dane oraz usuwać obiekty ćwiczebne. Większość pracy wykonasz <strong>przez interfejs graficzny</strong>. W Query Tool użyjemy tylko <code>SELECT * FROM ...;</code>.</p>
 <p>Zadania 1–36 stanowią część prowadzoną, a 37–45 służą samodzielnemu utrwaleniu. Wykonuj je kolejno: późniejsze kroki korzystają z wcześniejszych rezultatów. Po każdym zadaniu sprawdź podany rezultat. Nie musisz znać innych poleceń SQL.</p>
 <p>Nazwy przycisków podano po angielsku, zgodnie z interfejsem pgAdmin. <strong>PPM</strong> oznacza prawy przycisk myszy. Ikony rozpoznawaj również po podpowiedzi wyświetlanej po najechaniu kursorem.</p>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -273,50 +273,89 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>W nazwie <code>rsod_lab1_12345</code> zastąp <code>12345</code> swoim numerem albumu. Wszystkie dalsze zadania wykonuj w tej bazie. Bazy <code>rsod4_pokaz</code> i <code>rsod5_pokaz</code> służą do demonstracji wykładowych — nie zmieniaj ich zawartości. Na stanowisku współdzielonym nie edytuj obiektów innych osób.</p>
+<p>W nazwie <code>rsod_lab1_12345</code> zastąp <code>12345</code> swoim numerem albumu. Wszystkie dalsze zadania wykonuj w tej bazie. Nie zmieniaj zawartości baz systemowych ani baz przygotowanych do innych zajęć. Na stanowisku współdzielonym nie edytuj obiektów innych osób.</p>
 </div>
 </div>
 </section>
-<section id="a.-uruchomienie-środowiska-i-orientacja" class="level2">
-<h2 class="anchored" data-anchor-id="a.-uruchomienie-środowiska-i-orientacja">A. Uruchomienie środowiska i orientacja</h2>
-<section id="zadanie-1.-uruchom-środowisko" class="level3">
-<h3 class="anchored" data-anchor-id="zadanie-1.-uruchom-środowisko">Zadanie 1. Uruchom środowisko</h3>
+<section id="a.-windows-sprawdzenie-środowiska-i-połączenia" class="level2">
+<h2 class="anchored" data-anchor-id="a.-windows-sprawdzenie-środowiska-i-połączenia">A. Windows — sprawdzenie środowiska i połączenia</h2>
+<p>Pracujemy na Windows z <strong>już zainstalowanymi PostgreSQL i pgAdmin 4</strong>. PostgreSQL jest serwerem bazy danych, a pgAdmin aplikacją do jego obsługi. Otwarcie pgAdmin samo w sobie nie potwierdza, że serwer PostgreSQL działa. Nazwy usług, wersje oraz dane logowania mogą różnić się między stanowiskami.</p>
+<section id="zadanie-1.-sprawdź-usługę-postgresql" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-1.-sprawdź-usługę-postgresql">Zadanie 1. Sprawdź usługę PostgreSQL</h3>
 <ol type="1">
-<li>Uruchom Docker Desktop i poczekaj, aż będzie gotowy.</li>
-<li>Otwórz terminal w katalogu <code>rsod2026/docker</code> otrzymanego repozytorium.</li>
-<li>Wykonaj:</li>
+<li>Naciśnij <strong>Win + R</strong>, wpisz <code>services.msc</code> i zatwierdź Enterem.</li>
+<li>Na liście <strong>Usługi</strong> znajdź usługę PostgreSQL. Jej nazwa może wyglądać np. jak <code>postgresql-x64-16</code>; numer zależy od zainstalowanej wersji.</li>
+<li>Sprawdź kolumnę <strong>Stan</strong>. Oczekiwany stan to <strong>Uruchomiono / Running</strong>.</li>
+<li>Jeżeli usługa jest zatrzymana, zgłoś to prowadzącemu. Jej uruchomienie może wymagać uprawnień administratora stanowiska.</li>
+<li>Opcjonalnie otwórz <strong>Menedżer zadań</strong> przez <strong>Ctrl + Shift + Esc</strong> i w zakładce <strong>Szczegóły</strong> odszukaj procesy <code>postgres.exe</code>.</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
-<ol start="4" type="1">
-<li>Sprawdź stan usług:</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose ps <span class="at">-a</span></span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Sprawdź:</strong> <code>postgres</code> i <code>pgadmin</code> działają. Usługa <code>prepare</code> może mieć stan <code>Exited (0)</code> — to poprawne zakończenie przygotowania baz. Pierwszy start może trwać dłużej ze względu na pobieranie obrazów.</p>
+<p><strong>Sprawdź:</strong> usługa PostgreSQL działa. Kilka procesów <code>postgres.exe</code> jest normalnym zjawiskiem; nie kończ ich ręcznie. Jeśli nie widzisz usługi lub procesów, zanotuj ten fakt i pokaż go prowadzącemu — sam brak procesu na liście nie rozstrzyga problemu. Ostateczną kontrolą będzie połączenie w zadaniu 3.</p>
 </section>
 <section id="zadanie-2.-otwórz-pgadmin" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-2.-otwórz-pgadmin">Zadanie 2. Otwórz pgAdmin</h3>
 <ol type="1">
-<li>Otwórz w przeglądarce <a href="http://localhost:5051">http://localhost:5051</a>.</li>
-<li>Poczekaj na załadowanie panelu. Jeśli start kontenerów jeszcze trwa, ponów próbę po chwili.</li>
+<li>W menu <strong>Start</strong> wyszukaj i uruchom <strong>pgAdmin 4</strong>.</li>
+<li>Poczekaj na otwarcie aplikacji.</li>
+<li>Jeśli pojawi się pytanie o <strong>Master Password</strong>, użyj hasła ustalonego dla pgAdmin na tym stanowisku lub poproś prowadzącego o pomoc.</li>
 <li>Znajdź panel <strong>Object Explorer</strong> po lewej i obszar kart po prawej.</li>
 </ol>
-<p><strong>Sprawdź:</strong> widzisz interfejs pgAdmin. W przygotowanym środowisku działa lokalny tryb desktop: formularz logowania do pgAdmin nie powinien być potrzebny.</p>
+<p><strong>Sprawdź:</strong> widzisz interfejs pgAdmin. Hasło główne pgAdmin chroni zapisane hasła połączeń; nie musi być tym samym hasłem co hasło użytkownika PostgreSQL. W zależności od wersji i ustawień pytanie o nie może się nie pojawić.</p>
 </section>
 <section id="zadanie-3.-połącz-się-z-serwerem" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-3.-połącz-się-z-serwerem">Zadanie 3. Połącz się z serwerem</h3>
 <ol type="1">
-<li>Rozwiń <strong>Servers</strong>, a następnie <strong>RSOD — PostgreSQL</strong>.</li>
-<li>Poczekaj na połączenie i rozwiń <strong>Databases</strong>.</li>
-<li>Jeżeli pojawi się pytanie o hasło serwera, użyj lokalnego hasła <code>Rsod2026Local</code>. Nazwa użytkownika to <code>rsod</code>.</li>
+<li>Rozwiń <strong>Servers</strong> i wybierz istniejący wpis lokalnego PostgreSQL. Jego nazwa może być np. <code>PostgreSQL 16</code> — to etykieta połączenia.</li>
+<li>Jeśli serwer jest rozłączony, kliknij PPM → <strong>Connect Server</strong>.</li>
+<li>Podaj hasło użytkownika PostgreSQL otrzymane dla tego stanowiska.</li>
+<li>Rozwiń <strong>Databases</strong> i sprawdź, czy lista baz jest dostępna.</li>
 </ol>
-<p><strong>Sprawdź:</strong> widzisz listę baz, w tym przygotowane bazy wykładowe. Serwer został zarejestrowany automatycznie; nie dodawaj drugiego połączenia.</p>
+<p>Jeśli <strong>Servers</strong> jest puste, zarejestruj istniejący serwer:</p>
+<ol type="1">
+<li>Kliknij PPM na <strong>Servers</strong> → <strong>Register</strong> → <strong>Server…</strong>.</li>
+<li>W <strong>General</strong> ustaw <strong>Name</strong> na <code>Local PostgreSQL</code>.</li>
+<li>W <strong>Connection</strong> uzupełnij parametry poniżej. Jeżeli prowadzący podał inne dane, zastosuj konfigurację stanowiska.</li>
+</ol>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pole</th>
+<th>Wartość dla typowej lokalnej instalacji</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Host name/address</td>
+<td><code>localhost</code></td>
+</tr>
+<tr class="even">
+<td>Port</td>
+<td><code>5432</code> — o ile podczas instalacji nie wybrano innego</td>
+</tr>
+<tr class="odd">
+<td>Maintenance database</td>
+<td><code>postgres</code></td>
+</tr>
+<tr class="even">
+<td>Username</td>
+<td>Konto wskazane przez prowadzącego, często <code>postgres</code></td>
+</tr>
+<tr class="odd">
+<td>Password</td>
+<td>Hasło tego konta ustawione na stanowisku</td>
+</tr>
+</tbody>
+</table>
+<ol start="4" type="1">
+<li>Kliknij <strong>Save</strong> i rozwiń <strong>Databases</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> widzisz listę baz. To potwierdza, że pgAdmin potrafi połączyć się z serwerem i uwierzytelnić użytkownika. Rejestracja wpisu w pgAdmin nie instaluje ani nie uruchamia nowego serwera. Nie znamy hasła Twojej instalacji — nie wpisuj przypadkowego hasła z przykładów.</p>
 </section>
 <section id="zadanie-4.-obejrzyj-drzewo-obiektów" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-4.-obejrzyj-drzewo-obiektów">Zadanie 4. Obejrzyj drzewo obiektów</h3>
 <ol type="1">
-<li>Rozwiń bazę <code>rsod4_pokaz</code>, następnie <strong>Schemas</strong> i <strong>public</strong>.</li>
-<li>Znajdź gałąź <strong>Tables</strong>. Może być pusta, jeśli pokazów jeszcze nie wykonano.</li>
-<li>Zwiń bazę wykładową.</li>
+<li>Rozwiń bazę <code>postgres</code>, następnie <strong>Schemas</strong> i <strong>public</strong>. Jeśli na stanowisku wskazano inną bazę do oglądania, użyj jej.</li>
+<li>Znajdź gałąź <strong>Tables</strong>. Może być pusta.</li>
+<li>Zwiń tę bazę; nie twórz w niej obiektów do ćwiczeń.</li>
 </ol>
 <p><strong>Sprawdź:</strong> umiesz wskazać hierarchię: serwer → baza → schemat → tabela. Schemat jest przestrzenią nazw wewnątrz bazy, a nie kolejnym serwerem.</p>
 </section>
@@ -327,7 +366,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Wybierz <strong>Refresh</strong>.</li>
 <li>Rozwiń i zwiń ponownie tę gałąź.</li>
 </ol>
-<p><strong>Sprawdź:</strong> potrafisz odświeżyć listę obiektów bez restartowania kontenerów. Odświeżenie drzewa nie zapisuje zmian w danych.</p>
+<p><strong>Sprawdź:</strong> potrafisz odświeżyć listę obiektów bez ponownego uruchamiania pgAdmin. Odświeżenie drzewa nie zapisuje zmian w danych.</p>
 </section>
 </section>
 <section id="b.-własna-baza-i-schemat" class="level2">
@@ -337,10 +376,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>Kliknij PPM na <strong>Databases</strong> → <strong>Create</strong> → <strong>Database…</strong>.</li>
 <li>W zakładce <strong>General</strong>, w polu <strong>Database</strong>, wpisz <code>rsod_lab1_12345</code> z własnym numerem albumu.</li>
-<li>Pozostaw właściciela <strong>Owner</strong> ustawionego na <code>rsod</code>.</li>
+<li>Pozostaw domyślnego właściciela <strong>Owner</strong> zgodnego z kontem używanym na stanowisku (np. <code>postgres</code>).</li>
 <li>Kliknij <strong>Save</strong>. W razie potrzeby odśwież <strong>Databases</strong>.</li>
 </ol>
-<p><strong>Sprawdź:</strong> Twoja baza pojawiła się na liście. Jeżeli taka nazwa już istnieje, nie usuwaj bazy — sprawdź, czy to wynik Twojej wcześniejszej pracy.</p>
+<p><strong>Sprawdź:</strong> Twoja baza pojawiła się na liście. Jeśli otrzymasz błąd braku uprawnień do tworzenia bazy, pokaż go prowadzącemu — potrzebne jest konto z uprawnieniem <code>CREATEDB</code> lub przygotowanie bazy przez prowadzącego. Jeżeli taka nazwa już istnieje, nie usuwaj bazy — sprawdź, czy to wynik Twojej wcześniejszej pracy.</p>
 </section>
 <section id="zadanie-7.-obejrzyj-właściwości-bazy" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-7.-obejrzyj-właściwości-bazy">Zadanie 7. Obejrzyj właściwości bazy</h3>
@@ -356,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>W swojej bazie kliknij PPM na <strong>Schemas</strong> → <strong>Create</strong> → <strong>Schema…</strong>.</li>
 <li>W polu <strong>Name</strong> wpisz <code>lab1</code>.</li>
-<li>Pozostaw właściciela <code>rsod</code> i kliknij <strong>Save</strong>.</li>
+<li>Pozostaw domyślnego właściciela zgodnego z kontem na stanowisku i kliknij <strong>Save</strong>.</li>
 <li>Odśwież <strong>Schemas</strong>, jeśli nowy obiekt nie jest widoczny.</li>
 </ol>
 <p><strong>Sprawdź:</strong> schematy <code>public</code> i <code>lab1</code> znajdują się w tej samej bazie.</p>
@@ -609,7 +648,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>Wpisz w edytorze:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.equipment;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.equipment;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="2" type="1">
 <li>Zaznacz całe polecenie i użyj <strong>Execute script</strong> / <strong>Execute query</strong> na pasku Query Tool, aby je wykonać.</li>
 <li>Obejrzyj <strong>Data Output</strong>.</li>
@@ -666,7 +705,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Wróć do Query Tool.</li>
 <li>Ponownie wykonaj:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.equipment;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.equipment;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="3" type="1">
 <li>Sprawdź nazwy kolumn i wpisane notatki.</li>
 </ol>
@@ -733,7 +772,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Wprowadź i zapisz rekord <code>1</code>, <code>Nowy test</code>.</li>
 <li>Otwórz Query Tool w swojej bazie i wykonaj:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.scratch_items;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.scratch_items;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Sprawdź:</strong> wynik zawiera wyłącznie nowy rekord. Dane <code>Test A</code> i <code>Test B</code> nie pojawiły się automatycznie.</p>
 </section>
 </section>
@@ -830,7 +869,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>W Query Tool wpisz i wykonaj:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> practice.books;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> practice.books;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="2" type="1">
 <li>Sprawdź sześć rekordów, pięć kolumn i wartości <code>shelf</code>.</li>
 <li>Przejdź do <strong>Messages</strong>, a następnie wróć do wyniku.</li>
@@ -860,32 +899,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="zadanie-45.-zakończ-i-wznów-pracę" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-45.-zakończ-i-wznów-pracę">Zadanie 45. Zakończ i wznów pracę</h3>
 <ol type="1">
-<li>Zapisz wszystkie zmiany w siatkach, a następnie zamknij karty edycji.</li>
-<li>W terminalu, w katalogu <code>rsod2026/docker</code>, zatrzymaj środowisko:</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose stop</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
-<ol start="3" type="1">
-<li>Uruchom je ponownie:</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
-<ol start="4" type="1">
-<li>Otwórz ponownie pgAdmin, połącz się z serwerem i odszukaj swoją bazę.</li>
+<li>Zapisz wszystkie zmiany przyciskiem <strong>Save Data</strong> i sprawdź komunikaty.</li>
+<li>Zamknij karty edycji, a następnie zamknij pgAdmin.</li>
+<li>Ponownie uruchom <strong>pgAdmin 4</strong> z menu Start.</li>
+<li>Połącz się z tym samym serwerem i odszukaj swoją bazę.</li>
 <li>Obejrzyj obie ewidencje i wykonaj dla każdej znany <code>SELECT *</code>.</li>
 </ol>
-<p><strong>Sprawdź:</strong> dane przetrwały zatrzymanie kontenerów. Po ostatecznym zakończeniu pracy możesz ponownie użyć <code>docker compose stop</code>.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Ostrzeżenie
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Nie używaj <code>docker compose down -v</code> do zwykłego kończenia zajęć. Opcja <code>-v</code> usuwa woluminy, w których przechowywane są dane środowiska.</p>
-</div>
-</div>
+<p><strong>Sprawdź:</strong> zapisane dane pozostały w bazie po zamknięciu aplikacji. Zamknięcie pgAdmin nie usuwa danych ani nie zatrzymuje usługi PostgreSQL. Na koniec zajęć zamknij pgAdmin i wyloguj się z Windows zgodnie z zasadami pracowni. Nie zatrzymuj usługi PostgreSQL ani procesów <code>postgres.exe</code>.</p>
 </section>
 </section>
 <section id="kontrola-końcowa-i-materiał-do-oddania" class="level2">
@@ -969,8 +989,8 @@ Ostrzeżenie
 <li>Dlaczego powtórzenie wartości <code>equipment_id</code> spowodowało błąd?</li>
 <li>Czym różni się usunięcie wszystkich wierszy od usunięcia tabeli?</li>
 <li>Czy odtworzenie tabeli o tej samej nazwie przywraca poprzednie dane?</li>
-<li>Czy zamknięcie przeglądarki zatrzymuje PostgreSQL w Dockerze?</li>
-<li>Jak zakończyć pracę z kontenerami i zachować dane na kolejne zajęcia?</li>
+<li>Czy zamknięcie pgAdmin zatrzymuje usługę PostgreSQL w Windows?</li>
+<li>Gdzie w Windows sprawdzisz stan usługi PostgreSQL i jak potwierdzisz połączenie z serwerem?</li>
 </ol>
 </section>
 </section>
@@ -989,48 +1009,61 @@ Ostrzeżenie
 </thead>
 <tbody>
 <tr class="odd">
-<td>Strona na porcie 5051 się nie otwiera</td>
-<td>Czy Docker działa? Sprawdź <code>docker compose ps -a</code> w katalogu <code>docker</code>; jeśli usługa nie startuje, odczytaj <code>docker compose logs pgadmin prepare postgres</code>.</td>
+<td>pgAdmin się nie otwiera</td>
+<td>Uruchom pgAdmin 4 z menu Start; jeśli aplikacja zgłasza błąd, pokaż komunikat prowadzącemu.</td>
 </tr>
 <tr class="even">
+<td>Nie można połączyć się z PostgreSQL</td>
+<td>Sprawdź stan usługi w <code>services.msc</code>, host oraz port połączenia.</td>
+</tr>
+<tr class="odd">
+<td>Komunikat o błędnym haśle</td>
+<td>Sprawdź nazwę użytkownika i hasło PostgreSQL dla stanowiska; nie myl go z Master Password pgAdmin.</td>
+</tr>
+<tr class="even">
+<td>Brak uprawnień do utworzenia bazy</td>
+<td>Pokaż komunikat prowadzącemu; nie zmieniaj samodzielnie uprawnień kont.</td>
+</tr>
+<tr class="odd">
 <td>Obiekt nie pojawia się w drzewie</td>
 <td>Odśwież gałąź i sprawdź właściwą bazę oraz schemat.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Tabela jest widoczna, ale zapytanie zgłasza brak obiektu</td>
 <td>Sprawdź połączenie Query Tool i pełną nazwę, np. <code>lab1.equipment</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Nie można edytować rekordów</td>
 <td>Otwórz tabelę przez <strong>View/Edit Data</strong> i sprawdź, czy ma klucz główny.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Po ponownym otwarciu brakuje zmian</td>
 <td>Sprawdź użycie <strong>Save Data</strong> i komunikat zapisu.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Wynik SELECT pokazuje stare dane</td>
 <td>Zapisz zmiany w siatce i wykonaj zapytanie ponownie.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Nowa kolumna nie jest widoczna w siatce</td>
 <td>Zamknij zapisany widok danych i otwórz go ponownie.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Zapis zgłasza duplikat klucza</td>
 <td>Popraw identyfikator nowego wiersza; nie usuwaj poprawnego istniejącego rekordu.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Zapis zgłasza brak wymaganej wartości</td>
 <td>Uzupełnij kolumny z <strong>Not NULL</strong>, a następnie ponów zapis.</td>
 </tr>
 </tbody>
 </table>
-<p>Nie usuwaj bazy ani woluminów w celu naprawienia pojedynczego błędu. Jeżeli nie wiesz, jak bezpiecznie poprawić stan, pokaż prowadzącemu komunikat oraz nazwę bazy i tabeli.</p>
+<p>Nie usuwaj bazy ani katalogu danych PostgreSQL w celu naprawienia pojedynczego błędu. Jeżeli nie wiesz, jak bezpiecznie poprawić stan, pokaż prowadzącemu komunikat oraz nazwę bazy i tabeli.</p>
 </section>
 <section id="dokumentacja-pomocnicza" class="level2">
 <h2 class="anchored" data-anchor-id="dokumentacja-pomocnicza">Dokumentacja pomocnicza</h2>
-<p>Formularze opisuje dokumentacja wersji używanej w środowisku: <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/table_dialog.html">tworzenie i właściwości tabeli</a> oraz <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/column_dialog.html">tworzenie i właściwości kolumny</a>.</p>
+<p><a href="https://www.pgadmin.org/docs/pgadmin4/latest/server_dialog.html">Parametry połączenia z serwerem</a>.</p>
+<p>Formularze opisuje dokumentacja pgAdmin (poniżej wersja 9.18; układ na stanowisku może się nieznacznie różnić): <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/table_dialog.html">tworzenie i właściwości tabeli</a> oraz <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/column_dialog.html">tworzenie i właściwości kolumny</a>.</p>
 </section>
 <section id="potwierdzenie-zaliczenia-laboratorium" class="level2">
 <h2 class="anchored" data-anchor-id="potwierdzenie-zaliczenia-laboratorium">Potwierdzenie zaliczenia laboratorium</h2>
