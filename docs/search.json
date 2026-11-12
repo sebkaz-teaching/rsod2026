@@ -907,5 +907,148 @@
       "Wykłady",
       "Przetwarzanie transakcyjne — ACID, współbieżność i izolacja"
     ]
+  },
+  {
+    "objectID": "laboratorium1.html",
+    "href": "laboratorium1.html",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "",
+    "text": "Na tych zajęciach nauczysz się obsługiwać pgAdmin: uruchamiać środowisko, poruszać się po obiektach, tworzyć bazę, schemat i tabele, wpisywać i zmieniać dane oraz usuwać obiekty ćwiczebne. Większość pracy wykonasz przez interfejs graficzny. W Query Tool użyjemy tylko SELECT * FROM ...;.\nZadania 1–36 stanowią część prowadzoną, a 37–45 służą samodzielnemu utrwaleniu. Wykonuj je kolejno: późniejsze kroki korzystają z wcześniejszych rezultatów. Po każdym zadaniu sprawdź podany rezultat. Nie musisz znać innych poleceń SQL.\nNazwy przycisków podano po angielsku, zgodnie z interfejsem pgAdmin. PPM oznacza prawy przycisk myszy. Ikony rozpoznawaj również po podpowiedzi wyświetlanej po najechaniu kursorem.\n\n\n\n\n\n\nWażnePracuj we własnej bazie\n\n\n\nW nazwie rsod_lab1_12345 zastąp 12345 swoim numerem albumu. Wszystkie dalsze zadania wykonuj w tej bazie. Bazy rsod4_pokaz i rsod5_pokaz służą do demonstracji wykładowych — nie zmieniaj ich zawartości. Na stanowisku współdzielonym nie edytuj obiektów innych osób.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#cel-i-sposób-pracy",
+    "href": "laboratorium1.html#cel-i-sposób-pracy",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "",
+    "text": "Na tych zajęciach nauczysz się obsługiwać pgAdmin: uruchamiać środowisko, poruszać się po obiektach, tworzyć bazę, schemat i tabele, wpisywać i zmieniać dane oraz usuwać obiekty ćwiczebne. Większość pracy wykonasz przez interfejs graficzny. W Query Tool użyjemy tylko SELECT * FROM ...;.\nZadania 1–36 stanowią część prowadzoną, a 37–45 służą samodzielnemu utrwaleniu. Wykonuj je kolejno: późniejsze kroki korzystają z wcześniejszych rezultatów. Po każdym zadaniu sprawdź podany rezultat. Nie musisz znać innych poleceń SQL.\nNazwy przycisków podano po angielsku, zgodnie z interfejsem pgAdmin. PPM oznacza prawy przycisk myszy. Ikony rozpoznawaj również po podpowiedzi wyświetlanej po najechaniu kursorem.\n\n\n\n\n\n\nWażnePracuj we własnej bazie\n\n\n\nW nazwie rsod_lab1_12345 zastąp 12345 swoim numerem albumu. Wszystkie dalsze zadania wykonuj w tej bazie. Bazy rsod4_pokaz i rsod5_pokaz służą do demonstracji wykładowych — nie zmieniaj ich zawartości. Na stanowisku współdzielonym nie edytuj obiektów innych osób.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#a.-uruchomienie-środowiska-i-orientacja",
+    "href": "laboratorium1.html#a.-uruchomienie-środowiska-i-orientacja",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "A. Uruchomienie środowiska i orientacja",
+    "text": "A. Uruchomienie środowiska i orientacja\n\nZadanie 1. Uruchom środowisko\n\nUruchom Docker Desktop i poczekaj, aż będzie gotowy.\nOtwórz terminal w katalogu rsod2026/docker otrzymanego repozytorium.\nWykonaj:\n\ndocker compose up -d\n\nSprawdź stan usług:\n\ndocker compose ps -a\nSprawdź: postgres i pgadmin działają. Usługa prepare może mieć stan Exited (0) — to poprawne zakończenie przygotowania baz. Pierwszy start może trwać dłużej ze względu na pobieranie obrazów.\n\n\nZadanie 2. Otwórz pgAdmin\n\nOtwórz w przeglądarce http://localhost:5051.\nPoczekaj na załadowanie panelu. Jeśli start kontenerów jeszcze trwa, ponów próbę po chwili.\nZnajdź panel Object Explorer po lewej i obszar kart po prawej.\n\nSprawdź: widzisz interfejs pgAdmin. W przygotowanym środowisku działa lokalny tryb desktop: formularz logowania do pgAdmin nie powinien być potrzebny.\n\n\nZadanie 3. Połącz się z serwerem\n\nRozwiń Servers, a następnie RSOD — PostgreSQL.\nPoczekaj na połączenie i rozwiń Databases.\nJeżeli pojawi się pytanie o hasło serwera, użyj lokalnego hasła Rsod2026Local. Nazwa użytkownika to rsod.\n\nSprawdź: widzisz listę baz, w tym przygotowane bazy wykładowe. Serwer został zarejestrowany automatycznie; nie dodawaj drugiego połączenia.\n\n\nZadanie 4. Obejrzyj drzewo obiektów\n\nRozwiń bazę rsod4_pokaz, następnie Schemas i public.\nZnajdź gałąź Tables. Może być pusta, jeśli pokazów jeszcze nie wykonano.\nZwiń bazę wykładową.\n\nSprawdź: umiesz wskazać hierarchię: serwer → baza → schemat → tabela. Schemat jest przestrzenią nazw wewnątrz bazy, a nie kolejnym serwerem.\n\n\nZadanie 5. Przećwicz odświeżanie drzewa\n\nKliknij PPM na Databases.\nWybierz Refresh.\nRozwiń i zwiń ponownie tę gałąź.\n\nSprawdź: potrafisz odświeżyć listę obiektów bez restartowania kontenerów. Odświeżenie drzewa nie zapisuje zmian w danych.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#b.-własna-baza-i-schemat",
+    "href": "laboratorium1.html#b.-własna-baza-i-schemat",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "B. Własna baza i schemat",
+    "text": "B. Własna baza i schemat\n\nZadanie 6. Utwórz bazę danych\n\nKliknij PPM na Databases → Create → Database….\nW zakładce General, w polu Database, wpisz rsod_lab1_12345 z własnym numerem albumu.\nPozostaw właściciela Owner ustawionego na rsod.\nKliknij Save. W razie potrzeby odśwież Databases.\n\nSprawdź: Twoja baza pojawiła się na liście. Jeżeli taka nazwa już istnieje, nie usuwaj bazy — sprawdź, czy to wynik Twojej wcześniejszej pracy.\n\n\nZadanie 7. Obejrzyj właściwości bazy\n\nZaznacz własną bazę i otwórz kartę Properties w prawym panelu.\nOdczytaj jej nazwę i właściciela.\nRozwiń bazę i gałąź Schemas.\n\nSprawdź: nazwa zawiera Twój numer albumu, a wewnątrz znajduje się schemat public. Nowa baza może zawierać obiekty systemowe; nie oznacza to, że utworzono już Twoje tabele.\n\n\nZadanie 8. Utwórz schemat\n\nW swojej bazie kliknij PPM na Schemas → Create → Schema….\nW polu Name wpisz lab1.\nPozostaw właściciela rsod i kliknij Save.\nOdśwież Schemas, jeśli nowy obiekt nie jest widoczny.\n\nSprawdź: schematy public i lab1 znajdują się w tej samej bazie.\n\n\nZadanie 9. Odszukaj miejsce na tabele\n\nRozwiń Schemas → lab1 → Tables.\nSprawdź, do której bazy należy rozwinięty schemat.\nKliknij PPM na Tables i znajdź opcję Create → Table…. Na razie nie twórz tabeli.\n\nSprawdź: potrafisz wskazać dokładne miejsce utworzenia tabeli: Twoja baza → lab1 → Tables.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#c.-pierwsza-tabela-przez-formularz",
+    "href": "laboratorium1.html#c.-pierwsza-tabela-przez-formularz",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "C. Pierwsza tabela przez formularz",
+    "text": "C. Pierwsza tabela przez formularz\n\nZadanie 10. Rozpocznij tworzenie tabeli\n\nW schemacie lab1 wybierz Tables → PPM → Create → Table….\nW zakładce General wpisz nazwę equipment.\nSprawdź, że pole Schema ma wartość lab1.\nW polu Comment wpisz Equipment register for laboratory 1.\nNie zapisuj jeszcze formularza — dodasz w nim kolumny.\n\nSprawdź: formularz dotyczy tabeli lab1.equipment w Twojej bazie.\n\n\nZadanie 11. Dodaj identyfikator\n\nPrzejdź do zakładki Columns i kliknij +.\nWpisz nazwę equipment_id i wybierz typ integer.\nWłącz Primary key? i Not NULL? dla tej kolumny.\nJeśli pola są zwinięte, rozwiń edycję wiersza kolumny ikoną ołówka.\n\nSprawdź: identyfikator jest kluczem głównym. Numery będziesz wpisywać ręcznie; w tym ćwiczeniu nie włączamy automatycznego numerowania.\n\n\nZadanie 12. Dodaj pozostałe kolumny\nPrzyciskiem + dodaj kolejne kolumny zgodnie z tabelą:\n\n\n\nName\nData type\nNot NULL?\nPrimary key?\n\n\n\n\nequipment_id\ninteger\nYes\nYes\n\n\nequipment_name\ntext\nYes\nNo\n\n\nroom\ntext\nNo\nNo\n\n\nquantity\ninteger\nYes\nNo\n\n\n\n\nPierwszy wiersz masz już z poprzedniego zadania — nie dodawaj go drugi raz.\nSprawdź pisownię nazw i typ każdej kolumny.\nNie ustawiaj wartości domyślnych ani dodatkowych ograniczeń.\n\nSprawdź: tabela ma dokładnie cztery kolumny, a kluczem jest wyłącznie equipment_id.\n\n\nZadanie 13. Obejrzyj wygenerowany SQL i zapisz tabelę\n\nOtwórz zakładkę SQL w formularzu.\nOdszukaj nazwę lab1.equipment, nazwy kolumn i zapis PRIMARY KEY. Nie musisz samodzielnie pisać tego polecenia.\nKliknij Save.\nOdśwież gałąź Tables.\n\nSprawdź: widzisz nową tabelę. Formularz pgAdmin przygotował i wykonał SQL na podstawie Twoich ustawień.\n\n\nZadanie 14. Sprawdź strukturę po zapisaniu\n\nRozwiń equipment → Columns i sprawdź cztery nazwy.\nRozwiń Constraints i odszukaj klucz główny.\nKliknij PPM na tabeli → Properties… i porównaj zakładkę Columns z wymaganiami zadania 12.\nZamknij formularz przyciskiem Cancel, jeśli niczego nie zmieniasz.\n\nSprawdź: kolumny i klucz istnieją już w bazie, a nie tylko w formularzu.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#d.-dodawanie-i-poprawianie-danych",
+    "href": "laboratorium1.html#d.-dodawanie-i-poprawianie-danych",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "D. Dodawanie i poprawianie danych",
+    "text": "D. Dodawanie i poprawianie danych\n\nZadanie 15. Otwórz edytowalną siatkę\n\nKliknij PPM na lab1.equipment.\nWybierz View/Edit Data → All Rows.\nOdszukaj nagłówki czterech kolumn i przycisk Add row na pasku danych.\n\nSprawdź: tabela nie zawiera jeszcze zapisanych rekordów. Siatka View/Edit Data służy do pracy na danych; formularz Properties służy do właściwości i struktury obiektu.\n\n\nZadanie 16. Wprowadź pierwszy rekord\n\nKliknij Add row, aby dodać wiersz.\nOtwieraj edycję komórek dwukrotnym kliknięciem; jeśli pojawi się edytor komórki, zatwierdzaj go przyciskiem OK.\nWpisz kolejno: 1, Laptop, A101, 12.\nKliknij Save Data na pasku siatki i sprawdź komunikat.\n\nSprawdź: zapisano jeden rekord. W siatce tekst wpisuj bez apostrofów: Laptop, a nie 'Laptop'. Zamknięcie edytora komórki nie zastępuje Save Data.\n\n\nZadanie 17. Uzupełnij ewidencję\nDodaj i zapisz pięć kolejnych rekordów:\n\n\n\nequipment_id\nequipment_name\nroom\nquantity\n\n\n\n\n2\nMonitor\nA101\n20\n\n\n3\nProjektor\nA102\n2\n\n\n4\nKlawiatura\nA101\n25\n\n\n5\nRouter\nB201\n4\n\n\n6\nDrukarka\nB202\n1\n\n\n\n\nDla każdego rekordu użyj Add row i uzupełnij wszystkie pola.\nZapisuj dane po każdym rekordzie lub małej grupie rekordów.\nSprawdź, czy nie pozostały niezapisane zmiany.\n\nSprawdź: masz sześć rekordów o identyfikatorach od 1 do 6.\n\n\nZadanie 18. Sprawdź trwałość zapisu\n\nZamknij kartę siatki po zapisaniu danych.\nPonownie wybierz View/Edit Data → All Rows dla equipment.\nPorównaj wartości z zadaniami 16–17.\n\nSprawdź: wszystkie sześć rekordów nadal istnieje. Ich kolejność w widoku może się różnić; rozpoznawaj rekordy po equipment_id.\n\n\nZadanie 19. Zmień jedną wartość\n\nOdszukaj rekord equipment_id = 1.\nZmień quantity z 12 na 14.\nKliknij Save Data.\nOtwórz ponownie widok danych i sprawdź zapis.\n\nSprawdź: Laptop ma ilość 14; liczba rekordów nadal wynosi sześć.\n\n\nZadanie 20. Popraw tekst i lokalizację\n\nDla rekordu equipment_id = 3 zmień nazwę na Projektor multimedialny.\nDla tego samego rekordu zmień salę z A102 na A103.\nZapisz zmiany i ponownie odczytaj dane.\n\nSprawdź: rekord 3 ma nową nazwę i salę, a jego identyfikator oraz ilość pozostały bez zmian.\n\n\nZadanie 21. Uzupełnij kilka rekordów\n\nDla Monitora (equipment_id = 2) ustaw quantity na 18.\nDla Routera (equipment_id = 5) ustaw room na B203.\nDla Drukarki (equipment_id = 6) ustaw quantity na 2.\nZapisz dane i sprawdź każdy ze zmienionych rekordów.\n\nSprawdź: potrafisz wprowadzić kilka poprawek i rozpoznać ich zapis.\n\n\nZadanie 22. Zobacz reakcję na powtórzony identyfikator\n\nDodaj próbny rekord: 1, Skaner, B202, 1.\nSpróbuj zapisać dane i odczytaj komunikat o naruszeniu klucza głównego.\nPopraw identyfikator niezapisanego wiersza z 1 na 7.\nZapisz ponownie. Jeśli po błędzie wiersz zniknął, dodaj go od nowa z 7.\n\nSprawdź: masz siedem rekordów, w tym Skaner z identyfikatorem 7. W tabeli nie ma dwóch rekordów z tym samym kluczem. Nie zmieniaj identyfikatora istniejącego Laptopa.\n\n\nZadanie 23. Usuń jeden rekord przez siatkę\n\nZaznacz cały wiersz Skanera (equipment_id = 7) przez jego nagłówek po lewej stronie.\nUżyj Delete row na pasku siatki i potwierdź wybór, jeśli jest wymagany.\nKliknij Save Data, aby zapisać usunięcie.\nPonownie otwórz dane.\n\nSprawdź: pozostało sześć rekordów. Tabela i jej cztery kolumny nadal istnieją. Usunięcie wiersza nie jest usunięciem tabeli.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#e.-query-tool-i-najprostszy-select",
+    "href": "laboratorium1.html#e.-query-tool-i-najprostszy-select",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "E. Query Tool i najprostszy SELECT",
+    "text": "E. Query Tool i najprostszy SELECT\n\nZadanie 24. Otwórz Query Tool we właściwej bazie\n\nKliknij PPM na swojej bazie → Query Tool.\nSprawdź nazwę bazy w informacji o połączeniu na pasku narzędzia.\nZnajdź edytor SQL oraz zakładki Data Output i Messages.\n\nSprawdź: zapytania będą wykonywane w Twojej bazie, a nie w bazie wykładowej. Zmiana zaznaczenia w drzewie nie przełącza automatycznie połączenia już otwartego Query Tool.\n\n\nZadanie 25. Odczytaj całą tabelę\n\nWpisz w edytorze:\n\nSELECT * FROM lab1.equipment;\n\nZaznacz całe polecenie i użyj Execute script / Execute query na pasku Query Tool, aby je wykonać.\nObejrzyj Data Output.\n\nSprawdź: wynik ma sześć wierszy i cztery kolumny. Gwiazdka oznacza wszystkie kolumny, a lab1.equipment wskazuje schemat i tabelę. Nie zakładaj konkretnej kolejności wierszy.\n\n\nZadanie 26. Odczytaj wynik i komunikat\n\nW wyniku znajdź Laptop z ilością 14.\nZnajdź Projektor multimedialny w sali A103.\nPrzejdź do Messages i odczytaj komunikat zakończenia zapytania.\nWróć do Data Output.\n\nSprawdź: umiesz odróżnić dane zwrócone przez zapytanie od komunikatów narzędzia. Do dalszej edycji wracaj do View/Edit Data.\n\n\nZadanie 27. Sprawdź, kiedy wynik się odświeża\n\nPozostaw otwartą kartę Query Tool z dotychczasowym wynikiem.\nW osobnej karcie View/Edit Data zmień ilość Klawiatury (equipment_id = 4) z 25 na 24 i zapisz dane.\nWróć do Query Tool i obejrzyj poprzedni wynik.\nPonownie wykonaj to samo polecenie SELECT * FROM lab1.equipment;.\n\nSprawdź: nowy wynik zawiera ilość 24. Poprzedni wynik zapytania nie jest automatycznie aktualizowany po każdej zmianie danych.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#f.-modyfikowanie-struktury-przez-interfejs",
+    "href": "laboratorium1.html#f.-modyfikowanie-struktury-przez-interfejs",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "F. Modyfikowanie struktury przez interfejs",
+    "text": "F. Modyfikowanie struktury przez interfejs\n\nZadanie 28. Dodaj kolumnę do istniejącej tabeli\n\nZamknij zapisane siatki danych, aby nie pracować na starym układzie kolumn.\nW drzewie rozwiń equipment → Columns.\nKliknij PPM na Columns → Create → Column….\nW General wpisz notes; w Definition wybierz typ text.\nPozostaw Not NULL wyłączone i zapisz formularz.\n\nSprawdź: tabela ma pięć kolumn. Dodana kolumna dopuszcza brak wartości, więc jej utworzenie nie wymaga natychmiastowego uzupełniania starych rekordów.\n\n\nZadanie 29. Wpisz notatki\n\nOtwórz na nowo View/Edit Data → All Rows.\nDla Laptopa w kolumnie notes wpisz Do zajec laboratoryjnych.\nDla Projektora multimedialnego wpisz Sprawdzic przewod HDMI.\nPozostałych notatek nie uzupełniaj. Zapisz dane.\n\nSprawdź: dwa rekordy mają notatkę. Pozostałe mają brak wartości (NULL), a nie tekst NULL. Nie wpisuj słowa NULL do komórki tekstowej.\n\n\nZadanie 30. Sprawdź nową strukturę w SELECT\n\nWróć do Query Tool.\nPonownie wykonaj:\n\nSELECT * FROM lab1.equipment;\n\nSprawdź nazwy kolumn i wpisane notatki.\n\nSprawdź: wynik ma sześć wierszy i pięć kolumn. To samo zapytanie z * obejmuje również nowo dodaną kolumnę.\n\n\nZadanie 31. Zmień nazwę kolumny\n\nZamknij zapisany widok edycji danych.\nW drzewie wybierz Columns → notes → PPM → Properties….\nW zakładce General zmień nazwę na remarks i zapisz.\nOdśwież Columns i ponownie wykonaj znany SELECT *.\n\nSprawdź: nazwa zmieniła się na remarks, a dwie notatki pozostały. Zmiana nazwy kolumny nie usuwa jej danych.\n\n\nZadanie 32. Zmień opis tabeli\n\nOtwórz Properties… tabeli equipment.\nW General zmień Comment na Equipment register updated in laboratory 1.\nZapisz i ponownie obejrzyj właściwości.\n\nSprawdź: opis został zmieniony, ale tabela nadal ma sześć rekordów i pięć kolumn. Komentarz opisuje obiekt; nie jest rekordem tabeli.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#g.-usuwanie-i-odtwarzanie-tabeli-roboczej",
+    "href": "laboratorium1.html#g.-usuwanie-i-odtwarzanie-tabeli-roboczej",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "G. Usuwanie i odtwarzanie tabeli roboczej",
+    "text": "G. Usuwanie i odtwarzanie tabeli roboczej\n\nZadanie 33. Utwórz tabelę do prób usuwania\n\nW schemacie lab1 utwórz przez Create → Table… tabelę scratch_items.\nDodaj item_id typu integer jako klucz główny, z Not NULL.\nDodaj item_name typu text, również z Not NULL.\nZapisz tabelę i dodaj przez View/Edit Data dwa rekordy: 1, Test A oraz 2, Test B.\nZapisz dane.\n\nSprawdź: w lab1 istnieją dwie osobne tabele. equipment pozostaje bez zmian.\n\n\nZadanie 34. Opróżnij tabelę przez usunięcie wierszy\n\nW siatce scratch_items zaznacz i usuń pierwszy wiersz, a następnie zapisz.\nUsuń drugi wiersz i ponownie zapisz.\nZamknij siatkę i otwórz ją ponownie.\nSprawdź w drzewie, że tabela nadal istnieje.\n\nSprawdź: scratch_items ma zero rekordów, ale wciąż ma dwie kolumny oraz klucz główny.\n\n\nZadanie 35. Usuń całą tabelę roboczą\n\nZamknij kartę danych scratch_items.\nW drzewie kliknij PPM wyłącznie na scratch_items.\nWybierz Delete/Drop… i sprawdź nazwę obiektu w potwierdzeniu.\nPotwierdź usunięcie; nie wybieraj wariantu Cascade.\nOdśwież Tables.\n\nSprawdź: scratch_items zniknęła, a equipment nadal istnieje. Usunięcie tabeli usuwa również jej strukturę. Utworzenie nowej tabeli o tej samej nazwie nie przywróci poprzednich danych.\n\n\nZadanie 36. Odtwórz tabelę samodzielnie\n\nPonownie utwórz lab1.scratch_items z kolumnami z zadania 33.\nWprowadź i zapisz rekord 1, Nowy test.\nOtwórz Query Tool w swojej bazie i wykonaj:\n\nSELECT * FROM lab1.scratch_items;\nSprawdź: wynik zawiera wyłącznie nowy rekord. Dane Test A i Test B nie pojawiły się automatycznie.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#h.-zadania-utrwalające",
+    "href": "laboratorium1.html#h.-zadania-utrwalające",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "H. Zadania utrwalające",
+    "text": "H. Zadania utrwalające\nW tej części nadal korzystaj głównie z interfejsu, ale samodzielnie wybieraj odpowiednie menu. Po każdym zadaniu sprawdź rezultat.\n\nZadanie 37. Utwórz drugi schemat\n\nW swojej bazie utwórz schemat practice.\nOdśwież drzewo i rozwiń jego gałąź Tables.\nSprawdź, że lab1.equipment nadal znajduje się w lab1.\n\nSprawdź: masz osobne schematy lab1 i practice.\n\n\nZadanie 38. Utwórz drugą ewidencję\nW schemacie practice utwórz tabelę books:\n\n\n\nColumn\nData type\nNot NULL?\nPrimary key?\n\n\n\n\nbook_id\ninteger\nYes\nYes\n\n\ntitle\ntext\nYes\nNo\n\n\nauthor\ntext\nYes\nNo\n\n\ncopies\ninteger\nYes\nNo\n\n\n\n\nUtwórz wszystkie kolumny w formularzu tabeli.\nSprawdź zakładkę SQL, a następnie zapisz.\nObejrzyj kolumny i klucz w drzewie obiektów.\n\nSprawdź: tabela znajduje się w practice, a nie w public ani lab1.\n\n\nZadanie 39. Wprowadź własny zestaw danych\n\nDodaj do practice.books sześć wybranych książek.\nNadaj im identyfikatory od 1 do 6.\nWpisz tytuł, autora i liczbę egzemplarzy dla każdej książki.\nZapisz dane i ponownie otwórz siatkę.\n\nSprawdź: widzisz sześć kompletnych rekordów.\n\n\nZadanie 40. Przećwicz poprawianie danych\n\nDla książki book_id = 1 zwiększ copies o dwa, wpisując obliczoną wartość.\nDla książki book_id = 2 popraw lub rozwiń tytuł.\nDla książki book_id = 3 zmień zapis autora na pełne imię i nazwisko.\nZapisz i odczytaj dane ponownie.\n\nSprawdź: wszystkie trzy poprawki są widoczne, a liczba rekordów się nie zmieniła.\n\n\nZadanie 41. Dodaj kolumnę z lokalizacją\n\nDodaj do practice.books kolumnę shelf typu text, dopuszczającą NULL.\nOtwórz świeży widok danych.\nDla książek 1–3 wpisz R1, dla książek 4–6 wpisz R2.\nZapisz dane.\n\nSprawdź: tabela ma pięć kolumn i każda książka ma przypisany regał.\n\n\nZadanie 42. Wykonaj samodzielnie SELECT\n\nW Query Tool wpisz i wykonaj:\n\nSELECT * FROM practice.books;\n\nSprawdź sześć rekordów, pięć kolumn i wartości shelf.\nPrzejdź do Messages, a następnie wróć do wyniku.\n\nSprawdź: umiesz samodzielnie odczytać całą tabelę z innego schematu.\n\n\nZadanie 43. Usuń i zastąp rekord\n\nPrzez View/Edit Data usuń książkę z identyfikatorem 6 i zapisz.\nWykonaj ponownie SELECT * FROM practice.books; — oczekuj pięciu rekordów.\nW siatce dodaj inną książkę z identyfikatorem 7; uzupełnij także shelf.\nZapisz i ponownie wykonaj to samo zapytanie.\n\nSprawdź: masz sześć rekordów z identyfikatorami 1, 2, 3, 4, 5, 7. Luka w numeracji po usunięciu rekordu nie jest błędem.\n\n\nZadanie 44. Posprzątaj wyłącznie tabelę roboczą\n\nSprawdź, że lab1.scratch_items zawiera jedynie dane próbne.\nUsuń tę tabelę przez Delete/Drop…, sprawdzając nazwę przed potwierdzeniem.\nPozostaw lab1.equipment i practice.books do oceny.\nOdśwież odpowiednie gałęzie drzewa.\n\nSprawdź: tabela robocza nie istnieje, a obie ewidencje pozostały.\n\n\nZadanie 45. Zakończ i wznow pracę\n\nZapisz wszystkie zmiany w siatkach, a następnie zamknij karty edycji.\nW terminalu, w katalogu rsod2026/docker, zatrzymaj środowisko:\n\ndocker compose stop\n\nUruchom je ponownie:\n\ndocker compose up -d\n\nOtwórz ponownie pgAdmin, połącz się z serwerem i odszukaj swoją bazę.\nObejrzyj obie ewidencje i wykonaj dla każdej znany SELECT *.\n\nSprawdź: dane przetrwały zatrzymanie kontenerów. Po ostatecznym zakończeniu pracy możesz ponownie użyć docker compose stop.\n\n\n\n\n\n\nOstrzeżenie\n\n\n\nNie używaj docker compose down -v do zwykłego kończenia zajęć. Opcja -v usuwa woluminy, w których przechowywane są dane środowiska.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#kontrola-końcowa-i-materiał-do-oddania",
+    "href": "laboratorium1.html#kontrola-końcowa-i-materiał-do-oddania",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "Kontrola końcowa i materiał do oddania",
+    "text": "Kontrola końcowa i materiał do oddania\nPokaż prowadzącemu lub dołącz w uzgodnionym miejscu:\n\nZrzut drzewa z nazwą Twojej bazy, schematami lab1 i practice oraz tabelami.\nZrzut wyniku SELECT * FROM lab1.equipment; — sześć rekordów i pięć kolumn.\nZrzut wyniku SELECT * FROM practice.books; — sześć rekordów i pięć kolumn.\nKrótkie odpowiedzi na pytania kontrolne poniżej.\n\nZrzuty powinny obejmować nazwę obiektu lub treść zapytania oraz cały wynik, tak aby można było przypisać dane do właściwej tabeli.\n\nOczekiwany stan equipment\nKolejność wyświetlania rekordów nie ma znaczenia.\n\n\n\nequipment_id\nequipment_name\nroom\nquantity\nremarks\n\n\n\n\n1\nLaptop\nA101\n14\nDo zajec laboratoryjnych\n\n\n2\nMonitor\nA101\n18\nNULL\n\n\n3\nProjektor multimedialny\nA103\n2\nSprawdzic przewod HDMI\n\n\n4\nKlawiatura\nA101\n24\nNULL\n\n\n5\nRouter\nB203\n4\nNULL\n\n\n6\nDrukarka\nB202\n2\nNULL\n\n\n\nNULL w powyższej tabeli oznacza brak wartości, nie wpisany tekst. Tabela practice.books powinna zawierać własne dane z zadań 39–43 i kolumny book_id, title, author, copies, shelf. Tabela lab1.scratch_items powinna być usunięta.\n\n\nPytania kontrolne\n\nCzym różni się serwer, baza, schemat i tabela? Wskaż je we własnym drzewie.\nGdzie sprawdzasz bazę, do której podłączony jest otwarty Query Tool?\nCzym różni się zatwierdzenie edycji komórki od Save Data?\nCo odświeża Refresh w drzewie, a co ponowne wykonanie zapytania?\nCo oznacza gwiazdka w SELECT * FROM lab1.equipment;?\nDlaczego powtórzenie wartości equipment_id spowodowało błąd?\nCzym różni się usunięcie wszystkich wierszy od usunięcia tabeli?\nCzy odtworzenie tabeli o tej samej nazwie przywraca poprzednie dane?\nCzy zamknięcie przeglądarki zatrzymuje PostgreSQL w Dockerze?\nJak zakończyć pracę z kontenerami i zachować dane na kolejne zajęcia?",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#gdy-coś-nie-działa",
+    "href": "laboratorium1.html#gdy-coś-nie-działa",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "Gdy coś nie działa",
+    "text": "Gdy coś nie działa\n\n\n\n\n\n\n\nObjaw\nCo sprawdzić\n\n\n\n\nStrona na porcie 5051 się nie otwiera\nCzy Docker działa? Sprawdź docker compose ps -a w katalogu docker; jeśli usługa nie startuje, odczytaj docker compose logs pgadmin prepare postgres.\n\n\nObiekt nie pojawia się w drzewie\nOdśwież gałąź i sprawdź właściwą bazę oraz schemat.\n\n\nTabela jest widoczna, ale zapytanie zgłasza brak obiektu\nSprawdź połączenie Query Tool i pełną nazwę, np. lab1.equipment.\n\n\nNie można edytować rekordów\nOtwórz tabelę przez View/Edit Data i sprawdź, czy ma klucz główny.\n\n\nPo ponownym otwarciu brakuje zmian\nSprawdź użycie Save Data i komunikat zapisu.\n\n\nWynik SELECT pokazuje stare dane\nZapisz zmiany w siatce i wykonaj zapytanie ponownie.\n\n\nNowa kolumna nie jest widoczna w siatce\nZamknij zapisany widok danych i otwórz go ponownie.\n\n\nZapis zgłasza duplikat klucza\nPopraw identyfikator nowego wiersza; nie usuwaj poprawnego istniejącego rekordu.\n\n\nZapis zgłasza brak wymaganej wartości\nUzupełnij kolumny z Not NULL, a następnie ponów zapis.\n\n\n\nNie usuwaj bazy ani woluminów w celu naprawienia pojedynczego błędu. Jeżeli nie wiesz, jak bezpiecznie poprawić stan, pokaż prowadzącemu komunikat oraz nazwę bazy i tabeli.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
+  },
+  {
+    "objectID": "laboratorium1.html#dokumentacja-pomocnicza",
+    "href": "laboratorium1.html#dokumentacja-pomocnicza",
+    "title": "Laboratorium 1 — pierwsze kroki w pgAdmin",
+    "section": "Dokumentacja pomocnicza",
+    "text": "Dokumentacja pomocnicza\nFormularze opisuje dokumentacja wersji używanej w środowisku: tworzenie i właściwości tabeli oraz tworzenie i właściwości kolumny.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 1 — pierwsze kroki w pgAdmin"
+    ]
   }
 ]

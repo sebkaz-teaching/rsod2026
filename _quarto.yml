@@ -26,6 +26,9 @@ website:
     style: "docked"
     contents:
       - index.qmd
+      - section: "Laboratoria"
+        contents:
+          - laboratorium1.qmd
       - section: "Wykłady"
         contents:
           - lectures/wyklad1.qmd

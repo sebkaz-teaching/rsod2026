@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Laboratorium 1 — pierwsze kroki w pgAdmin – Relacyjne Systemy Organizacji Danych</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-94ae530b1fc9924793afbc3bb7de9d3b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Brak wyników",
+    "search-matching-documents-text": "dopasowane dokumenty",
+    "search-copy-link-title": "Kopiuj link do wyszukiwania",
+    "search-hide-matches-text": "Ukryj dodatkowe dopasowania",
+    "search-more-match-text": "więcej dopasowań w tym dokumencie",
+    "search-more-matches-text": "więcej dopasowań w tym dokumencie",
+    "search-clear-button-title": "Wyczyść",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Anuluj",
+    "search-submit-button-title": "Zatwierdź",
+    "search-label": "Szukaj"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Przełącz pasek boczny" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./laboratorium1.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="./laboratorium1.html">Laboratorium 1 — pierwsze kroki w pgAdmin</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Przełącz pasek boczny" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Szukaj" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Relacyjne Systemy Organizacji Danych</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Szukaj"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Informacje ogólne</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratoria</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Przełącz sekcję">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./laboratorium1.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Laboratorium 1 — pierwsze kroki w pgAdmin</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Wykłady</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Przełącz sekcję">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lectures/wyklad1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Od pliku do bazy danych</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lectures/wyklad2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model relacyjny i podstawy SQL</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lectures/wyklad3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Struktura logiczna i normalizacja baz danych</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lectures/wyklad4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Programowanie w bazie danych — PL/pgSQL</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lectures/wyklad5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Przetwarzanie transakcyjne — ACID, współbieżność i izolacja</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title"><strong>Sections</strong></h2>
+   
+  <ul class="collapse">
+  <li><a href="#cel-i-sposób-pracy" id="toc-cel-i-sposób-pracy" class="nav-link active" data-scroll-target="#cel-i-sposób-pracy">Cel i sposób pracy</a></li>
+  <li><a href="#a.-uruchomienie-środowiska-i-orientacja" id="toc-a.-uruchomienie-środowiska-i-orientacja" class="nav-link" data-scroll-target="#a.-uruchomienie-środowiska-i-orientacja">A. Uruchomienie środowiska i orientacja</a></li>
+  <li><a href="#b.-własna-baza-i-schemat" id="toc-b.-własna-baza-i-schemat" class="nav-link" data-scroll-target="#b.-własna-baza-i-schemat">B. Własna baza i schemat</a></li>
+  <li><a href="#c.-pierwsza-tabela-przez-formularz" id="toc-c.-pierwsza-tabela-przez-formularz" class="nav-link" data-scroll-target="#c.-pierwsza-tabela-przez-formularz">C. Pierwsza tabela przez formularz</a></li>
+  <li><a href="#d.-dodawanie-i-poprawianie-danych" id="toc-d.-dodawanie-i-poprawianie-danych" class="nav-link" data-scroll-target="#d.-dodawanie-i-poprawianie-danych">D. Dodawanie i poprawianie danych</a></li>
+  <li><a href="#e.-query-tool-i-najprostszy-select" id="toc-e.-query-tool-i-najprostszy-select" class="nav-link" data-scroll-target="#e.-query-tool-i-najprostszy-select">E. Query Tool i najprostszy SELECT</a></li>
+  <li><a href="#f.-modyfikowanie-struktury-przez-interfejs" id="toc-f.-modyfikowanie-struktury-przez-interfejs" class="nav-link" data-scroll-target="#f.-modyfikowanie-struktury-przez-interfejs">F. Modyfikowanie struktury przez interfejs</a></li>
+  <li><a href="#g.-usuwanie-i-odtwarzanie-tabeli-roboczej" id="toc-g.-usuwanie-i-odtwarzanie-tabeli-roboczej" class="nav-link" data-scroll-target="#g.-usuwanie-i-odtwarzanie-tabeli-roboczej">G. Usuwanie i odtwarzanie tabeli roboczej</a></li>
+  <li><a href="#h.-zadania-utrwalające" id="toc-h.-zadania-utrwalające" class="nav-link" data-scroll-target="#h.-zadania-utrwalające">H. Zadania utrwalające</a></li>
+  <li><a href="#kontrola-końcowa-i-materiał-do-oddania" id="toc-kontrola-końcowa-i-materiał-do-oddania" class="nav-link" data-scroll-target="#kontrola-końcowa-i-materiał-do-oddania">Kontrola końcowa i materiał do oddania</a></li>
+  <li><a href="#gdy-coś-nie-działa" id="toc-gdy-coś-nie-działa" class="nav-link" data-scroll-target="#gdy-coś-nie-działa">Gdy coś nie działa</a></li>
+  <li><a href="#dokumentacja-pomocnicza" id="toc-dokumentacja-pomocnicza" class="nav-link" data-scroll-target="#dokumentacja-pomocnicza">Dokumentacja pomocnicza</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./laboratorium1.html">Laboratoria</a></li><li class="breadcrumb-item"><a href="./laboratorium1.html">Laboratorium 1 — pierwsze kroki w pgAdmin</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Laboratorium 1 — pierwsze kroki w pgAdmin</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="cel-i-sposób-pracy" class="level2">
+<h2 class="anchored" data-anchor-id="cel-i-sposób-pracy">Cel i sposób pracy</h2>
+<p>Na tych zajęciach nauczysz się obsługiwać pgAdmin: uruchamiać środowisko, poruszać się po obiektach, tworzyć bazę, schemat i tabele, wpisywać i zmieniać dane oraz usuwać obiekty ćwiczebne. Większość pracy wykonasz <strong>przez interfejs graficzny</strong>. W Query Tool użyjemy tylko <code>SELECT * FROM ...;</code>.</p>
+<p>Zadania 1–36 stanowią część prowadzoną, a 37–45 służą samodzielnemu utrwaleniu. Wykonuj je kolejno: późniejsze kroki korzystają z wcześniejszych rezultatów. Po każdym zadaniu sprawdź podany rezultat. Nie musisz znać innych poleceń SQL.</p>
+<p>Nazwy przycisków podano po angielsku, zgodnie z interfejsem pgAdmin. <strong>PPM</strong> oznacza prawy przycisk myszy. Ikony rozpoznawaj również po podpowiedzi wyświetlanej po najechaniu kursorem.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Ważne</span>Pracuj we własnej bazie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>W nazwie <code>rsod_lab1_12345</code> zastąp <code>12345</code> swoim numerem albumu. Wszystkie dalsze zadania wykonuj w tej bazie. Bazy <code>rsod4_pokaz</code> i <code>rsod5_pokaz</code> służą do demonstracji wykładowych — nie zmieniaj ich zawartości. Na stanowisku współdzielonym nie edytuj obiektów innych osób.</p>
+</div>
+</div>
+</section>
+<section id="a.-uruchomienie-środowiska-i-orientacja" class="level2">
+<h2 class="anchored" data-anchor-id="a.-uruchomienie-środowiska-i-orientacja">A. Uruchomienie środowiska i orientacja</h2>
+<section id="zadanie-1.-uruchom-środowisko" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-1.-uruchom-środowisko">Zadanie 1. Uruchom środowisko</h3>
+<ol type="1">
+<li>Uruchom Docker Desktop i poczekaj, aż będzie gotowy.</li>
+<li>Otwórz terminal w katalogu <code>rsod2026/docker</code> otrzymanego repozytorium.</li>
+<li>Wykonaj:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="4" type="1">
+<li>Sprawdź stan usług:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose ps <span class="at">-a</span></span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Sprawdź:</strong> <code>postgres</code> i <code>pgadmin</code> działają. Usługa <code>prepare</code> może mieć stan <code>Exited (0)</code> — to poprawne zakończenie przygotowania baz. Pierwszy start może trwać dłużej ze względu na pobieranie obrazów.</p>
+</section>
+<section id="zadanie-2.-otwórz-pgadmin" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-2.-otwórz-pgadmin">Zadanie 2. Otwórz pgAdmin</h3>
+<ol type="1">
+<li>Otwórz w przeglądarce <a href="http://localhost:5051">http://localhost:5051</a>.</li>
+<li>Poczekaj na załadowanie panelu. Jeśli start kontenerów jeszcze trwa, ponów próbę po chwili.</li>
+<li>Znajdź panel <strong>Object Explorer</strong> po lewej i obszar kart po prawej.</li>
+</ol>
+<p><strong>Sprawdź:</strong> widzisz interfejs pgAdmin. W przygotowanym środowisku działa lokalny tryb desktop: formularz logowania do pgAdmin nie powinien być potrzebny.</p>
+</section>
+<section id="zadanie-3.-połącz-się-z-serwerem" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-3.-połącz-się-z-serwerem">Zadanie 3. Połącz się z serwerem</h3>
+<ol type="1">
+<li>Rozwiń <strong>Servers</strong>, a następnie <strong>RSOD — PostgreSQL</strong>.</li>
+<li>Poczekaj na połączenie i rozwiń <strong>Databases</strong>.</li>
+<li>Jeżeli pojawi się pytanie o hasło serwera, użyj lokalnego hasła <code>Rsod2026Local</code>. Nazwa użytkownika to <code>rsod</code>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> widzisz listę baz, w tym przygotowane bazy wykładowe. Serwer został zarejestrowany automatycznie; nie dodawaj drugiego połączenia.</p>
+</section>
+<section id="zadanie-4.-obejrzyj-drzewo-obiektów" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-4.-obejrzyj-drzewo-obiektów">Zadanie 4. Obejrzyj drzewo obiektów</h3>
+<ol type="1">
+<li>Rozwiń bazę <code>rsod4_pokaz</code>, następnie <strong>Schemas</strong> i <strong>public</strong>.</li>
+<li>Znajdź gałąź <strong>Tables</strong>. Może być pusta, jeśli pokazów jeszcze nie wykonano.</li>
+<li>Zwiń bazę wykładową.</li>
+</ol>
+<p><strong>Sprawdź:</strong> umiesz wskazać hierarchię: serwer → baza → schemat → tabela. Schemat jest przestrzenią nazw wewnątrz bazy, a nie kolejnym serwerem.</p>
+</section>
+<section id="zadanie-5.-przećwicz-odświeżanie-drzewa" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-5.-przećwicz-odświeżanie-drzewa">Zadanie 5. Przećwicz odświeżanie drzewa</h3>
+<ol type="1">
+<li>Kliknij PPM na <strong>Databases</strong>.</li>
+<li>Wybierz <strong>Refresh</strong>.</li>
+<li>Rozwiń i zwiń ponownie tę gałąź.</li>
+</ol>
+<p><strong>Sprawdź:</strong> potrafisz odświeżyć listę obiektów bez restartowania kontenerów. Odświeżenie drzewa nie zapisuje zmian w danych.</p>
+</section>
+</section>
+<section id="b.-własna-baza-i-schemat" class="level2">
+<h2 class="anchored" data-anchor-id="b.-własna-baza-i-schemat">B. Własna baza i schemat</h2>
+<section id="zadanie-6.-utwórz-bazę-danych" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-6.-utwórz-bazę-danych">Zadanie 6. Utwórz bazę danych</h3>
+<ol type="1">
+<li>Kliknij PPM na <strong>Databases</strong> → <strong>Create</strong> → <strong>Database…</strong>.</li>
+<li>W zakładce <strong>General</strong>, w polu <strong>Database</strong>, wpisz <code>rsod_lab1_12345</code> z własnym numerem albumu.</li>
+<li>Pozostaw właściciela <strong>Owner</strong> ustawionego na <code>rsod</code>.</li>
+<li>Kliknij <strong>Save</strong>. W razie potrzeby odśwież <strong>Databases</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> Twoja baza pojawiła się na liście. Jeżeli taka nazwa już istnieje, nie usuwaj bazy — sprawdź, czy to wynik Twojej wcześniejszej pracy.</p>
+</section>
+<section id="zadanie-7.-obejrzyj-właściwości-bazy" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-7.-obejrzyj-właściwości-bazy">Zadanie 7. Obejrzyj właściwości bazy</h3>
+<ol type="1">
+<li>Zaznacz własną bazę i otwórz kartę <strong>Properties</strong> w prawym panelu.</li>
+<li>Odczytaj jej nazwę i właściciela.</li>
+<li>Rozwiń bazę i gałąź <strong>Schemas</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> nazwa zawiera Twój numer albumu, a wewnątrz znajduje się schemat <code>public</code>. Nowa baza może zawierać obiekty systemowe; nie oznacza to, że utworzono już Twoje tabele.</p>
+</section>
+<section id="zadanie-8.-utwórz-schemat" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-8.-utwórz-schemat">Zadanie 8. Utwórz schemat</h3>
+<ol type="1">
+<li>W swojej bazie kliknij PPM na <strong>Schemas</strong> → <strong>Create</strong> → <strong>Schema…</strong>.</li>
+<li>W polu <strong>Name</strong> wpisz <code>lab1</code>.</li>
+<li>Pozostaw właściciela <code>rsod</code> i kliknij <strong>Save</strong>.</li>
+<li>Odśwież <strong>Schemas</strong>, jeśli nowy obiekt nie jest widoczny.</li>
+</ol>
+<p><strong>Sprawdź:</strong> schematy <code>public</code> i <code>lab1</code> znajdują się w tej samej bazie.</p>
+</section>
+<section id="zadanie-9.-odszukaj-miejsce-na-tabele" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-9.-odszukaj-miejsce-na-tabele">Zadanie 9. Odszukaj miejsce na tabele</h3>
+<ol type="1">
+<li>Rozwiń <strong>Schemas</strong> → <strong>lab1</strong> → <strong>Tables</strong>.</li>
+<li>Sprawdź, do której bazy należy rozwinięty schemat.</li>
+<li>Kliknij PPM na <strong>Tables</strong> i znajdź opcję <strong>Create</strong> → <strong>Table…</strong>. Na razie nie twórz tabeli.</li>
+</ol>
+<p><strong>Sprawdź:</strong> potrafisz wskazać dokładne miejsce utworzenia tabeli: Twoja baza → <code>lab1</code> → <strong>Tables</strong>.</p>
+</section>
+</section>
+<section id="c.-pierwsza-tabela-przez-formularz" class="level2">
+<h2 class="anchored" data-anchor-id="c.-pierwsza-tabela-przez-formularz">C. Pierwsza tabela przez formularz</h2>
+<section id="zadanie-10.-rozpocznij-tworzenie-tabeli" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-10.-rozpocznij-tworzenie-tabeli">Zadanie 10. Rozpocznij tworzenie tabeli</h3>
+<ol type="1">
+<li>W schemacie <code>lab1</code> wybierz <strong>Tables</strong> → PPM → <strong>Create</strong> → <strong>Table…</strong>.</li>
+<li>W zakładce <strong>General</strong> wpisz nazwę <code>equipment</code>.</li>
+<li>Sprawdź, że pole <strong>Schema</strong> ma wartość <code>lab1</code>.</li>
+<li>W polu <strong>Comment</strong> wpisz <code>Equipment register for laboratory 1</code>.</li>
+<li>Nie zapisuj jeszcze formularza — dodasz w nim kolumny.</li>
+</ol>
+<p><strong>Sprawdź:</strong> formularz dotyczy tabeli <code>lab1.equipment</code> w Twojej bazie.</p>
+</section>
+<section id="zadanie-11.-dodaj-identyfikator" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-11.-dodaj-identyfikator">Zadanie 11. Dodaj identyfikator</h3>
+<ol type="1">
+<li>Przejdź do zakładki <strong>Columns</strong> i kliknij <strong>+</strong>.</li>
+<li>Wpisz nazwę <code>equipment_id</code> i wybierz typ <code>integer</code>.</li>
+<li>Włącz <strong>Primary key?</strong> i <strong>Not NULL?</strong> dla tej kolumny.</li>
+<li>Jeśli pola są zwinięte, rozwiń edycję wiersza kolumny ikoną ołówka.</li>
+</ol>
+<p><strong>Sprawdź:</strong> identyfikator jest kluczem głównym. Numery będziesz wpisywać ręcznie; w tym ćwiczeniu nie włączamy automatycznego numerowania.</p>
+</section>
+<section id="zadanie-12.-dodaj-pozostałe-kolumny" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-12.-dodaj-pozostałe-kolumny">Zadanie 12. Dodaj pozostałe kolumny</h3>
+<p>Przyciskiem <strong>+</strong> dodaj kolejne kolumny zgodnie z tabelą:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Data type</th>
+<th>Not NULL?</th>
+<th>Primary key?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>equipment_id</code></td>
+<td><code>integer</code></td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td><code>equipment_name</code></td>
+<td><code>text</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td><code>room</code></td>
+<td><code>text</code></td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>quantity</code></td>
+<td><code>integer</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Pierwszy wiersz masz już z poprzedniego zadania — nie dodawaj go drugi raz.</li>
+<li>Sprawdź pisownię nazw i typ każdej kolumny.</li>
+<li>Nie ustawiaj wartości domyślnych ani dodatkowych ograniczeń.</li>
+</ol>
+<p><strong>Sprawdź:</strong> tabela ma dokładnie cztery kolumny, a kluczem jest wyłącznie <code>equipment_id</code>.</p>
+</section>
+<section id="zadanie-13.-obejrzyj-wygenerowany-sql-i-zapisz-tabelę" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-13.-obejrzyj-wygenerowany-sql-i-zapisz-tabelę">Zadanie 13. Obejrzyj wygenerowany SQL i zapisz tabelę</h3>
+<ol type="1">
+<li>Otwórz zakładkę <strong>SQL</strong> w formularzu.</li>
+<li>Odszukaj nazwę <code>lab1.equipment</code>, nazwy kolumn i zapis <code>PRIMARY KEY</code>. Nie musisz samodzielnie pisać tego polecenia.</li>
+<li>Kliknij <strong>Save</strong>.</li>
+<li>Odśwież gałąź <strong>Tables</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> widzisz nową tabelę. Formularz pgAdmin przygotował i wykonał SQL na podstawie Twoich ustawień.</p>
+</section>
+<section id="zadanie-14.-sprawdź-strukturę-po-zapisaniu" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-14.-sprawdź-strukturę-po-zapisaniu">Zadanie 14. Sprawdź strukturę po zapisaniu</h3>
+<ol type="1">
+<li>Rozwiń <code>equipment</code> → <strong>Columns</strong> i sprawdź cztery nazwy.</li>
+<li>Rozwiń <strong>Constraints</strong> i odszukaj klucz główny.</li>
+<li>Kliknij PPM na tabeli → <strong>Properties…</strong> i porównaj zakładkę <strong>Columns</strong> z wymaganiami zadania 12.</li>
+<li>Zamknij formularz przyciskiem <strong>Cancel</strong>, jeśli niczego nie zmieniasz.</li>
+</ol>
+<p><strong>Sprawdź:</strong> kolumny i klucz istnieją już w bazie, a nie tylko w formularzu.</p>
+</section>
+</section>
+<section id="d.-dodawanie-i-poprawianie-danych" class="level2">
+<h2 class="anchored" data-anchor-id="d.-dodawanie-i-poprawianie-danych">D. Dodawanie i poprawianie danych</h2>
+<section id="zadanie-15.-otwórz-edytowalną-siatkę" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-15.-otwórz-edytowalną-siatkę">Zadanie 15. Otwórz edytowalną siatkę</h3>
+<ol type="1">
+<li>Kliknij PPM na <code>lab1.equipment</code>.</li>
+<li>Wybierz <strong>View/Edit Data</strong> → <strong>All Rows</strong>.</li>
+<li>Odszukaj nagłówki czterech kolumn i przycisk <strong>Add row</strong> na pasku danych.</li>
+</ol>
+<p><strong>Sprawdź:</strong> tabela nie zawiera jeszcze zapisanych rekordów. Siatka <strong>View/Edit Data</strong> służy do pracy na danych; formularz <strong>Properties</strong> służy do właściwości i struktury obiektu.</p>
+</section>
+<section id="zadanie-16.-wprowadź-pierwszy-rekord" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-16.-wprowadź-pierwszy-rekord">Zadanie 16. Wprowadź pierwszy rekord</h3>
+<ol type="1">
+<li>Kliknij <strong>Add row</strong>, aby dodać wiersz.</li>
+<li>Otwieraj edycję komórek dwukrotnym kliknięciem; jeśli pojawi się edytor komórki, zatwierdzaj go przyciskiem <strong>OK</strong>.</li>
+<li>Wpisz kolejno: <code>1</code>, <code>Laptop</code>, <code>A101</code>, <code>12</code>.</li>
+<li>Kliknij <strong>Save Data</strong> na pasku siatki i sprawdź komunikat.</li>
+</ol>
+<p><strong>Sprawdź:</strong> zapisano jeden rekord. W siatce tekst wpisuj <strong>bez apostrofów</strong>: <code>Laptop</code>, a nie <code>'Laptop'</code>. Zamknięcie edytora komórki nie zastępuje <strong>Save Data</strong>.</p>
+</section>
+<section id="zadanie-17.-uzupełnij-ewidencję" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-17.-uzupełnij-ewidencję">Zadanie 17. Uzupełnij ewidencję</h3>
+<p>Dodaj i zapisz pięć kolejnych rekordów:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>equipment_id</th>
+<th>equipment_name</th>
+<th>room</th>
+<th>quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2</td>
+<td>Monitor</td>
+<td>A101</td>
+<td>20</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>Projektor</td>
+<td>A102</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>Klawiatura</td>
+<td>A101</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>Router</td>
+<td>B201</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>Drukarka</td>
+<td>B202</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Dla każdego rekordu użyj <strong>Add row</strong> i uzupełnij wszystkie pola.</li>
+<li>Zapisuj dane po każdym rekordzie lub małej grupie rekordów.</li>
+<li>Sprawdź, czy nie pozostały niezapisane zmiany.</li>
+</ol>
+<p><strong>Sprawdź:</strong> masz sześć rekordów o identyfikatorach od 1 do 6.</p>
+</section>
+<section id="zadanie-18.-sprawdź-trwałość-zapisu" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-18.-sprawdź-trwałość-zapisu">Zadanie 18. Sprawdź trwałość zapisu</h3>
+<ol type="1">
+<li>Zamknij kartę siatki po zapisaniu danych.</li>
+<li>Ponownie wybierz <strong>View/Edit Data</strong> → <strong>All Rows</strong> dla <code>equipment</code>.</li>
+<li>Porównaj wartości z zadaniami 16–17.</li>
+</ol>
+<p><strong>Sprawdź:</strong> wszystkie sześć rekordów nadal istnieje. Ich kolejność w widoku może się różnić; rozpoznawaj rekordy po <code>equipment_id</code>.</p>
+</section>
+<section id="zadanie-19.-zmień-jedną-wartość" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-19.-zmień-jedną-wartość">Zadanie 19. Zmień jedną wartość</h3>
+<ol type="1">
+<li>Odszukaj rekord <code>equipment_id = 1</code>.</li>
+<li>Zmień <code>quantity</code> z <code>12</code> na <code>14</code>.</li>
+<li>Kliknij <strong>Save Data</strong>.</li>
+<li>Otwórz ponownie widok danych i sprawdź zapis.</li>
+</ol>
+<p><strong>Sprawdź:</strong> Laptop ma ilość <code>14</code>; liczba rekordów nadal wynosi sześć.</p>
+</section>
+<section id="zadanie-20.-popraw-tekst-i-lokalizację" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-20.-popraw-tekst-i-lokalizację">Zadanie 20. Popraw tekst i lokalizację</h3>
+<ol type="1">
+<li>Dla rekordu <code>equipment_id = 3</code> zmień nazwę na <code>Projektor multimedialny</code>.</li>
+<li>Dla tego samego rekordu zmień salę z <code>A102</code> na <code>A103</code>.</li>
+<li>Zapisz zmiany i ponownie odczytaj dane.</li>
+</ol>
+<p><strong>Sprawdź:</strong> rekord 3 ma nową nazwę i salę, a jego identyfikator oraz ilość pozostały bez zmian.</p>
+</section>
+<section id="zadanie-21.-uzupełnij-kilka-rekordów" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-21.-uzupełnij-kilka-rekordów">Zadanie 21. Uzupełnij kilka rekordów</h3>
+<ol type="1">
+<li>Dla Monitora (<code>equipment_id = 2</code>) ustaw <code>quantity</code> na <code>18</code>.</li>
+<li>Dla Routera (<code>equipment_id = 5</code>) ustaw <code>room</code> na <code>B203</code>.</li>
+<li>Dla Drukarki (<code>equipment_id = 6</code>) ustaw <code>quantity</code> na <code>2</code>.</li>
+<li>Zapisz dane i sprawdź każdy ze zmienionych rekordów.</li>
+</ol>
+<p><strong>Sprawdź:</strong> potrafisz wprowadzić kilka poprawek i rozpoznać ich zapis.</p>
+</section>
+<section id="zadanie-22.-zobacz-reakcję-na-powtórzony-identyfikator" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-22.-zobacz-reakcję-na-powtórzony-identyfikator">Zadanie 22. Zobacz reakcję na powtórzony identyfikator</h3>
+<ol type="1">
+<li>Dodaj próbny rekord: <code>1</code>, <code>Skaner</code>, <code>B202</code>, <code>1</code>.</li>
+<li>Spróbuj zapisać dane i odczytaj komunikat o naruszeniu klucza głównego.</li>
+<li>Popraw identyfikator <strong>niezapisanego wiersza</strong> z <code>1</code> na <code>7</code>.</li>
+<li>Zapisz ponownie. Jeśli po błędzie wiersz zniknął, dodaj go od nowa z <code>7</code>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> masz siedem rekordów, w tym Skaner z identyfikatorem <code>7</code>. W tabeli nie ma dwóch rekordów z tym samym kluczem. Nie zmieniaj identyfikatora istniejącego Laptopa.</p>
+</section>
+<section id="zadanie-23.-usuń-jeden-rekord-przez-siatkę" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-23.-usuń-jeden-rekord-przez-siatkę">Zadanie 23. Usuń jeden rekord przez siatkę</h3>
+<ol type="1">
+<li>Zaznacz cały wiersz Skanera (<code>equipment_id = 7</code>) przez jego nagłówek po lewej stronie.</li>
+<li>Użyj <strong>Delete row</strong> na pasku siatki i potwierdź wybór, jeśli jest wymagany.</li>
+<li>Kliknij <strong>Save Data</strong>, aby zapisać usunięcie.</li>
+<li>Ponownie otwórz dane.</li>
+</ol>
+<p><strong>Sprawdź:</strong> pozostało sześć rekordów. Tabela i jej cztery kolumny nadal istnieją. Usunięcie wiersza nie jest usunięciem tabeli.</p>
+</section>
+</section>
+<section id="e.-query-tool-i-najprostszy-select" class="level2">
+<h2 class="anchored" data-anchor-id="e.-query-tool-i-najprostszy-select">E. Query Tool i najprostszy SELECT</h2>
+<section id="zadanie-24.-otwórz-query-tool-we-właściwej-bazie" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-24.-otwórz-query-tool-we-właściwej-bazie">Zadanie 24. Otwórz Query Tool we właściwej bazie</h3>
+<ol type="1">
+<li>Kliknij PPM na <strong>swojej bazie</strong> → <strong>Query Tool</strong>.</li>
+<li>Sprawdź nazwę bazy w informacji o połączeniu na pasku narzędzia.</li>
+<li>Znajdź edytor SQL oraz zakładki <strong>Data Output</strong> i <strong>Messages</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> zapytania będą wykonywane w Twojej bazie, a nie w bazie wykładowej. Zmiana zaznaczenia w drzewie nie przełącza automatycznie połączenia już otwartego Query Tool.</p>
+</section>
+<section id="zadanie-25.-odczytaj-całą-tabelę" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-25.-odczytaj-całą-tabelę">Zadanie 25. Odczytaj całą tabelę</h3>
+<ol type="1">
+<li>Wpisz w edytorze:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.equipment;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
+<li>Zaznacz całe polecenie i użyj <strong>Execute script</strong> / <strong>Execute query</strong> na pasku Query Tool, aby je wykonać.</li>
+<li>Obejrzyj <strong>Data Output</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> wynik ma sześć wierszy i cztery kolumny. Gwiazdka oznacza wszystkie kolumny, a <code>lab1.equipment</code> wskazuje schemat i tabelę. Nie zakładaj konkretnej kolejności wierszy.</p>
+</section>
+<section id="zadanie-26.-odczytaj-wynik-i-komunikat" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-26.-odczytaj-wynik-i-komunikat">Zadanie 26. Odczytaj wynik i komunikat</h3>
+<ol type="1">
+<li>W wyniku znajdź Laptop z ilością <code>14</code>.</li>
+<li>Znajdź Projektor multimedialny w sali <code>A103</code>.</li>
+<li>Przejdź do <strong>Messages</strong> i odczytaj komunikat zakończenia zapytania.</li>
+<li>Wróć do <strong>Data Output</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> umiesz odróżnić dane zwrócone przez zapytanie od komunikatów narzędzia. Do dalszej edycji wracaj do <strong>View/Edit Data</strong>.</p>
+</section>
+<section id="zadanie-27.-sprawdź-kiedy-wynik-się-odświeża" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-27.-sprawdź-kiedy-wynik-się-odświeża">Zadanie 27. Sprawdź, kiedy wynik się odświeża</h3>
+<ol type="1">
+<li>Pozostaw otwartą kartę Query Tool z dotychczasowym wynikiem.</li>
+<li>W osobnej karcie <strong>View/Edit Data</strong> zmień ilość Klawiatury (<code>equipment_id = 4</code>) z <code>25</code> na <code>24</code> i zapisz dane.</li>
+<li>Wróć do Query Tool i obejrzyj poprzedni wynik.</li>
+<li>Ponownie wykonaj to samo polecenie <code>SELECT * FROM lab1.equipment;</code>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> nowy wynik zawiera ilość <code>24</code>. Poprzedni wynik zapytania nie jest automatycznie aktualizowany po każdej zmianie danych.</p>
+</section>
+</section>
+<section id="f.-modyfikowanie-struktury-przez-interfejs" class="level2">
+<h2 class="anchored" data-anchor-id="f.-modyfikowanie-struktury-przez-interfejs">F. Modyfikowanie struktury przez interfejs</h2>
+<section id="zadanie-28.-dodaj-kolumnę-do-istniejącej-tabeli" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-28.-dodaj-kolumnę-do-istniejącej-tabeli">Zadanie 28. Dodaj kolumnę do istniejącej tabeli</h3>
+<ol type="1">
+<li>Zamknij zapisane siatki danych, aby nie pracować na starym układzie kolumn.</li>
+<li>W drzewie rozwiń <code>equipment</code> → <strong>Columns</strong>.</li>
+<li>Kliknij PPM na <strong>Columns</strong> → <strong>Create</strong> → <strong>Column…</strong>.</li>
+<li>W <strong>General</strong> wpisz <code>notes</code>; w <strong>Definition</strong> wybierz typ <code>text</code>.</li>
+<li>Pozostaw <strong>Not NULL</strong> wyłączone i zapisz formularz.</li>
+</ol>
+<p><strong>Sprawdź:</strong> tabela ma pięć kolumn. Dodana kolumna dopuszcza brak wartości, więc jej utworzenie nie wymaga natychmiastowego uzupełniania starych rekordów.</p>
+</section>
+<section id="zadanie-29.-wpisz-notatki" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-29.-wpisz-notatki">Zadanie 29. Wpisz notatki</h3>
+<ol type="1">
+<li>Otwórz na nowo <strong>View/Edit Data</strong> → <strong>All Rows</strong>.</li>
+<li>Dla Laptopa w kolumnie <code>notes</code> wpisz <code>Do zajec laboratoryjnych</code>.</li>
+<li>Dla Projektora multimedialnego wpisz <code>Sprawdzic przewod HDMI</code>.</li>
+<li>Pozostałych notatek nie uzupełniaj. Zapisz dane.</li>
+</ol>
+<p><strong>Sprawdź:</strong> dwa rekordy mają notatkę. Pozostałe mają brak wartości (<code>NULL</code>), a nie tekst <code>NULL</code>. Nie wpisuj słowa <code>NULL</code> do komórki tekstowej.</p>
+</section>
+<section id="zadanie-30.-sprawdź-nową-strukturę-w-select" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-30.-sprawdź-nową-strukturę-w-select">Zadanie 30. Sprawdź nową strukturę w SELECT</h3>
+<ol type="1">
+<li>Wróć do Query Tool.</li>
+<li>Ponownie wykonaj:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.equipment;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="1">
+<li>Sprawdź nazwy kolumn i wpisane notatki.</li>
+</ol>
+<p><strong>Sprawdź:</strong> wynik ma sześć wierszy i pięć kolumn. To samo zapytanie z <code>*</code> obejmuje również nowo dodaną kolumnę.</p>
+</section>
+<section id="zadanie-31.-zmień-nazwę-kolumny" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-31.-zmień-nazwę-kolumny">Zadanie 31. Zmień nazwę kolumny</h3>
+<ol type="1">
+<li>Zamknij zapisany widok edycji danych.</li>
+<li>W drzewie wybierz <strong>Columns</strong> → <code>notes</code> → PPM → <strong>Properties…</strong>.</li>
+<li>W zakładce <strong>General</strong> zmień nazwę na <code>remarks</code> i zapisz.</li>
+<li>Odśwież <strong>Columns</strong> i ponownie wykonaj znany <code>SELECT *</code>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> nazwa zmieniła się na <code>remarks</code>, a dwie notatki pozostały. Zmiana nazwy kolumny nie usuwa jej danych.</p>
+</section>
+<section id="zadanie-32.-zmień-opis-tabeli" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-32.-zmień-opis-tabeli">Zadanie 32. Zmień opis tabeli</h3>
+<ol type="1">
+<li>Otwórz <strong>Properties…</strong> tabeli <code>equipment</code>.</li>
+<li>W <strong>General</strong> zmień <strong>Comment</strong> na <code>Equipment register updated in laboratory 1</code>.</li>
+<li>Zapisz i ponownie obejrzyj właściwości.</li>
+</ol>
+<p><strong>Sprawdź:</strong> opis został zmieniony, ale tabela nadal ma sześć rekordów i pięć kolumn. Komentarz opisuje obiekt; nie jest rekordem tabeli.</p>
+</section>
+</section>
+<section id="g.-usuwanie-i-odtwarzanie-tabeli-roboczej" class="level2">
+<h2 class="anchored" data-anchor-id="g.-usuwanie-i-odtwarzanie-tabeli-roboczej">G. Usuwanie i odtwarzanie tabeli roboczej</h2>
+<section id="zadanie-33.-utwórz-tabelę-do-prób-usuwania" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-33.-utwórz-tabelę-do-prób-usuwania">Zadanie 33. Utwórz tabelę do prób usuwania</h3>
+<ol type="1">
+<li>W schemacie <code>lab1</code> utwórz przez <strong>Create</strong> → <strong>Table…</strong> tabelę <code>scratch_items</code>.</li>
+<li>Dodaj <code>item_id</code> typu <code>integer</code> jako klucz główny, z <strong>Not NULL</strong>.</li>
+<li>Dodaj <code>item_name</code> typu <code>text</code>, również z <strong>Not NULL</strong>.</li>
+<li>Zapisz tabelę i dodaj przez <strong>View/Edit Data</strong> dwa rekordy: <code>1</code>, <code>Test A</code> oraz <code>2</code>, <code>Test B</code>.</li>
+<li>Zapisz dane.</li>
+</ol>
+<p><strong>Sprawdź:</strong> w <code>lab1</code> istnieją dwie osobne tabele. <code>equipment</code> pozostaje bez zmian.</p>
+</section>
+<section id="zadanie-34.-opróżnij-tabelę-przez-usunięcie-wierszy" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-34.-opróżnij-tabelę-przez-usunięcie-wierszy">Zadanie 34. Opróżnij tabelę przez usunięcie wierszy</h3>
+<ol type="1">
+<li>W siatce <code>scratch_items</code> zaznacz i usuń pierwszy wiersz, a następnie zapisz.</li>
+<li>Usuń drugi wiersz i ponownie zapisz.</li>
+<li>Zamknij siatkę i otwórz ją ponownie.</li>
+<li>Sprawdź w drzewie, że tabela nadal istnieje.</li>
+</ol>
+<p><strong>Sprawdź:</strong> <code>scratch_items</code> ma zero rekordów, ale wciąż ma dwie kolumny oraz klucz główny.</p>
+</section>
+<section id="zadanie-35.-usuń-całą-tabelę-roboczą" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-35.-usuń-całą-tabelę-roboczą">Zadanie 35. Usuń całą tabelę roboczą</h3>
+<ol type="1">
+<li>Zamknij kartę danych <code>scratch_items</code>.</li>
+<li>W drzewie kliknij PPM <strong>wyłącznie na <code>scratch_items</code></strong>.</li>
+<li>Wybierz <strong>Delete/Drop…</strong> i sprawdź nazwę obiektu w potwierdzeniu.</li>
+<li>Potwierdź usunięcie; nie wybieraj wariantu <strong>Cascade</strong>.</li>
+<li>Odśwież <strong>Tables</strong>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> <code>scratch_items</code> zniknęła, a <code>equipment</code> nadal istnieje. Usunięcie tabeli usuwa również jej strukturę. Utworzenie nowej tabeli o tej samej nazwie nie przywróci poprzednich danych.</p>
+</section>
+<section id="zadanie-36.-odtwórz-tabelę-samodzielnie" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-36.-odtwórz-tabelę-samodzielnie">Zadanie 36. Odtwórz tabelę samodzielnie</h3>
+<ol type="1">
+<li>Ponownie utwórz <code>lab1.scratch_items</code> z kolumnami z zadania 33.</li>
+<li>Wprowadź i zapisz rekord <code>1</code>, <code>Nowy test</code>.</li>
+<li>Otwórz Query Tool w swojej bazie i wykonaj:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> lab1.scratch_items;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Sprawdź:</strong> wynik zawiera wyłącznie nowy rekord. Dane <code>Test A</code> i <code>Test B</code> nie pojawiły się automatycznie.</p>
+</section>
+</section>
+<section id="h.-zadania-utrwalające" class="level2">
+<h2 class="anchored" data-anchor-id="h.-zadania-utrwalające">H. Zadania utrwalające</h2>
+<p>W tej części nadal korzystaj głównie z interfejsu, ale samodzielnie wybieraj odpowiednie menu. Po każdym zadaniu sprawdź rezultat.</p>
+<section id="zadanie-37.-utwórz-drugi-schemat" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-37.-utwórz-drugi-schemat">Zadanie 37. Utwórz drugi schemat</h3>
+<ol type="1">
+<li>W swojej bazie utwórz schemat <code>practice</code>.</li>
+<li>Odśwież drzewo i rozwiń jego gałąź <strong>Tables</strong>.</li>
+<li>Sprawdź, że <code>lab1.equipment</code> nadal znajduje się w <code>lab1</code>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> masz osobne schematy <code>lab1</code> i <code>practice</code>.</p>
+</section>
+<section id="zadanie-38.-utwórz-drugą-ewidencję" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-38.-utwórz-drugą-ewidencję">Zadanie 38. Utwórz drugą ewidencję</h3>
+<p>W schemacie <code>practice</code> utwórz tabelę <code>books</code>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Data type</th>
+<th>Not NULL?</th>
+<th>Primary key?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>book_id</code></td>
+<td><code>integer</code></td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td><code>title</code></td>
+<td><code>text</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td><code>author</code></td>
+<td><code>text</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>copies</code></td>
+<td><code>integer</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Utwórz wszystkie kolumny w formularzu tabeli.</li>
+<li>Sprawdź zakładkę <strong>SQL</strong>, a następnie zapisz.</li>
+<li>Obejrzyj kolumny i klucz w drzewie obiektów.</li>
+</ol>
+<p><strong>Sprawdź:</strong> tabela znajduje się w <code>practice</code>, a nie w <code>public</code> ani <code>lab1</code>.</p>
+</section>
+<section id="zadanie-39.-wprowadź-własny-zestaw-danych" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-39.-wprowadź-własny-zestaw-danych">Zadanie 39. Wprowadź własny zestaw danych</h3>
+<ol type="1">
+<li>Dodaj do <code>practice.books</code> sześć wybranych książek.</li>
+<li>Nadaj im identyfikatory od <code>1</code> do <code>6</code>.</li>
+<li>Wpisz tytuł, autora i liczbę egzemplarzy dla każdej książki.</li>
+<li>Zapisz dane i ponownie otwórz siatkę.</li>
+</ol>
+<p><strong>Sprawdź:</strong> widzisz sześć kompletnych rekordów.</p>
+</section>
+<section id="zadanie-40.-przećwicz-poprawianie-danych" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-40.-przećwicz-poprawianie-danych">Zadanie 40. Przećwicz poprawianie danych</h3>
+<ol type="1">
+<li>Dla książki <code>book_id = 1</code> zwiększ <code>copies</code> o dwa, wpisując obliczoną wartość.</li>
+<li>Dla książki <code>book_id = 2</code> popraw lub rozwiń tytuł.</li>
+<li>Dla książki <code>book_id = 3</code> zmień zapis autora na pełne imię i nazwisko.</li>
+<li>Zapisz i odczytaj dane ponownie.</li>
+</ol>
+<p><strong>Sprawdź:</strong> wszystkie trzy poprawki są widoczne, a liczba rekordów się nie zmieniła.</p>
+</section>
+<section id="zadanie-41.-dodaj-kolumnę-z-lokalizacją" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-41.-dodaj-kolumnę-z-lokalizacją">Zadanie 41. Dodaj kolumnę z lokalizacją</h3>
+<ol type="1">
+<li>Dodaj do <code>practice.books</code> kolumnę <code>shelf</code> typu <code>text</code>, dopuszczającą <code>NULL</code>.</li>
+<li>Otwórz świeży widok danych.</li>
+<li>Dla książek 1–3 wpisz <code>R1</code>, dla książek 4–6 wpisz <code>R2</code>.</li>
+<li>Zapisz dane.</li>
+</ol>
+<p><strong>Sprawdź:</strong> tabela ma pięć kolumn i każda książka ma przypisany regał.</p>
+</section>
+<section id="zadanie-42.-wykonaj-samodzielnie-select" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-42.-wykonaj-samodzielnie-select">Zadanie 42. Wykonaj samodzielnie SELECT</h3>
+<ol type="1">
+<li>W Query Tool wpisz i wykonaj:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> practice.books;</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
+<li>Sprawdź sześć rekordów, pięć kolumn i wartości <code>shelf</code>.</li>
+<li>Przejdź do <strong>Messages</strong>, a następnie wróć do wyniku.</li>
+</ol>
+<p><strong>Sprawdź:</strong> umiesz samodzielnie odczytać całą tabelę z innego schematu.</p>
+</section>
+<section id="zadanie-43.-usuń-i-zastąp-rekord" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-43.-usuń-i-zastąp-rekord">Zadanie 43. Usuń i zastąp rekord</h3>
+<ol type="1">
+<li>Przez <strong>View/Edit Data</strong> usuń książkę z identyfikatorem <code>6</code> i zapisz.</li>
+<li>Wykonaj ponownie <code>SELECT * FROM practice.books;</code> — oczekuj pięciu rekordów.</li>
+<li>W siatce dodaj inną książkę z identyfikatorem <code>7</code>; uzupełnij także <code>shelf</code>.</li>
+<li>Zapisz i ponownie wykonaj to samo zapytanie.</li>
+</ol>
+<p><strong>Sprawdź:</strong> masz sześć rekordów z identyfikatorami <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code>, <code>5</code>, <code>7</code>. Luka w numeracji po usunięciu rekordu nie jest błędem.</p>
+</section>
+<section id="zadanie-44.-posprzątaj-wyłącznie-tabelę-roboczą" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-44.-posprzątaj-wyłącznie-tabelę-roboczą">Zadanie 44. Posprzątaj wyłącznie tabelę roboczą</h3>
+<ol type="1">
+<li>Sprawdź, że <code>lab1.scratch_items</code> zawiera jedynie dane próbne.</li>
+<li>Usuń tę tabelę przez <strong>Delete/Drop…</strong>, sprawdzając nazwę przed potwierdzeniem.</li>
+<li>Pozostaw <code>lab1.equipment</code> i <code>practice.books</code> do oceny.</li>
+<li>Odśwież odpowiednie gałęzie drzewa.</li>
+</ol>
+<p><strong>Sprawdź:</strong> tabela robocza nie istnieje, a obie ewidencje pozostały.</p>
+</section>
+<section id="zadanie-45.-zakończ-i-wznow-pracę" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-45.-zakończ-i-wznow-pracę">Zadanie 45. Zakończ i wznow pracę</h3>
+<ol type="1">
+<li>Zapisz wszystkie zmiany w siatkach, a następnie zamknij karty edycji.</li>
+<li>W terminalu, w katalogu <code>rsod2026/docker</code>, zatrzymaj środowisko:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose stop</span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="1">
+<li>Uruchom je ponownie:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div><button title="Kopiuj do schowka" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="4" type="1">
+<li>Otwórz ponownie pgAdmin, połącz się z serwerem i odszukaj swoją bazę.</li>
+<li>Obejrzyj obie ewidencje i wykonaj dla każdej znany <code>SELECT *</code>.</li>
+</ol>
+<p><strong>Sprawdź:</strong> dane przetrwały zatrzymanie kontenerów. Po ostatecznym zakończeniu pracy możesz ponownie użyć <code>docker compose stop</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Ostrzeżenie
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Nie używaj <code>docker compose down -v</code> do zwykłego kończenia zajęć. Opcja <code>-v</code> usuwa woluminy, w których przechowywane są dane środowiska.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="kontrola-końcowa-i-materiał-do-oddania" class="level2">
+<h2 class="anchored" data-anchor-id="kontrola-końcowa-i-materiał-do-oddania">Kontrola końcowa i materiał do oddania</h2>
+<p>Pokaż prowadzącemu lub dołącz w uzgodnionym miejscu:</p>
+<ol type="1">
+<li>Zrzut drzewa z nazwą Twojej bazy, schematami <code>lab1</code> i <code>practice</code> oraz tabelami.</li>
+<li>Zrzut wyniku <code>SELECT * FROM lab1.equipment;</code> — sześć rekordów i pięć kolumn.</li>
+<li>Zrzut wyniku <code>SELECT * FROM practice.books;</code> — sześć rekordów i pięć kolumn.</li>
+<li>Krótkie odpowiedzi na pytania kontrolne poniżej.</li>
+</ol>
+<p>Zrzuty powinny obejmować nazwę obiektu lub treść zapytania oraz cały wynik, tak aby można było przypisać dane do właściwej tabeli.</p>
+<section id="oczekiwany-stan-equipment" class="level3">
+<h3 class="anchored" data-anchor-id="oczekiwany-stan-equipment">Oczekiwany stan equipment</h3>
+<p>Kolejność wyświetlania rekordów nie ma znaczenia.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>equipment_id</th>
+<th>equipment_name</th>
+<th>room</th>
+<th>quantity</th>
+<th>remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Laptop</td>
+<td>A101</td>
+<td>14</td>
+<td>Do zajec laboratoryjnych</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Monitor</td>
+<td>A101</td>
+<td>18</td>
+<td>NULL</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Projektor multimedialny</td>
+<td>A103</td>
+<td>2</td>
+<td>Sprawdzic przewod HDMI</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Klawiatura</td>
+<td>A101</td>
+<td>24</td>
+<td>NULL</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Router</td>
+<td>B203</td>
+<td>4</td>
+<td>NULL</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Drukarka</td>
+<td>B202</td>
+<td>2</td>
+<td>NULL</td>
+</tr>
+</tbody>
+</table>
+<p><code>NULL</code> w powyższej tabeli oznacza brak wartości, nie wpisany tekst. Tabela <code>practice.books</code> powinna zawierać własne dane z zadań 39–43 i kolumny <code>book_id</code>, <code>title</code>, <code>author</code>, <code>copies</code>, <code>shelf</code>. Tabela <code>lab1.scratch_items</code> powinna być usunięta.</p>
+</section>
+<section id="pytania-kontrolne" class="level3">
+<h3 class="anchored" data-anchor-id="pytania-kontrolne">Pytania kontrolne</h3>
+<ol type="1">
+<li>Czym różni się serwer, baza, schemat i tabela? Wskaż je we własnym drzewie.</li>
+<li>Gdzie sprawdzasz bazę, do której podłączony jest otwarty Query Tool?</li>
+<li>Czym różni się zatwierdzenie edycji komórki od <strong>Save Data</strong>?</li>
+<li>Co odświeża <strong>Refresh</strong> w drzewie, a co ponowne wykonanie zapytania?</li>
+<li>Co oznacza gwiazdka w <code>SELECT * FROM lab1.equipment;</code>?</li>
+<li>Dlaczego powtórzenie wartości <code>equipment_id</code> spowodowało błąd?</li>
+<li>Czym różni się usunięcie wszystkich wierszy od usunięcia tabeli?</li>
+<li>Czy odtworzenie tabeli o tej samej nazwie przywraca poprzednie dane?</li>
+<li>Czy zamknięcie przeglądarki zatrzymuje PostgreSQL w Dockerze?</li>
+<li>Jak zakończyć pracę z kontenerami i zachować dane na kolejne zajęcia?</li>
+</ol>
+</section>
+</section>
+<section id="gdy-coś-nie-działa" class="level2">
+<h2 class="anchored" data-anchor-id="gdy-coś-nie-działa">Gdy coś nie działa</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Objaw</th>
+<th>Co sprawdzić</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Strona na porcie 5051 się nie otwiera</td>
+<td>Czy Docker działa? Sprawdź <code>docker compose ps -a</code> w katalogu <code>docker</code>; jeśli usługa nie startuje, odczytaj <code>docker compose logs pgadmin prepare postgres</code>.</td>
+</tr>
+<tr class="even">
+<td>Obiekt nie pojawia się w drzewie</td>
+<td>Odśwież gałąź i sprawdź właściwą bazę oraz schemat.</td>
+</tr>
+<tr class="odd">
+<td>Tabela jest widoczna, ale zapytanie zgłasza brak obiektu</td>
+<td>Sprawdź połączenie Query Tool i pełną nazwę, np. <code>lab1.equipment</code>.</td>
+</tr>
+<tr class="even">
+<td>Nie można edytować rekordów</td>
+<td>Otwórz tabelę przez <strong>View/Edit Data</strong> i sprawdź, czy ma klucz główny.</td>
+</tr>
+<tr class="odd">
+<td>Po ponownym otwarciu brakuje zmian</td>
+<td>Sprawdź użycie <strong>Save Data</strong> i komunikat zapisu.</td>
+</tr>
+<tr class="even">
+<td>Wynik SELECT pokazuje stare dane</td>
+<td>Zapisz zmiany w siatce i wykonaj zapytanie ponownie.</td>
+</tr>
+<tr class="odd">
+<td>Nowa kolumna nie jest widoczna w siatce</td>
+<td>Zamknij zapisany widok danych i otwórz go ponownie.</td>
+</tr>
+<tr class="even">
+<td>Zapis zgłasza duplikat klucza</td>
+<td>Popraw identyfikator nowego wiersza; nie usuwaj poprawnego istniejącego rekordu.</td>
+</tr>
+<tr class="odd">
+<td>Zapis zgłasza brak wymaganej wartości</td>
+<td>Uzupełnij kolumny z <strong>Not NULL</strong>, a następnie ponów zapis.</td>
+</tr>
+</tbody>
+</table>
+<p>Nie usuwaj bazy ani woluminów w celu naprawienia pojedynczego błędu. Jeżeli nie wiesz, jak bezpiecznie poprawić stan, pokaż prowadzącemu komunikat oraz nazwę bazy i tabeli.</p>
+</section>
+<section id="dokumentacja-pomocnicza" class="level2">
+<h2 class="anchored" data-anchor-id="dokumentacja-pomocnicza">Dokumentacja pomocnicza</h2>
+<p>Formularze opisuje dokumentacja wersji używanej w środowisku: <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/table_dialog.html">tworzenie i właściwości tabeli</a> oraz <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/column_dialog.html">tworzenie i właściwości kolumny</a>.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Skopiowano!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Skopiowano!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/sebkaz-teaching\.github\.io\/rsod2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2026, Sebastian Zając</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
