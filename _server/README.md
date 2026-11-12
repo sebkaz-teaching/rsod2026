@@ -129,3 +129,70 @@ configuration precedence, legacy compatibility, HTTP scoring and the filtered
 viewer using temporary files and a local PHP server on an ephemeral port.
 Until `db.php` is deployed, the public test may report that it is not activated;
 publishing the static page alone does not activate the server-side key.
+
+
+## WDP laboratory attendance and task review
+
+Deploy `lab-progress.php`, `lab-panel.php`, `results.php` and `schema.sql` to the
+existing `/rsod-quiz/` directory. Keep the production `config.local.php`, database,
+`db.php`, `.htaccess` and password file. Back up the live SQLite database before
+uploading. The schema adds two tables on first access; it preserves all quiz and
+assignment records. No new dependency or URL prefix is required.
+
+Publish the updated WDP handout and `assets/js/lab-progress.js` together. The
+handout uses `https://sebastianzajac.pl/rsod-quiz/lab-progress.php`.
+Open `results.php?view=labs` with the existing instructor Basic Auth account.
+The production server **must enforce the existing `.htaccess` protection of
+`results.php`**, including password verification; PHP only consumes the identity
+provided by that authentication. Direct requests to `lab-panel.php` return 404.
+Teacher writes additionally require a session-bound CSRF token. Separate server
+Basic Auth accounts allow the panel to record individual reviewers; a shared
+account records the shared login.
+
+A student's explicit start registers their self-declared email immediately.
+The roster is filtered by class date in Europe/Warsaw and refreshes every 30 seconds
+unless a review form is open/focused. Registration is not proof of physical
+attendance. Emails are not verified. Each email has one registration per lab/day.
+A random access token is saved in the student's tab sessionStorage; only its SHA-256
+hash is stored in SQLite. Reloading that tab restores access, and retrying a start
+with the same token does not create another participant. Clearing sessionStorage,
+closing the tab, or switching browser can lose access; another token for the same
+email/day is rejected rather than silently replacing an existing registration.
+Do not share a student's browser tab. The server stores every task submission and
+teacher review immediately; finishing is an idempotent summary marker, not a lock
+on subsequent corrections. No source files are uploaded.
+
+Teacher flow: find the student, inspect their program, open the submitted task's
+**Sprawdź** control, then choose **Zatwierdź** or **Do poprawy**. Existing reviews can
+be corrected through **Zmień status**. Students can resubmit tasks returned for
+revision; they cannot grant or overwrite approvals. Review time and authenticated
+reviewer are saved with the current task status.
+
+Verify locally with `python3 _server/tests/test_lab_progress.py`. For deployment,
+check an actual student start from the published WDP site, reload the tab, submit
+a task, approve it in the protected panel, and verify that the student sees the
+approval. Confirm anonymous access to `results.php?view=labs` is denied. Local PHP
+HTTP tests emulate the web-server authentication rule; they do not prove the
+hosting configuration.
+
+
+## RSOD whole-laboratory confirmations
+
+Publish `laboratorium1.qmd` and `assets/js/lab-confirmation.js` through Quarto.
+Deploy the updated `lab-progress.php`, `lab-panel.php`, `schema.sql` and
+`results.php` to the existing `/rsod-quiz/` hosting directory. Preserve production
+configuration, authentication and the database; back up the live database first.
+GitHub Pages publishes static files only and does not deploy this PHP backend.
+The additive `lab_confirmations` table leaves WDP registrations and reviews intact.
+
+Students enter a WAT email and group 1, 2 or 3 after oral approval. One record per
+course/lab/email stores the original group, Warsaw date and server timestamp;
+retries preserve it across days. No review queue or per-task approval is created.
+This is a student declaration, not an authenticated teacher approval. Emails are
+not verified. A mistyped identity/group needs instructor intervention; students
+cannot overwrite an existing record. No roster is exposed by the public endpoint.
+
+Open `results.php?view=labs&course=rsod2026` with existing instructor Basic Auth.
+The default summary includes all dates/groups; filters select a date or group.
+Verify the live endpoint from the published handout and confirm unauthenticated
+summary access is denied. A Git push alone does not activate confirmations.

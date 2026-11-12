@@ -232,6 +232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#kontrola-końcowa-i-materiał-do-oddania" id="toc-kontrola-końcowa-i-materiał-do-oddania" class="nav-link" data-scroll-target="#kontrola-końcowa-i-materiał-do-oddania">Kontrola końcowa i materiał do oddania</a></li>
   <li><a href="#gdy-coś-nie-działa" id="toc-gdy-coś-nie-działa" class="nav-link" data-scroll-target="#gdy-coś-nie-działa">Gdy coś nie działa</a></li>
   <li><a href="#dokumentacja-pomocnicza" id="toc-dokumentacja-pomocnicza" class="nav-link" data-scroll-target="#dokumentacja-pomocnicza">Dokumentacja pomocnicza</a></li>
+  <li><a href="#potwierdzenie-zaliczenia-laboratorium" id="toc-potwierdzenie-zaliczenia-laboratorium" class="nav-link" data-scroll-target="#potwierdzenie-zaliczenia-laboratorium">Potwierdzenie zaliczenia laboratorium</a></li>
   </ul>
 </nav>
     </div>
@@ -856,8 +857,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p><strong>Sprawdź:</strong> tabela robocza nie istnieje, a obie ewidencje pozostały.</p>
 </section>
-<section id="zadanie-45.-zakończ-i-wznow-pracę" class="level3">
-<h3 class="anchored" data-anchor-id="zadanie-45.-zakończ-i-wznow-pracę">Zadanie 45. Zakończ i wznow pracę</h3>
+<section id="zadanie-45.-zakończ-i-wznów-pracę" class="level3">
+<h3 class="anchored" data-anchor-id="zadanie-45.-zakończ-i-wznów-pracę">Zadanie 45. Zakończ i wznów pracę</h3>
 <ol type="1">
 <li>Zapisz wszystkie zmiany w siatkach, a następnie zamknij karty edycji.</li>
 <li>W terminalu, w katalogu <code>rsod2026/docker</code>, zatrzymaj środowisko:</li>
@@ -1030,6 +1031,20 @@ Ostrzeżenie
 <section id="dokumentacja-pomocnicza" class="level2">
 <h2 class="anchored" data-anchor-id="dokumentacja-pomocnicza">Dokumentacja pomocnicza</h2>
 <p>Formularze opisuje dokumentacja wersji używanej w środowisku: <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/table_dialog.html">tworzenie i właściwości tabeli</a> oraz <a href="https://www.pgadmin.org/docs/pgadmin4/9.18/column_dialog.html">tworzenie i właściwości kolumny</a>.</p>
+</section>
+<section id="potwierdzenie-zaliczenia-laboratorium" class="level2">
+<h2 class="anchored" data-anchor-id="potwierdzenie-zaliczenia-laboratorium">Potwierdzenie zaliczenia laboratorium</h2>
+<p>Po wykonaniu ćwiczeń pokaż rezultaty prowadzącemu. <strong>Dopiero po otrzymaniu ustnego zaliczenia</strong> wpisz e-mail WAT, wybierz swoją grupę i naciśnij przycisk. To jedno potwierdzenie całego laboratorium; nie zgłaszasz tu zadań do sprawdzenia. Datę i godzinę zapisuje serwer. Przy ponownej próbie zachowany zostanie pierwszy wpis dla tego e-maila i laboratorium. Jeżeli pomylisz grupę lub e-mail, powiedz o tym prowadzącemu.</p>
+<div id="lab-confirmation" data-endpoint="https://sebastianzajac.pl/rsod-quiz/lab-progress.php" style="padding:20px;border:1px solid #ccd8e4;border-radius:8px">
+<form>
+<p><label>E-mail WAT: <input name="email" type="email" autocomplete="email" maxlength="254" placeholder="imie.nazwisko@student.wat.edu.pl" required=""></label></p>
+<p><label>Grupa: <select name="group" required=""><option value="">Wybierz grupę</option><option value="1">Grupa 1</option><option value="2">Grupa 2</option><option value="3">Grupa 3</option></select></label></p>
+<p><label><input type="checkbox" required=""> Prowadzący ustnie zaliczył mi całe laboratorium 1.</label></p>
+<button type="submit">Prowadzący zaliczył laboratorium — zapisz potwierdzenie</button>
+</form>
+<p role="status" aria-live="polite"></p>
+</div>
+<script src="assets/js/lab-confirmation.js"></script>
 
 
 </section>

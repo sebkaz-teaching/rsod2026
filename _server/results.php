@@ -5,6 +5,12 @@ declare(strict_types=1);
 
 require __DIR__ . '/db.php';
 
+if (($_GET['view'] ?? '') === 'labs') {
+    define('LAB_PANEL_ENTRY', true);
+    require __DIR__ . '/lab-panel.php';
+    exit;
+}
+
 $db = rsod_db();
 $isAssignments = ($_GET['view'] ?? '') === 'assignments';
 $table = $isAssignments ? 'assignment_submissions' : 'submissions';
@@ -56,7 +62,7 @@ function qs(array $overrides = []): string
 </style>
 </head>
 <body>
-<nav><a href="results.php">Testy</a><a href="results.php?view=assignments">Prace opisowe</a></nav>
+<nav><a href="results.php">Testy</a><a href="results.php?view=assignments">Prace opisowe</a><a href="results.php?view=labs">Laboratoria</a><a href="results.php?view=labs&amp;course=rsod2026">RSOD — zaliczenia</a></nav>
 <h1><?= $isAssignments ? 'Prace opisowe (bez automatycznej oceny)' : 'Wyniki testów' ?><?= $course ? ' — ' . htmlspecialchars($course) : '' ?><?= $lecture ? ' / ' . htmlspecialchars($lecture) : '' ?></h1>
 
 <nav>

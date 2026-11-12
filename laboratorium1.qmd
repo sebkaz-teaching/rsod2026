@@ -531,7 +531,7 @@ Luka w numeracji po usunięciu rekordu nie jest błędem.
 
 **Sprawdź:** tabela robocza nie istnieje, a obie ewidencje pozostały.
 
-### Zadanie 45. Zakończ i wznow pracę
+### Zadanie 45. Zakończ i wznów pracę
 
 1. Zapisz wszystkie zmiany w siatkach, a następnie zamknij karty edycji.
 2. W terminalu, w katalogu `rsod2026/docker`, zatrzymaj środowisko:
@@ -623,3 +623,25 @@ oraz nazwę bazy i tabeli.
 Formularze opisuje dokumentacja wersji używanej w środowisku:
 [tworzenie i właściwości tabeli](https://www.pgadmin.org/docs/pgadmin4/9.18/table_dialog.html)
 oraz [tworzenie i właściwości kolumny](https://www.pgadmin.org/docs/pgadmin4/9.18/column_dialog.html).
+
+## Potwierdzenie zaliczenia laboratorium
+
+Po wykonaniu ćwiczeń pokaż rezultaty prowadzącemu. **Dopiero po otrzymaniu
+ustnego zaliczenia** wpisz e-mail WAT, wybierz swoją grupę i naciśnij przycisk.
+To jedno potwierdzenie całego laboratorium; nie zgłaszasz tu zadań do sprawdzenia.
+Datę i godzinę zapisuje serwer. Przy ponownej próbie zachowany zostanie pierwszy
+wpis dla tego e-maila i laboratorium. Jeżeli pomylisz grupę lub e-mail,
+powiedz o tym prowadzącemu.
+
+```{=html}
+<div id="lab-confirmation" data-endpoint="https://sebastianzajac.pl/rsod-quiz/lab-progress.php" style="padding:20px;border:1px solid #ccd8e4;border-radius:8px">
+<form>
+<p><label>E-mail WAT: <input name="email" type="email" autocomplete="email" maxlength="254" placeholder="imie.nazwisko@student.wat.edu.pl" required></label></p>
+<p><label>Grupa: <select name="group" required><option value="">Wybierz grupę</option><option value="1">Grupa 1</option><option value="2">Grupa 2</option><option value="3">Grupa 3</option></select></label></p>
+<p><label><input type="checkbox" required> Prowadzący ustnie zaliczył mi całe laboratorium 1.</label></p>
+<button type="submit">Prowadzący zaliczył laboratorium — zapisz potwierdzenie</button>
+</form>
+<p role="status" aria-live="polite"></p>
+</div>
+<script src="assets/js/lab-confirmation.js"></script>
+```
