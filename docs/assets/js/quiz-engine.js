@@ -19,24 +19,39 @@
   "use strict";
 
   var STYLE_ID = "rsod-quiz-style";
-  var CSS =
-    "#rsod-quiz{font-family:inherit;max-width:700px;margin:2rem 0;border:1px solid #d7dde4;" +
-    "border-radius:10px;padding:20px 22px;background:#fafbfc;}" +
-    "#rsod-quiz h3{margin-top:0;}" +
-    "#rsod-quiz .rq-field{margin-bottom:16px;display:flex;flex-direction:column;gap:6px;}" +
-    "#rsod-quiz input[type=email]{padding:8px 10px;border:1px solid #c7cdd6;border-radius:6px;font-size:.95rem;}" +
-    "#rsod-quiz .rq-q{border-top:1px solid #e2e6eb;padding-top:14px;margin-top:14px;}" +
-    "#rsod-quiz .rq-q:first-of-type{border-top:none;margin-top:0;padding-top:0;}" +
-    "#rsod-quiz .rq-meta{display:flex;justify-content:space-between;font-size:.78rem;color:#6b7684;margin-bottom:4px;}" +
-    "#rsod-quiz pre{background:#eef1f5;border-radius:6px;padding:8px 10px;overflow-x:auto;font-size:.85rem;}" +
-    "#rsod-quiz .rq-opt{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:6px;cursor:pointer;}" +
-    "#rsod-quiz .rq-opt:hover{background:#eef1f5;}" +
-    "#rsod-quiz button.rq-submit{margin-top:14px;background:#33539e;color:#fff;border:none;" +
-    "padding:10px 18px;border-radius:7px;font-size:.95rem;cursor:pointer;}" +
-    "#rsod-quiz button.rq-submit:disabled{opacity:.5;cursor:not-allowed;}" +
-    "#rsod-quiz .rq-result{margin-top:16px;padding:14px 16px;border-radius:8px;background:#e7f4eb;}" +
-    "#rsod-quiz .rq-error{margin-top:16px;padding:14px 16px;border-radius:8px;background:#fbebe8;color:#8a2f1f;}" +
-    "#rsod-quiz .rq-score{font-size:1.6rem;font-weight:700;}";
+  var CSS = `
+.rsod-quiz{--rq-blue:#33539e;--rq-line:#dce3ed;margin:24px 0 32px;padding:clamp(16px,3vw,28px);border:1px solid var(--rq-line);border-radius:16px;background:#f5f7fb;color:#203247;font:inherit}
+.rsod-quiz *{box-sizing:border-box}
+.rsod-quiz .rq-heading{margin-bottom:24px}
+.rsod-quiz .rq-eyebrow{margin:0 0 8px;color:var(--rq-blue);font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.rsod-quiz h3{margin:0 0 12px;font-size:1.3rem;line-height:1.4;border:0}
+.rsod-quiz .rq-badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.rsod-quiz .rq-badges span{padding:5px 10px;border:1px solid var(--rq-line);border-radius:20px;background:#fff;font-size:.8rem}
+.rsod-quiz .rq-help{margin:8px 0 0;color:#53647c;font-size:.86rem;line-height:1.6}
+.rsod-quiz .rq-field{display:flex;flex-direction:column;gap:8px;margin:0 0 24px}
+.rsod-quiz .rq-field label{font-weight:650}
+.rsod-quiz input[type=email]{width:100%;max-width:480px;padding:11px 13px;border:1px solid #aebbd0;border-radius:8px;background:#fff;color:inherit;font:inherit}
+.rsod-quiz .rq-questions{display:grid;gap:18px}
+.rsod-quiz .rq-q{min-width:0;margin:0;padding:20px;border:1px solid var(--rq-line);border-radius:12px;background:#fff}
+.rsod-quiz .rq-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:12px;color:#53647c;font-size:.78rem}
+.rsod-quiz .rq-question{margin:0 0 14px;font-weight:650;line-height:1.6}
+.rsod-quiz pre{padding:12px;border-radius:8px;background:#eef2f8;overflow-x:auto;font-size:.85rem}
+.rsod-quiz .rq-opts{display:grid;gap:8px}
+.rsod-quiz .rq-opt{display:flex;align-items:flex-start;gap:11px;margin:0;padding:11px 13px;border:1px solid var(--rq-line);border-radius:8px;cursor:pointer;line-height:1.55;transition:background .15s,border-color .15s}
+.rsod-quiz .rq-opt:hover{border-color:#91a5cb;background:#f4f7fc}
+.rsod-quiz .rq-opt:has(input:checked){border-color:var(--rq-blue);background:#eaf0fc;box-shadow:inset 3px 0 var(--rq-blue)}
+.rsod-quiz input[type=radio]{flex:0 0 auto;width:17px;height:17px;margin:4px 0 0;accent-color:var(--rq-blue)}
+.rsod-quiz :is(input,button):focus-visible{outline:3px solid #789ce3;outline-offset:3px}
+.rsod-quiz .rq-footer{margin-top:24px;padding-top:20px;border-top:1px solid var(--rq-line)}
+.rsod-quiz button.rq-submit{padding:12px 20px;border:0;border-radius:9px;background:var(--rq-blue);color:#fff;font:inherit;font-weight:650;cursor:pointer}
+.rsod-quiz button.rq-submit:hover{background:#26427f}
+.rsod-quiz button.rq-submit:disabled{opacity:.65;cursor:default}
+.rsod-quiz .rq-result,.rsod-quiz .rq-error{margin-top:20px;padding:18px;border-radius:10px;line-height:1.6}
+.rsod-quiz .rq-result{border:1px solid #b7d9c2;background:#e8f5ed;color:#215d36}
+.rsod-quiz .rq-error{border:1px solid #efc6c1;background:#fff0ee;color:#8a2f1f}
+.rsod-quiz .rq-score{font-size:1.8rem;font-weight:750}
+@media(max-width:600px){.rsod-quiz .rq-q{padding:14px}.rsod-quiz .rq-opt{padding:10px}.rsod-quiz button.rq-submit{width:100%}}
+`;
 
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
@@ -71,18 +86,24 @@
 
   function mount(container, config) {
     injectStyle();
+    container.classList.add("rsod-quiz");
     var questions = config.questions;
     var maxScore = questions.reduce(function (s, q) { return s + q.points; }, 0);
 
     container.innerHTML =
-      "<h3>Test — " + (config.title || config.lecture) + "</h3>" +
+      '<div class="rq-heading"><p class="rq-eyebrow">Test powtórkowy</p><h3>' +
+      (config.title || config.lecture) + '</h3><div class="rq-badges"><span>' +
+      questions.length + ' pytań</span><span>' + maxScore +
+      ' pkt do zdobycia</span><span>Jedna odpowiedź w pytaniu</span></div>' +
+      '<p class="rq-help">Wpisz e-mail i zaznacz odpowiedź w każdym pytaniu. Po wysłaniu zobaczysz wynik.</p></div>' +
       '<form class="rq-form">' +
       '<div class="rq-field"><label for="rq-email"><strong>E-mail</strong></label>' +
-      '<input type="email" id="rq-email" required placeholder="imie.nazwisko@wcy.wat.edu.pl"></div>' +
+      '<input type="email" id="rq-email" required autocomplete="email" placeholder="imie.nazwisko@student.wat.edu.pl"></div>' +
       '<div class="rq-questions"></div>' +
-      '<button type="submit" class="rq-submit">Wyślij i pokaż wynik</button>' +
+      '<div class="rq-footer"><button type="submit" class="rq-submit">Wyślij i pokaż wynik</button>' +
+      '<p class="rq-help">Poczekaj na potwierdzenie zapisu — samo kliknięcie nie oznacza jeszcze wysłania wyniku.</p></div>' +
       "</form>" +
-      '<div class="rq-output"></div>';
+      '<div class="rq-output" role="status" aria-live="polite"></div>';
 
     var qHost = container.querySelector(".rq-questions");
     questions.forEach(function (q, i) {
@@ -102,7 +123,7 @@
         })
         .join("");
       var block = el(
-        '<div class="rq-q">' +
+        '<div class="rq-q" role="group" aria-labelledby="rq-title-' + i + '">' +
           '<div class="rq-meta"><span>Pytanie ' +
           (i + 1) +
           " · " +
@@ -110,7 +131,7 @@
           " pkt</span><span>" +
           (q.diff || "") +
           "</span></div>" +
-          "<p>" +
+          '<p class="rq-question" id="rq-title-' + i + '">' +
           q.text +
           "</p>" +
           (q.code ? "<pre><code>" + q.code.replace(/</g, "&lt;") + "</code></pre>" : "") +
