@@ -26,7 +26,8 @@ class LabProgressTests(unittest.TestCase):
                          'lab-progress.php', 'submit.php'):
                 shutil.copy(SOURCE / name, root / name)
             (root / 'config.php').write_text("<?php return ['db_path'=>__DIR__.'/test.db',"
-                "'allowed_origin'=>'https://sebkaz-teaching.github.io','answer_keys'=>[]];")
+                "'allowed_origin'=>'https://sebkaz-teaching.github.io','answer_keys'=>"
+                "['wdplab2026'=>['cpp02'=>['q1'=>['correct'=>'B','points'=>1]]]]];")
             # Emulate Apache's existing results.php Basic Auth rule, including password validation.
             (root / 'router.php').write_text("""<?php
 if (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) === '/results.php' &&
@@ -87,6 +88,32 @@ return false;
                 self.assertNotIn('rsod@student.wat.edu.pl', request(summary + '&date=2000-01-01', teacher=True)[1])
                 self.assertEqual(request(summary + '&date=2026-02-30', teacher=True)[0], 422)
                 self.assertEqual(request(summary, rsod, teacher=True)[0], 405)
+                # A student can confirm each lab once without affecting earlier labs.
+                for lab in ('lab02', 'lab03', 'lab04'):
+                    self.assertEqual(request('lab-progress.php', {**rsod, 'lab': lab})[0], 200)
+                    self.assertEqual(request('lab-progress.php', {**rsod, 'lab': lab})[0], 200)
+                    code, filtered = request(summary + '&lab=' + lab, teacher=True)
+                    self.assertEqual(code, 200, filtered)
+                    self.assertIn('rsod@student.wat.edu.pl', filtered)
+                    self.assertIn('1 potwierdzeń', filtered)
+                with sqlite3.connect(root / 'test.db') as db:
+                    self.assertEqual(db.execute('SELECT COUNT(*) FROM lab_confirmations').fetchone()[0], 4)
+                    self.assertEqual(db.execute("SELECT * FROM lab_confirmations WHERE lab = 'lab01'").fetchone(), original)
+                    self.assertEqual(db.execute('SELECT COUNT(*) FROM lab_tasks').fetchone()[0], 0)
+                for lab in ('lab00', 'lab05', '', ['lab02']):
+                    self.assertEqual(request('lab-progress.php', {**rsod, 'lab': lab})[0], 422)
+                self.assertEqual(request(summary + '&lab=lab05', teacher=True)[0], 422)
+                # Existing deployments with no RSOD keys receive the recap key.
+                answers = dict(zip((f'q{i}' for i in range(1, 9)), 'BCADBACD'))
+                quiz = {'course': 'rsod2026', 'lecture': 'lab02-start',
+                        'email': 'recap@wat.edu.pl', 'answers': answers, 'score': 999}
+                code, receipt = request('submit.php', quiz)
+                self.assertEqual(code, 200, receipt)
+                self.assertEqual(json.loads(receipt)['score'], 8)
+                self.assertEqual(json.loads(receipt)['maxScore'], 8)
+                empty = json.loads(request('submit.php', {**quiz, 'answers': {}})[1])
+                self.assertEqual(empty['score'], 0)
+                self.assertIn('lab02-start', request('results.php?course=rsod2026', teacher=True)[1])
                 token = 'a' * 64
                 student = {'token': token, 'action': 'start', 'email': 'Student@WAT.EDU.PL'}
                 code, text = request('lab-progress.php', student)
@@ -142,6 +169,17 @@ return false;
                 self.assertIn('Prace opisowe', request('results.php?view=assignments', teacher=True)[1])
                 self.assertEqual(request('submit.php', {'course':'wdplab2026', 'lecture':'cpp02',
                     'email':'quiz@example.test', 'answers':{'q1':'B'}})[0], 200)
+                # A site-local answer key remains authoritative.
+                (root / 'config.local.php').write_text(
+                    "<?php return ['answer_keys'=>['rsod2026'=>['lab02-start'=>"
+                    "['q1'=>['correct'=>'D','points'=>3]]]]];"
+                )
+                configured = subprocess.check_output(
+                    ['php', '-r', "require $argv[1]; echo json_encode(rsod_config());", str(root / 'db.php')],
+                    text=True,
+                )
+                self.assertEqual(json.loads(configured)['answer_keys']['rsod2026']['lab02-start'],
+                                 {'q1': {'correct': 'D', 'points': 3}})
             finally:
                 server.terminate()
                 server.wait(timeout=5)

@@ -23,27 +23,35 @@ if (($_GET['course'] ?? '') === 'rsod2026') {
         $parsed = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
         if (!$parsed || $parsed->format('Y-m-d') !== $date) { http_response_code(422); exit('Niepoprawna data.'); }
     }
-    $sql = "SELECT * FROM lab_confirmations WHERE course = 'rsod2026' AND lab = 'lab01'";
+    $lab = $_GET['lab'] ?? '';
+    $labels = ['lab01' => '1 — pgAdmin', 'lab02' => '2 — podstawy SQL',
+        'lab03' => '3 — podzapytania', 'lab04' => '4 — złączenia'];
+    if (!is_string($lab) || ($lab !== '' && !isset($labels[$lab]))) {
+        http_response_code(422); exit('Niepoprawne laboratorium.');
+    }
+    $sql = "SELECT * FROM lab_confirmations WHERE course = 'rsod2026'";
     $params = [];
+    if ($lab !== '') { $sql .= ' AND lab = ?'; $params[] = $lab; }
     if ($date !== '') { $sql .= ' AND class_date = ?'; $params[] = $date; }
     if ($group !== '') { $sql .= ' AND class_group = ?'; $params[] = $group; }
-    $query = rsod_db()->prepare($sql . ' ORDER BY class_date DESC, class_group, email');
+    $query = rsod_db()->prepare($sql . ' ORDER BY class_date DESC, class_group, email, lab');
     $query->execute($params);
     $rows = $query->fetchAll(PDO::FETCH_ASSOC);
     $h = fn(string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     ?>
 <!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RSOD — potwierdzenia laboratorium 1</title>
+<title>RSOD — potwierdzenia laboratoriów</title>
 <style>body{font:16px system-ui;margin:24px;color:#203247}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccd8e4;padding:10px;text-align:left}input,select,button{font:inherit;padding:8px}nav a{margin-right:16px}</style></head><body>
 <nav><a href="results.php">Testy</a><a href="results.php?view=labs">WDP — laboratoria</a><a href="results.php?view=labs&amp;course=rsod2026">RSOD — laboratoria</a></nav>
-<h1>RSOD — laboratorium 1</h1>
+<h1>RSOD — laboratoria</h1>
 <p>Potwierdzenia studentów po ustnym zaliczeniu przez prowadzącego. Bez zgłaszania do sprawdzenia i dodatkowego zatwierdzania w panelu.</p>
 <form method="get"><input type="hidden" name="view" value="labs"><input type="hidden" name="course" value="rsod2026">
+<label>Laboratorium: <select name="lab"><option value="">Wszystkie</option><?php foreach ($labels as $id => $label): ?><option value="<?= $id ?>" <?= $lab === $id ? 'selected' : '' ?>><?= $h($label) ?></option><?php endforeach; ?></select></label>
 <label>Data (pusta = wszystkie): <input type="date" name="date" value="<?= $h($date) ?>"></label>
 <label>Grupa: <select name="group"><option value="">Wszystkie</option><?php foreach (['1','2','3'] as $g): ?><option value="<?= $g ?>" <?= $group === $g ? 'selected' : '' ?>>Grupa <?= $g ?></option><?php endforeach; ?></select></label><button>Pokaż / odśwież</button></form>
 <p><strong><?= count($rows) ?> potwierdzeń</strong>. Czas w strefie Europe/Warsaw. Lista odświeża się co 30 sekund.</p>
 <table><thead><tr><th>Student</th><th>Grupa</th><th>Laboratorium</th><th>Data</th><th>Czas potwierdzenia</th><th>Status</th></tr></thead><tbody>
-<?php foreach ($rows as $row): ?><tr><td><?= $h($row['email']) ?></td><td>Grupa <?= $h($row['class_group']) ?></td><td>1 — pgAdmin</td><td><?= $h($row['class_date']) ?></td><td><?= $h((new DateTimeImmutable($row['confirmed_at']))->setTimezone(new DateTimeZone('Europe/Warsaw'))->format('H:i:s')) ?></td><td>Potwierdzone przez studenta po ustnym zaliczeniu</td></tr><?php endforeach; ?>
+<?php foreach ($rows as $row): ?><tr><td><?= $h($row['email']) ?></td><td>Grupa <?= $h($row['class_group']) ?></td><td><?= $h($labels[$row['lab']] ?? $row['lab']) ?></td><td><?= $h($row['class_date']) ?></td><td><?= $h((new DateTimeImmutable($row['confirmed_at']))->setTimezone(new DateTimeZone('Europe/Warsaw'))->format('H:i:s')) ?></td><td>Potwierdzone przez studenta po ustnym zaliczeniu</td></tr><?php endforeach; ?>
 </tbody></table><?php if (!$rows): ?><p>Brak potwierdzeń dla wybranych filtrów.</p><?php endif; ?>
 <script>setInterval(function(){if(!document.querySelector('input:focus,select:focus,button:focus')) location.reload();},30000);</script>
 </body></html>

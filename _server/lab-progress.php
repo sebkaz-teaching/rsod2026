@@ -25,7 +25,7 @@ $body = json_decode($raw, true);
 if (!is_array($body)) { lab_error(400, 'invalid_json'); }
 // RSOD has one declaration per student/lab, without the WDP review queue.
 if (($body['course'] ?? '') === 'rsod2026') {
-    if (($body['action'] ?? '') !== 'confirm' || ($body['lab'] ?? '') !== 'lab01') {
+    if (($body['action'] ?? '') !== 'confirm' || !in_array($body['lab'] ?? '', ['lab01', 'lab02', 'lab03', 'lab04'], true)) {
         lab_error(422, 'invalid_action');
     }
     $email = $body['email'] ?? null;
@@ -43,7 +43,7 @@ if (($body['course'] ?? '') === 'rsod2026') {
         $insert = $db->prepare('INSERT INTO lab_confirmations
             (course, lab, email, class_group, class_date, confirmed_at)
             VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(course, lab, email) DO NOTHING');
-        $insert->execute(['rsod2026', 'lab01', $email, $group, $date, gmdate('c')]);
+        $insert->execute(['rsod2026', $body['lab'], $email, $group, $date, gmdate('c')]);
         // A retry never alters the original group or confirmation timestamp.
         echo json_encode(['ok' => true]);
     } catch (Throwable $error) {

@@ -18,6 +18,15 @@ function rsod_config(): array
         $config['answer_keys']['pas2026']['test-po-wykladach'] = $combined;
     }
 
+    // Stable option IDs for the recap of laboratory 1, shown at laboratory 2.
+    if (!isset($config['answer_keys']['rsod2026']['lab02-start'])) {
+        $key = [];
+        foreach (['B', 'C', 'A', 'D', 'B', 'A', 'C', 'D'] as $index => $answer) {
+            $key['q' . ($index + 1)] = ['correct' => $answer, 'points' => 1];
+        }
+        $config['answer_keys']['rsod2026']['lab02-start'] = $key;
+    }
+
     return $config;
 }
 

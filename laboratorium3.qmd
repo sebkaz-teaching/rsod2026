@@ -1,0 +1,507 @@
+---
+title: "Laboratorium 3 — podzapytania i zapytania skorelowane"
+lang: pl
+---
+
+## Plan bloku — 90 minut
+
+| Czas | Praca |
+|---|---|
+| 0–10 min | Przypomnienie agregacji i kontrola danych |
+| 10–30 min | Zadania 1–6: podzapytania skalarne i IN |
+| 30–55 min | Zadania 7–12: EXISTS, NOT EXISTS i NULL |
+| 55–80 min | Zadania 13–16: korelacja, tabela pochodna i CTE |
+| 80–90 min | Samodzielne wyjaśnienie wyniku i potwierdzenie |
+
+Zadania 17–20 są dodatkowe. Celem jest wybór właściwego rodzaju podzapytania,
+a nie samo zwiększanie liczby zagnieżdżonych nawiasów.
+
+## Zanim zaczniesz
+
+Otwórz Query Tool w swojej bazie i korzystaj ze schematu `shop_lab` z poprzedniego
+bloku. Oczekiwany stan: **6 klientów, 10 produktów, 8 zamówień, 12 pozycji**.
+Nie uruchamiaj ponownie skryptu startowego i nie zmieniaj danych. Jeśli nie masz
+jeszcze zestawu, wykonaj [przygotowanie danych z laboratorium 2](laboratorium2.qmd#wspólny-zestaw-danych-sklep).
+Pamiętaj o różnicy między ceną bieżącą `products.price` a historyczną `order_items.unit_price`.
+
+## Jak wykonywać zadania
+
+1. Zapisuj zapytania w swoim pliku `labNN_numer_albumu.sql`; przed każdym dodaj
+   komentarz, np. `-- Task 03`. Nie nadpisuj pliku startowego.
+2. Wykonuj **tylko zaznaczone zapytanie**, aby nie uruchamiać całego pliku ponownie.
+3. Sprawdzaj **Data Output** i **Messages**. Błąd składni popraw i uruchom zapytanie ponownie.
+4. Przed podejrzeniem rezultatu przewidź kolumny, liczbę wierszy i istotne wartości.
+5. Jeśli polecenie wymaga sortowania, zastosuj wskazane klucze. Bez ORDER BY
+   kolejność rekordów nie jest gwarantowana.
+
+Przykłady oznaczone „start” możesz uruchomić i zmodyfikować. W pozostałych
+zadaniach samodzielnie napisz SQL. Rozwijane wyniki kontrolne pokazują rezultat,
+nie gotowe rozwiązanie. Zadania dodatkowe są dla osób pracujących szybciej.
+
+## Zadania
+
+### Trzy rodzaje wyniku podzapytania
+
+| Konstrukcja | Oczekiwany wynik podzapytania | Typowe zastosowanie |
+|---|---|---|
+| `price > (SELECT ...)` | Jedna kolumna i najwyżej jeden wiersz | Porównanie ze średnią |
+| `id IN (SELECT ...)` | Jedna kolumna, dowolna liczba wierszy | Przynależność do listy |
+| `EXISTS (SELECT ...)` | Dowolne kolumny; liczy się istnienie wiersza | Czy istnieje powiązany rekord? |
+
+Podzapytanie skalarne z zerem wierszy daje NULL, z więcej niż jednym wierszem —
+błąd. Zwykłe AVG bez GROUP BY zwraca jeden wiersz. Sam warunek WHERE nie
+gwarantuje pojedynczego wyniku, chyba że wynika to np. z wyszukania po kluczu.
+
+### Zadanie 1. Przygotuj wartość progową
+
+Policz średnią cenę wszystkich produktów, bez zaokrąglania. Zapisz ją roboczo i wskaż, że wynik ma jeden wiersz oraz jedną kolumnę.
+
+**Przykład na start:**
+
+```sql
+SELECT AVG(price) AS mean_price
+FROM shop_lab.products;
+```
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| mean_price |
+| --- |
+| 654.0 |
+
+</details>
+
+### Zadanie 2. Porównaj cenę ze średnią
+
+Znajdź produkty droższe od średniej wszystkich cen. Użyj podzapytania w WHERE, a nie ręcznie przepisanej liczby. Pokaż identyfikator, nazwę i cenę.
+
+**Przykład na start:**
+
+```sql
+SELECT product_id, product_name, price
+FROM shop_lab.products
+WHERE price > (SELECT AVG(price)
+FROM shop_lab.products)
+ORDER BY product_id;
+```
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | price |
+| --- | --- | --- |
+| 1 | Laptop | 3000.0 |
+| 2 | Monitor | 800.0 |
+| 9 | Monitor Pro | 1200.0 |
+
+</details>
+
+### Zadanie 3. Znajdź najtańsze produkty
+
+Wypisz identyfikator, nazwę i cenę wszystkich produktów o cenie równej minimum. Użyj MIN w podzapytaniu, bez LIMIT.
+
+**Wskazówka:** W razie remisu warunek równości do MIN zwraca wszystkie najtańsze produkty.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | price |
+| --- | --- | --- |
+| 5 | Cable HDMI | 40.0 |
+
+</details>
+
+### Zadanie 4. Pobierz pojedynczą wartość z innego rekordu
+
+Znajdź produkty droższe od Routera o identyfikatorze 6. Cenę Routera odczytaj podzapytaniem po kluczu głównym. Pokaż identyfikator i nazwę.
+
+**Kontrola:** liczba wierszy: 5.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name |
+| --- | --- |
+| 1 | Laptop |
+| 2 | Monitor |
+| 7 | Switch |
+| 9 | Monitor Pro |
+| 10 | Dock |
+
+</details>
+
+### Zadanie 5. Zastosuj IN z podzapytaniem
+
+Znajdź klientów z co najmniej jednym opłaconym zamówieniem. Pokaż identyfikator i nazwę. W podzapytaniu odczytaj customer_id z orders o statusie paid.
+
+**Przykład na start:**
+
+```sql
+SELECT customer_id, customer_name
+FROM shop_lab.customers
+WHERE customer_id IN (SELECT customer_id
+FROM shop_lab.orders
+WHERE status = 'paid')
+ORDER BY customer_id;
+```
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 1 | Anna Kowalska |
+| 2 | Jan Nowak |
+
+</details>
+
+### Zadanie 6. Zastosuj dwa poziomy zagnieżdżenia
+
+Znajdź produkty występujące w opłaconych zamówieniach. Zewnętrzne zapytanie czyta products, kolejne order_items, a najgłębsze orders. Pokaż identyfikator i nazwę.
+
+**Kontrola:** liczba wierszy: 6.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name |
+| --- | --- |
+| 1 | Laptop |
+| 2 | Monitor |
+| 3 | Keyboard |
+| 4 | Mouse |
+| 5 | Cable HDMI |
+| 6 | Router |
+
+</details>
+
+### Co oznacza korelacja?
+
+Wewnętrzne zapytanie może odwoływać się do aliasu zewnętrznego. Czytaj je jako
+pytanie „czy dla **tego** klienta istnieje zamówienie?”. Taki model myślowy nie
+przesądza, ile razy silnik fizycznie wykona podzapytanie — optymalizator może
+zmienić sposób obliczeń. `SELECT 1` w EXISTS oznacza, że interesuje nas istnienie
+wiersza, a nie jego zawartość.
+
+### Zadanie 7. Przeczytaj zapytanie skorelowane
+
+Wykonaj przykład wybierający klientów z jakimkolwiek zamówieniem. Wskaż, skąd pochodzą aliasy c i o oraz co porównuje warunek `o.customer_id = c.customer_id`.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, c.customer_name
+FROM shop_lab.customers AS c
+WHERE EXISTS (SELECT 1
+FROM shop_lab.orders AS o
+WHERE o.customer_id = c.customer_id)
+ORDER BY c.customer_id;
+```
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 1 | Anna Kowalska |
+| 2 | Jan Nowak |
+| 3 | Ola Lis |
+| 4 | Piotr Wilk |
+
+</details>
+
+### Zadanie 8. Dodaj warunek wewnątrz EXISTS
+
+Znajdź klientów z opłaconym zamówieniem, tym razem przez EXISTS. Porównaj listę z zadaniem 5.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 1 | Anna Kowalska |
+| 2 | Jan Nowak |
+
+</details>
+
+### Zadanie 9. Znajdź klientów bez zamówień
+
+Użyj NOT EXISTS do znalezienia klientów bez żadnego zamówienia. Pokaż identyfikator i nazwę.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 5 | Ewa Kot |
+| 6 | Adam Zuk |
+
+</details>
+
+### Zadanie 10. Zobacz pułapkę NOT IN
+
+Wykonaj przykład i porównaj z zadaniem 9. Obejrzyj osobno customer_id w orders. Znajdziesz tam NULL, oznaczający zamówienie gościnne.
+
+**Przykład na start:**
+
+```sql
+SELECT customer_id, customer_name
+FROM shop_lab.customers
+WHERE customer_id NOT IN (SELECT customer_id
+FROM shop_lab.orders)
+ORDER BY customer_id;
+```
+
+**Wskazówka:** WHERE zachowuje tylko TRUE. Przy braku dopasowania i NULL w podzapytaniu NOT IN daje UNKNOWN, więc nie wybiera takich klientów.
+
+**Kontrola:** liczba wierszy: 0.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+*Brak wierszy (0 rekordów).*
+
+</details>
+
+### Zadanie 11. Napraw NOT IN
+
+W podzapytaniu usuń brakujące identyfikatory przez `WHERE customer_id IS NOT NULL`. Sprawdź zgodność z NOT EXISTS.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 5 | Ewa Kot |
+| 6 | Adam Zuk |
+
+</details>
+
+### Zadanie 12. Znajdź produkt bez pozycji zamówienia
+
+Przez NOT EXISTS znajdź produkty, których nie ma w żadnej pozycji zamówienia. Pokaż identyfikator i nazwę; uwzględniamy tutaj wszystkie statusy.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name |
+| --- | --- |
+| 8 | Webcam |
+
+</details>
+
+### Zadanie 13. Policz zamówienia przy każdym kliencie
+
+W SELECT umieść skorelowane podzapytanie COUNT(*) liczące zamówienia danego klienta. Pokaż wszystkich klientów, także z zerem zamówień.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, c.customer_name, (SELECT COUNT(*)
+FROM shop_lab.orders AS o
+WHERE o.customer_id = c.customer_id) AS order_count
+FROM shop_lab.customers AS c
+ORDER BY c.customer_id;
+```
+
+**Kontrola:** liczba wierszy: 6.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name | order_count |
+| --- | --- | --- |
+| 1 | Anna Kowalska | 2 |
+| 2 | Jan Nowak | 2 |
+| 3 | Ola Lis | 1 |
+| 4 | Piotr Wilk | 1 |
+| 5 | Ewa Kot | 0 |
+| 6 | Adam Zuk | 0 |
+
+</details>
+
+### Zadanie 14. Porównaj produkt ze średnią jego kategorii
+
+Znajdź produkty droższe od średniej w swojej kategorii. Użyj aliasów p i p2 oraz powiąż podzapytanie po category. Pokaż identyfikator, nazwę i kategorię.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | category |
+| --- | --- | --- |
+| 7 | Switch | network |
+| 9 | Monitor Pro | displays |
+| 10 | Dock | accessories |
+
+</details>
+
+### Wynik zapytania jako źródło danych
+
+Podzapytanie w FROM musi mieć alias w naszych przykładach, np. `AS totals`.
+Najpierw wyobraź sobie tabelę zawierającą wynik wewnętrznego SELECT, a następnie
+wykonaj na niej zewnętrzne filtrowanie lub agregację. `WITH` pozwala nazwać
+taki etap. Nie jest to deklaracja zmiennej ani utworzenie trwałego obiektu.
+
+### Zadanie 15. Użyj tabeli pochodnej
+
+Najpierw wyznacz wartość każdego zamówienia z pozycji: SUM(quantity * unit_price). Umieść zapytanie w FROM pod aliasem totals. Na zewnątrz zostaw wartości większe niż 1000 PLN. To wartości zapisanych pozycji niezależnie od statusu.
+
+**Przykład na start:**
+
+```sql
+SELECT totals.order_id, totals.order_total
+FROM (SELECT order_id, SUM(quantity * unit_price) AS order_total
+FROM shop_lab.order_items
+GROUP BY order_id) AS totals
+WHERE totals.order_total > 1000
+ORDER BY totals.order_id;
+```
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| order_id | order_total |
+| --- | --- |
+| 101 | 3080.0 |
+| 106 | 1650.0 |
+| 107 | 1600.0 |
+
+</details>
+
+### Zadanie 16. Nazwij etap przez WITH
+
+Przepisz poprzednie zadanie z użyciem `WITH totals AS (...)`. Zachowaj te same kolumny i sortowanie. Porównaj oba wyniki.
+
+**Wskazówka:** CTE nazywa wynik zapytania w obrębie jednej instrukcji. Nie tworzy trwałej tabeli.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| order_id | order_total |
+| --- | --- |
+| 101 | 3080.0 |
+| 106 | 1650.0 |
+| 107 | 1600.0 |
+
+</details>
+
+### Zadanie 17. Policz średnią wartości zamówień z pozycjami — dodatkowe
+
+Dodatkowo: policz średnią sum policzonych dla poszczególnych zamówień. Użyj tabeli pochodnej lub CTE, zaokrąglij do dwóch miejsc. Zamówienie 108 bez pozycji nie wchodzi do tej średniej.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| mean_order_total |
+| --- |
+| 1165.71 |
+
+</details>
+
+### Zadanie 18. Połącz EXISTS i NOT EXISTS — dodatkowe
+
+Dodatkowo: znajdź klientów, którzy mają opłacone zamówienie i nie mają żadnego anulowanego. Pokaż identyfikator i nazwę.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 1 | Anna Kowalska |
+| 2 | Jan Nowak |
+
+</details>
+
+### Zadanie 19. Sprawdź pusty wynik skalarny — dodatkowe
+
+Dodatkowo: wykonaj podzapytanie skalarne szukające ceny produktu 999. Nie ma takiego produktu. Obejrzyj NULL w wyniku i wyjaśnij, czym różni się to od wyniku 0.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| missing_price |
+| --- |
+| NULL |
+
+</details>
+
+### Zadanie 20. Wybierz rekordy o maksymalnym stanie — dodatkowe
+
+Dodatkowo: znajdź wszystkie produkty o największym stock w swojej kategorii. Zastosuj korelację i MAX, bez sortowania z LIMIT. Zwróć identyfikator, nazwę i stan.
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | stock |
+| --- | --- | --- |
+| 1 | Laptop | 5 |
+| 2 | Monitor | 10 |
+| 5 | Cable HDMI | 30 |
+| 6 | Router | 8 |
+
+</details>
+
+## Co pokazać prowadzącemu
+
+Zachowaj plik `.sql` z ponumerowanymi zapytaniami. Pokaż wykonanie zadań
+podstawowych; rozszerzenia wykonuj w pozostałym czasie. Przy omówieniu:
+
+1. Wyjaśnij różnicę między podzapytaniem skalarnym, IN i EXISTS.
+2. Pokaż, dlaczego NOT IN w zadaniu 10 nie zwraca klientów.
+3. Wskaż odwołanie skorelowane i wyjaśnij jego sens.
+4. Porównaj tabelę pochodną z CTE z zadań 15–16.
+
+## Dokumentacja
+
+[IN, EXISTS i NOT IN](https://www.postgresql.org/docs/16/functions-subquery.html) oraz [WITH](https://www.postgresql.org/docs/16/queries-with.html).
+
+## Potwierdzenie zaliczenia
+
+Pokaż prowadzącemu plik zapytań i wyjaśnij wybrane wyniki. Po **ustnym zaliczeniu
+całego laboratorium 3** zapisz potwierdzenie. Nie zgłaszasz osobnych zadań do sprawdzenia.
+Datę i czas nada serwer. Ponowna próba nie tworzy drugiego wpisu dla tego samego
+e-maila i laboratorium. Wybierz tę samą grupę co na poprzednich zajęciach.
+
+```{=html}
+<div id="lab-confirmation" data-lab="lab03" data-endpoint="https://sebastianzajac.pl/rsod-quiz/lab-progress.php" style="padding:20px;border:1px solid #ccd8e4;border-radius:8px">
+<form>
+<p><label>E-mail WAT: <input name="email" type="email" autocomplete="email" maxlength="254" required></label></p>
+<p><label>Grupa: <select name="group" required><option value="">Wybierz grupę</option><option value="1">Grupa 1</option><option value="2">Grupa 2</option><option value="3">Grupa 3</option></select></label></p>
+<p><label><input type="checkbox" required> Prowadzący ustnie zaliczył mi całe laboratorium 3.</label></p>
+<button type="submit">Prowadzący zaliczył laboratorium 3 — zapisz potwierdzenie</button>
+</form><p role="status" aria-live="polite"></p></div>
+<script src="assets/js/lab-confirmation.js"></script>
+```

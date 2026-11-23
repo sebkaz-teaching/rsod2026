@@ -1,0 +1,587 @@
+---
+title: "Laboratorium 4 — złączenia i iloczyn kartezjański"
+lang: pl
+---
+
+## Plan bloku — 90 minut
+
+| Czas | Praca |
+|---|---|
+| 0–15 min | Zadania 1–3: od 12 par do rzeczywistych dopasowań |
+| 15–40 min | Zadania 4–9: INNER, LEFT, RIGHT i FULL OUTER JOIN |
+| 40–60 min | Zadania 10–12: ON kontra WHERE oraz COUNT |
+| 60–80 min | Zadania 13–16: pozycje, sprzedaż i puste zamówienie |
+| 80–90 min | Zadania 17–18: diagnoza mnożenia wierszy i omówienie |
+
+Zadania 19–20 są dodatkowe. Złączenie tworzy wiersze z dopasowanych par;
+nie jest po prostu „doklejeniem kolumn” bez wpływu na liczbę rekordów.
+
+## Zanim zaczniesz
+
+Otwórz Query Tool w swojej bazie i korzystaj ze schematu `shop_lab` z poprzedniego
+bloku. Oczekiwany stan: **6 klientów, 10 produktów, 8 zamówień, 12 pozycji**.
+Nie uruchamiaj ponownie skryptu startowego i nie zmieniaj danych. Jeśli nie masz
+jeszcze zestawu, wykonaj [przygotowanie danych z laboratorium 2](laboratorium2.qmd#wspólny-zestaw-danych-sklep).
+Pamiętaj o różnicy między ceną bieżącą `products.price` a historyczną `order_items.unit_price`.
+
+## Jak wykonywać zadania
+
+1. Zapisuj zapytania w swoim pliku `labNN_numer_albumu.sql`; przed każdym dodaj
+   komentarz, np. `-- Task 03`. Nie nadpisuj pliku startowego.
+2. Wykonuj **tylko zaznaczone zapytanie**, aby nie uruchamiać całego pliku ponownie.
+3. Sprawdzaj **Data Output** i **Messages**. Błąd składni popraw i uruchom zapytanie ponownie.
+4. Przed podejrzeniem rezultatu przewidź kolumny, liczbę wierszy i istotne wartości.
+5. Jeśli polecenie wymaga sortowania, zastosuj wskazane klucze. Bez ORDER BY
+   kolejność rekordów nie jest gwarantowana.
+
+Przykłady oznaczone „start” możesz uruchomić i zmodyfikować. W pozostałych
+zadaniach samodzielnie napisz SQL. Rozwijane wyniki kontrolne pokazują rezultat,
+nie gotowe rozwiązanie. Zadania dodatkowe są dla osób pracujących szybciej.
+
+## Zadania
+
+### Najpierw pary, potem dopasowania
+
+Iloczyn kartezjański łączy **każdy wiersz pierwszej tabeli z każdym wierszem drugiej**.
+Przy 3 i 4 wierszach otrzymujesz 12 par. Warunek ON wskazuje, które pary są
+powiązane. Złączenie wewnętrzne po równości to nie działanie na samych nazwach
+kolumn, lecz wybór par spełniających konkretny warunek.
+
+| Klient \ Zamówienie | 101 | 102 | 103 | 104 |
+|---|---|---|---|---|
+| 1 | (1,101) | (1,102) | (1,103) | (1,104) |
+| 2 | (2,101) | (2,102) | (2,103) | (2,104) |
+| 3 | (3,101) | (3,102) | (3,103) | (3,104) |
+
+Zakreśl te pary, w których orders.customer_id zgadza się z identyfikatorem
+klienta. CROSS JOIN jest też użyteczny celowo, np. do tworzenia wszystkich
+wariantów rozmiar × kolor. Błędem jest jego niezamierzone użycie w raporcie.
+
+### Zadanie 1. Zbuduj iloczyn kartezjański 3 × 4
+
+Przed uruchomieniem rozpisz na kartce pary klientów 1–3 i zamówień 101–104. Ile par przewidujesz? Wykonaj przykład. Nie wszystkie pary opisują rzeczywiste zamówienia tych klientów.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, o.order_id
+FROM shop_lab.customers AS c
+CROSS JOIN shop_lab.orders AS o
+WHERE c.customer_id <= 3 AND o.order_id <= 104
+ORDER BY c.customer_id, o.order_id;
+```
+
+**Kontrola:** liczba wierszy: 12.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | order_id |
+| --- | --- |
+| 1 | 101 |
+| 1 | 102 |
+| 1 | 103 |
+| 1 | 104 |
+| 2 | 101 |
+| 2 | 102 |
+| 2 | 103 |
+| 2 | 104 |
+| 3 | 101 |
+| 3 | 102 |
+| 3 | 103 |
+| 3 | 104 |
+
+</details>
+
+### Zadanie 2. Wybierz pasujące pary z iloczynu
+
+Do zapytania z zadania 1 dodaj `AND o.customer_id = c.customer_id`. Porównaj liczbę wierszy oraz konkretne pary.
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | order_id |
+| --- | --- |
+| 1 | 101 |
+| 1 | 102 |
+| 2 | 103 |
+| 3 | 104 |
+
+</details>
+
+### Zadanie 3. Przepisz warunek jako INNER JOIN
+
+Przenieś warunek powiązania do ON i użyj INNER JOIN. Zachowaj ograniczenie do tych samych klientów i zamówień. Porównaj pary z zadaniem 2.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, o.order_id
+FROM shop_lab.customers AS c
+INNER JOIN shop_lab.orders AS o
+ON o.customer_id = c.customer_id
+WHERE c.customer_id <= 3 AND o.order_id <= 104
+ORDER BY c.customer_id, o.order_id;
+```
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | order_id |
+| --- | --- |
+| 1 | 101 |
+| 1 | 102 |
+| 2 | 103 |
+| 3 | 104 |
+
+</details>
+
+### Co zachowuje dany rodzaj złączenia?
+
+| Złączenie | Co trafia do wyniku |
+|---|---|
+| INNER JOIN | Wszystkie pary spełniające ON |
+| LEFT JOIN | Dopasowane pary oraz niedopasowane wiersze lewej tabeli |
+| RIGHT JOIN | Dopasowane pary oraz niedopasowane wiersze prawej tabeli |
+| FULL OUTER JOIN | Dopasowane pary oraz niedopasowane wiersze obu tabel |
+
+W niedopasowanym wierszu brakująca strona jest wypełniana NULL. Kilka dopasowań
+daje kilka wierszy. Rysunek „przecięcia zbiorów” nie oddaje tego mnożenia,
+dlatego porównujemy konkretne pary kluczy i liczby wierszy.
+
+### Zadanie 4. Odczytaj wszystkie dopasowane zamówienia
+
+Usuń ograniczenia identyfikatorów. Połącz klientów i zamówienia przez INNER JOIN, pokaż customer_id, customer_name, order_id, status. Wskaż zamówienia i klientów, których tu nie ma.
+
+**Kontrola:** liczba wierszy: 6.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name | order_id | status |
+| --- | --- | --- | --- |
+| 1 | Anna Kowalska | 101 | paid |
+| 1 | Anna Kowalska | 102 | new |
+| 2 | Jan Nowak | 103 | paid |
+| 2 | Jan Nowak | 107 | paid |
+| 3 | Ola Lis | 104 | cancelled |
+| 4 | Piotr Wilk | 106 | new |
+
+</details>
+
+### Zadanie 5. Zachowaj klientów przez LEFT JOIN
+
+Zamień INNER na LEFT JOIN. Zachowaj kolejność tabel: customers po lewej. Pokaż identyfikator i nazwę klienta oraz order_id.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, c.customer_name, o.order_id
+FROM shop_lab.customers AS c
+LEFT JOIN shop_lab.orders AS o
+ON o.customer_id = c.customer_id
+ORDER BY c.customer_id, o.order_id;
+```
+
+**Wskazówka:** Jeden klient może mieć kilka dopasowań. LEFT JOIN nie gwarantuje jednego wiersza na klienta.
+
+**Kontrola:** liczba wierszy: 8.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name | order_id |
+| --- | --- | --- |
+| 1 | Anna Kowalska | 101 |
+| 1 | Anna Kowalska | 102 |
+| 2 | Jan Nowak | 103 |
+| 2 | Jan Nowak | 107 |
+| 3 | Ola Lis | 104 |
+| 4 | Piotr Wilk | 106 |
+| 5 | Ewa Kot | NULL |
+| 6 | Adam Zuk | NULL |
+
+</details>
+
+### Zadanie 6. Wyszukaj brak dopasowania
+
+Na podstawie LEFT JOIN znajdź klientów bez zamówień. Sprawdź `o.order_id IS NULL`, czyli brak klucza po stronie zamówienia. Porównaj z NOT EXISTS z lab 3.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name |
+| --- | --- |
+| 5 | Ewa Kot |
+| 6 | Adam Zuk |
+
+</details>
+
+### Zadanie 7. Zachowaj zamówienia przez RIGHT JOIN
+
+Użyj customers RIGHT JOIN orders. Pokaż customer_id z customers, customer_name oraz order_id. Wskaż zamówienia gościnne.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, c.customer_name, o.order_id
+FROM shop_lab.customers AS c
+RIGHT JOIN shop_lab.orders AS o
+ON o.customer_id = c.customer_id
+ORDER BY o.order_id;
+```
+
+**Kontrola:** liczba wierszy: 8.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name | order_id |
+| --- | --- | --- |
+| 1 | Anna Kowalska | 101 |
+| 1 | Anna Kowalska | 102 |
+| 2 | Jan Nowak | 103 |
+| 3 | Ola Lis | 104 |
+| NULL | NULL | 105 |
+| 4 | Piotr Wilk | 106 |
+| 2 | Jan Nowak | 107 |
+| NULL | NULL | 108 |
+
+</details>
+
+### Zadanie 8. Zamień RIGHT na LEFT
+
+Odwróć kolejność tabel z zadania 7 i użyj LEFT JOIN. Zwróć te same kolumny oraz kolejność wierszy. Czy dane się zmieniły?
+
+**Kontrola:** liczba wierszy: 8.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name | order_id |
+| --- | --- | --- |
+| 1 | Anna Kowalska | 101 |
+| 1 | Anna Kowalska | 102 |
+| 2 | Jan Nowak | 103 |
+| 3 | Ola Lis | 104 |
+| NULL | NULL | 105 |
+| 4 | Piotr Wilk | 106 |
+| 2 | Jan Nowak | 107 |
+| NULL | NULL | 108 |
+
+</details>
+
+### Zadanie 9. Zachowaj obie strony przez FULL OUTER JOIN
+
+Połącz customers i orders przez FULL OUTER JOIN. Pokaż identyfikator i nazwę klienta oraz order_id. Uporządkuj po c.customer_id NULLS LAST, a potem o.order_id. Rozpoznaj dopasowane wiersze, klientów bez zamówień i zamówienia gościnne.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, c.customer_name, o.order_id
+FROM shop_lab.customers AS c
+FULL OUTER JOIN shop_lab.orders AS o
+ON o.customer_id = c.customer_id
+ORDER BY c.customer_id NULLS LAST, o.order_id;
+```
+
+**Kontrola:** liczba wierszy: 10.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | customer_name | order_id |
+| --- | --- | --- |
+| 1 | Anna Kowalska | 101 |
+| 1 | Anna Kowalska | 102 |
+| 2 | Jan Nowak | 103 |
+| 2 | Jan Nowak | 107 |
+| 3 | Ola Lis | 104 |
+| 4 | Piotr Wilk | 106 |
+| 5 | Ewa Kot | NULL |
+| 6 | Adam Zuk | NULL |
+| NULL | NULL | 105 |
+| NULL | NULL | 108 |
+
+</details>
+
+### ON i WHERE odpowiadają na różne pytania
+
+ON ustala dopasowanie podczas złączenia. WHERE filtruje wynik po złączeniu,
+łącznie z wierszami uzupełnionymi NULL. Dla złączenia zewnętrznego przeniesienie
+warunku z ON do WHERE może więc zmienić wynik. Porównaj zadania 10 i 11,
+przewidując wcześniej los klienta bez opłaconego zamówienia.
+
+### Zadanie 10. Umieść filtr w ON
+
+Do LEFT JOIN od klientów dodaj w ON warunek, że status zamówienia to paid. Pokaż customer_id i order_id, zachowując wszystkich klientów.
+
+**Kontrola:** liczba wierszy: 7.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | order_id |
+| --- | --- |
+| 1 | 101 |
+| 2 | 103 |
+| 2 | 107 |
+| 3 | NULL |
+| 4 | NULL |
+| 5 | NULL |
+| 6 | NULL |
+
+</details>
+
+### Zadanie 11. Przenieś filtr do WHERE
+
+Połącz klientów z dowolnymi zamówieniami przez LEFT JOIN, ale `o.status = 'paid'` umieść w WHERE. Porównaj z zadaniem 10: którzy klienci zniknęli i dlaczego?
+
+**Wskazówka:** WHERE usuwa również wiersze uzupełnione NULL, bo porównanie NULL ze statusem nie daje TRUE.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | order_id |
+| --- | --- |
+| 1 | 101 |
+| 2 | 103 |
+| 2 | 107 |
+
+</details>
+
+### Zadanie 12. Policz zamówienia po LEFT JOIN
+
+Dla każdego klienta pokaż COUNT(*) jako joined_rows oraz COUNT(o.order_id) jako order_count. Wyjaśnij różnicę dla klientów bez zamówień.
+
+**Przykład na start:**
+
+```sql
+SELECT c.customer_id, COUNT(*) AS joined_rows, COUNT(o.order_id) AS order_count
+FROM shop_lab.customers AS c
+LEFT JOIN shop_lab.orders AS o
+ON o.customer_id = c.customer_id
+GROUP BY c.customer_id
+ORDER BY c.customer_id;
+```
+
+**Kontrola:** liczba wierszy: 6.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | joined_rows | order_count |
+| --- | --- | --- |
+| 1 | 2 | 2 |
+| 2 | 2 | 2 |
+| 3 | 1 | 1 |
+| 4 | 1 | 1 |
+| 5 | 1 | 0 |
+| 6 | 1 | 0 |
+
+</details>
+
+### Zadanie 13. Połącz pozycje z produktami
+
+Dla każdej pozycji zamówienia pokaż order_id, product_name, quantity, unit_price i wartość quantity * unit_price jako line_total. Nie zastępuj unit_price bieżącą ceną produktu.
+
+**Kontrola:** liczba wierszy: 12.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| order_id | product_name | quantity | unit_price | line_total |
+| --- | --- | --- | --- | --- |
+| 101 | Laptop | 1 | 2900.0 | 2900.0 |
+| 101 | Keyboard | 2 | 90.0 | 180.0 |
+| 102 | Monitor | 1 | 800.0 | 800.0 |
+| 102 | Mouse | 2 | 50.0 | 100.0 |
+| 103 | Cable HDMI | 3 | 40.0 | 120.0 |
+| 103 | Router | 2 | 180.0 | 360.0 |
+| 104 | Switch | 1 | 400.0 | 400.0 |
+| 105 | Mouse | 1 | 50.0 | 50.0 |
+| 106 | Monitor Pro | 1 | 1100.0 | 1100.0 |
+| 106 | Dock | 1 | 550.0 | 550.0 |
+| 107 | Monitor | 2 | 750.0 | 1500.0 |
+| 107 | Keyboard | 1 | 100.0 | 100.0 |
+
+</details>
+
+### Zadanie 14. Zsumuj opłaconą sprzedaż
+
+Połącz orders z order_items i policz SUM(quantity * unit_price) tylko dla statusu paid. Wynik nazwij paid_total. Bez rozbijania na klientów.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| paid_total |
+| --- |
+| 5210.0 |
+
+</details>
+
+### Zadanie 15. Zbuduj raport trzech tabel
+
+Połącz orders, order_items i products. Dla każdej kategorii policz wartość pozycji opłaconych zamówień jako paid_total. Posortuj malejąco po wartości, przy remisie po kategorii.
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| category | paid_total |
+| --- | --- |
+| computers | 2900.0 |
+| displays | 1500.0 |
+| accessories | 450.0 |
+| network | 360.0 |
+
+</details>
+
+### Zadanie 16. Pokaż również zamówienie bez pozycji
+
+Dla każdego zamówienia pokaż order_id i SUM(quantity * unit_price), zastępując brak sumy zerem przez COALESCE. Użyj LEFT JOIN. Uwzględnij wszystkie statusy.
+
+**Kontrola:** liczba wierszy: 8.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| order_id | order_total |
+| --- | --- |
+| 101 | 3080.0 |
+| 102 | 900.0 |
+| 103 | 480.0 |
+| 104 | 400.0 |
+| 105 | 50.0 |
+| 106 | 1650.0 |
+| 107 | 1600.0 |
+| 108 | 0 |
+
+</details>
+
+### Ustal, co oznacza jeden wiersz
+
+Przed agregacją nazwij poziom szczegółowości: klient, zamówienie czy pozycja?
+Po dołączeniu pozycji identyfikator zamówienia powtarza się w każdej jego pozycji.
+COUNT(DISTINCT order_id) policzy zamówienia, lecz nie naprawia automatycznie
+innych agregatów. Nie używaj `SUM(DISTINCT kwota)` do usuwania przypadkowych
+powtórzeń: dwie rzeczywiste pozycje mogą mieć równą wartość.
+
+### Zadanie 17. Wykryj mnożenie rekordów w raporcie
+
+Połącz customers → orders → order_items przez dwa LEFT JOIN. Dla każdego klienta porównaj COUNT(o.order_id) jako repeated_orders z COUNT(DISTINCT o.order_id) jako order_count. Wyjaśnij wynik dla klienta 1.
+
+**Kontrola:** liczba wierszy: 6.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_id | repeated_orders | order_count |
+| --- | --- | --- |
+| 1 | 4 | 2 |
+| 2 | 4 | 2 |
+| 3 | 1 | 1 |
+| 4 | 2 | 1 |
+| 5 | 0 | 0 |
+| 6 | 0 | 0 |
+
+</details>
+
+### Zadanie 18. Sprawdź koszt błędnego iloczynu
+
+Najpierw policz sumę quantity * unit_price tylko w order_items. Następnie celowo dodaj CROSS JOIN customers i ponownie policz sumę. Zwróć dwie kolumny poprawna i błędna przez dwa podzapytania skalarne. Wyjaśnij, przez ile pomnożył się wynik.
+
+**Wskazówka:** To celowy błędny raport do diagnozy. DISTINCT na kwotach nie jest naprawą — różne pozycje mogą mieć taką samą wartość.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| correct_total | wrong_total |
+| --- | --- |
+| 8160.0 | 48960.0 |
+
+</details>
+
+### Zadanie 19. Połącz cztery tabele — dodatkowe
+
+Dodatkowo: wypisz customer_name, order_id i product_name dla pozycji opłaconych zamówień zarejestrowanych klientów. Użyj czterech tabel i jawnych warunków ON. Zamówienia gościnne mają zostać pominięte.
+
+**Kontrola:** liczba wierszy: 6.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| customer_name | order_id | product_name |
+| --- | --- | --- |
+| Anna Kowalska | 101 | Laptop |
+| Anna Kowalska | 101 | Keyboard |
+| Jan Nowak | 103 | Cable HDMI |
+| Jan Nowak | 103 | Router |
+| Jan Nowak | 107 | Monitor |
+| Jan Nowak | 107 | Keyboard |
+
+</details>
+
+### Zadanie 20. Znajdź produkty bez sprzedaży przez złączenie — dodatkowe
+
+Dodatkowo: wypisz produkty bez jakiejkolwiek pozycji zamówienia. Użyj LEFT JOIN i sprawdź brak klucza po stronie order_items. Porównaj z lab 3.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name |
+| --- | --- |
+| 8 | Webcam |
+
+</details>
+
+## Co pokazać prowadzącemu
+
+Zachowaj plik `.sql` z ponumerowanymi zapytaniami. Pokaż wykonanie zadań
+podstawowych; rozszerzenia wykonuj w pozostałym czasie. Przy omówieniu:
+
+1. Wypisz 12 par i wskaż, które cztery spełniają warunek dopasowania.
+2. Porównaj INNER, LEFT, RIGHT i FULL na konkretnych kluczach.
+3. Wyjaśnij różnicę wyników zadań 10 i 11.
+4. Pokaż poprawną sumę opłaconej sprzedaży oraz przyczynę mnożenia kwot w zadaniu 18.
+
+Po tym bloku przechodzimy na kolejnych sześciu spotkaniach po 90 minut
+do **PL/pgSQL**: bloków, zmiennych, sterowania przebiegiem, funkcji oraz obsługi
+błędów. Zwykły SQL pozostaje podstawą odczytu danych wewnątrz tych konstrukcji.
+
+## Dokumentacja
+
+[Złączenia i wyrażenia tabelowe](https://www.postgresql.org/docs/16/queries-table-expressions.html).
+
+## Potwierdzenie zaliczenia
+
+Pokaż prowadzącemu plik zapytań i wyjaśnij wybrane wyniki. Po **ustnym zaliczeniu
+całego laboratorium 4** zapisz potwierdzenie. Nie zgłaszasz osobnych zadań do sprawdzenia.
+Datę i czas nada serwer. Ponowna próba nie tworzy drugiego wpisu dla tego samego
+e-maila i laboratorium. Wybierz tę samą grupę co na poprzednich zajęciach.
+
+```{=html}
+<div id="lab-confirmation" data-lab="lab04" data-endpoint="https://sebastianzajac.pl/rsod-quiz/lab-progress.php" style="padding:20px;border:1px solid #ccd8e4;border-radius:8px">
+<form>
+<p><label>E-mail WAT: <input name="email" type="email" autocomplete="email" maxlength="254" required></label></p>
+<p><label>Grupa: <select name="group" required><option value="">Wybierz grupę</option><option value="1">Grupa 1</option><option value="2">Grupa 2</option><option value="3">Grupa 3</option></select></label></p>
+<p><label><input type="checkbox" required> Prowadzący ustnie zaliczył mi całe laboratorium 4.</label></p>
+<button type="submit">Prowadzący zaliczył laboratorium 4 — zapisz potwierdzenie</button>
+</form><p role="status" aria-live="polite"></p></div>
+<script src="assets/js/lab-confirmation.js"></script>
+```

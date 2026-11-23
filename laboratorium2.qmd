@@ -1,0 +1,765 @@
+---
+title: "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+lang: pl
+---
+
+## Plan bloku — 90 minut
+
+| Czas | Praca |
+|---|---|
+| 0–10 min | Test z laboratorium 1 |
+| 10–20 min | Przygotowanie danych i orientacja |
+| 20–45 min | Zadania 1–11: wybór kolumn, warunki i sortowanie |
+| 45–70 min | Zadania 12–16: agregacje, GROUP BY i HAVING |
+| 70–85 min | Zadania 17–18: samodzielne raporty |
+| 85–90 min | Omówienie i potwierdzenie zaliczenia |
+
+Zadania 19–20 są dodatkowe. Podczas ćwiczeń przechodzimy od wyniku
+zawierającego osobne produkty do wyniku opisującego całe grupy produktów.
+
+## Test z poprzednich zajęć — 10 minut
+
+Odpowiedz samodzielnie na osiem pytań z laboratorium 1. Każde pytanie jest warte
+1 punkt. Podaj e-mail używany na zajęciach; wynik zostanie zapisany w podsumowaniu
+prowadzącego jako `lab02-start`. Kolejność odpowiedzi na ekranie jest losowa.
+Test dotyczy pgAdmin i pracy na Windows, a nie nowych zagadnień SQL.
+
+```{=html}
+<div id="course-quiz"></div>
+<script src="assets/js/quiz-engine.js"></script>
+<script>
+CourseQuiz.mount(document.getElementById('course-quiz'), {
+  "course": "rsod2026",
+  "lecture": "lab02-start",
+  "title": "Laboratorium 1 — pgAdmin i obiekty bazy",
+  "submitUrl": "https://sebastianzajac.pl/rsod-quiz/submit.php",
+  "questions": [
+    {
+      "id": "q1",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Jaka jest poprawna hierarchia obiektów?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Tabela → baza → serwer → schemat"
+        },
+        {
+          "v": "B",
+          "t": "Serwer → baza → schemat → tabela"
+        },
+        {
+          "v": "C",
+          "t": "Baza → tabela → schemat → serwer"
+        },
+        {
+          "v": "D",
+          "t": "Schemat → serwer → tabela → baza"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Co trwale zapisuje edycję rekordów w siatce View/Edit Data?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Refresh w drzewie"
+        },
+        {
+          "v": "B",
+          "t": "Zamknięcie edytora komórki"
+        },
+        {
+          "v": "C",
+          "t": "Save Data zakończone poprawnym zapisem"
+        },
+        {
+          "v": "D",
+          "t": "Zwinięcie gałęzi Tables"
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Co oznacza gwiazdka w SELECT * FROM lab1.equipment;?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Wszystkie kolumny tabeli"
+        },
+        {
+          "v": "B",
+          "t": "Tylko pierwszy rekord"
+        },
+        {
+          "v": "C",
+          "t": "Usunięcie duplikatów"
+        },
+        {
+          "v": "D",
+          "t": "Automatyczne sortowanie"
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Jaką własność zapewnia klucz główny?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Automatycznie numeruje każdą kolumnę"
+        },
+        {
+          "v": "B",
+          "t": "Zawsze sortuje wynik SELECT"
+        },
+        {
+          "v": "C",
+          "t": "Pozwala powtarzać identyfikator"
+        },
+        {
+          "v": "D",
+          "t": "Identyfikuje wiersz jednoznacznie; jego wartości nie są NULL"
+        }
+      ]
+    },
+    {
+      "id": "q5",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Czym różni się usunięcie wszystkich rekordów od usunięcia tabeli?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Nie ma różnicy"
+        },
+        {
+          "v": "B",
+          "t": "Po usunięciu rekordów pozostaje struktura tabeli"
+        },
+        {
+          "v": "C",
+          "t": "Usunięcie tabeli zachowuje rekordy"
+        },
+        {
+          "v": "D",
+          "t": "Usunięcie rekordów usuwa schemat"
+        }
+      ]
+    },
+    {
+      "id": "q6",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Właśnie zmieniono i zapisano dane w innej karcie. Jak uzyskać aktualny wynik w Query Tool?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Ponownie wykonać zapytanie"
+        },
+        {
+          "v": "B",
+          "t": "Tylko odświeżyć gałąź Schemas"
+        },
+        {
+          "v": "C",
+          "t": "Zmienić nazwę bazy"
+        },
+        {
+          "v": "D",
+          "t": "Zamknąć usługę PostgreSQL"
+        }
+      ]
+    },
+    {
+      "id": "q7",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Co oznacza NULL w kolumnie room?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Tekst o czterech literach"
+        },
+        {
+          "v": "B",
+          "t": "Zawsze liczbę zero"
+        },
+        {
+          "v": "C",
+          "t": "Brak wartości; nie jest to pusty tekst"
+        },
+        {
+          "v": "D",
+          "t": "Nazwę domyślnej sali"
+        }
+      ]
+    },
+    {
+      "id": "q8",
+      "points": 1,
+      "diff": "Powtórzenie",
+      "text": "Co dzieje się po zwykłym zamknięciu pgAdmin na stanowisku Windows?",
+      "options": [
+        {
+          "v": "A",
+          "t": "Usuwane są tabele"
+        },
+        {
+          "v": "B",
+          "t": "Usługa PostgreSQL jest odinstalowywana"
+        },
+        {
+          "v": "C",
+          "t": "Wszystkie zapisane dane znikają"
+        },
+        {
+          "v": "D",
+          "t": "Zapisane dane pozostają; usługa PostgreSQL może nadal działać"
+        }
+      ]
+    }
+  ]
+});
+</script>
+```
+
+## Wspólny zestaw danych — sklep
+
+Pracujemy na **Windows, w zainstalowanym pgAdmin i PostgreSQL**. Wykorzystaj
+własną bazę z laboratorium 1. Nie zmieniaj baz innych osób. Jeżeli pracujesz na
+nowym stanowisku, połącz się z lokalnym serwerem i utwórz własną bazę zgodnie z
+[instrukcją laboratorium 1](laboratorium1.qmd).
+
+1. Pobierz [00_setup.sql](assets/sql/rsod-lab234/00_setup.sql) i zapisz na komputerze.
+2. W pgAdmin kliknij PPM na **swojej bazie** → **Query Tool**. Sprawdź bazę połączenia.
+3. Otwórz pobrany plik przez **Open File**. Zaznacz **całą zawartość** i wykonaj.
+4. Sprawdź **Messages**, a następnie odśwież **Schemas** w drzewie.
+5. Znajdź schemat `shop_lab` z czterema tabelami. Skrypt uruchom **tylko raz**;
+   laboratoria 2–4 korzystają z tego samego zestawu bez modyfikacji danych.
+
+Jeśli schemat `shop_lab` już istnieje, nie usuwaj go. Jeżeli jest to Twój zestaw
+z wcześniejszego bloku, przejdź do kontroli danych. Gdy ponowne wykonanie skryptu
+zakończyło się błędem, wpisz `ROLLBACK;`, wykonaj je osobno i kontynuuj dopiero po
+sprawdzeniu stanu. Skrypt nie nadpisuje istniejącego schematu.
+
+| Tabela | Co oznacza wiersz | Liczba wierszy |
+|---|---|---:|
+| `shop_lab.customers` | Zarejestrowany klient | 6 |
+| `shop_lab.products` | Produkt i jego bieżąca cena oraz stan | 10 |
+| `shop_lab.orders` | Zamówienie, także gościnne | 8 |
+| `shop_lab.order_items` | Produkt w zamówieniu, ilość i cena z chwili zamówienia | 12 |
+
+Otwórz każdą tabelę przez **View/Edit Data → All Rows** lub wykonaj `SELECT *`.
+Przeczytaj nazwy kolumn. W `orders.customer_id` brak wartości oznacza zamówienie
+gościnne. Klienci 5 i 6 nie mają zamówień; produkt 8 nie ma pozycji zamówienia;
+zamówienie 108 nie ma jeszcze pozycji. To celowe przypadki do ćwiczeń.
+
+Pozycja ma klucz złożony `(order_id, product_id)`: dany produkt pojawia się w danym
+zamówieniu najwyżej raz. Klucze obce łączą orders z customers oraz order_items
+z orders i products. Statusy: `new` — nowe, `paid` — opłacone,
+`cancelled` — anulowane. Kwoty zapisano jako `numeric`, w PLN.
+
+::: {.callout-important}
+**Nie zmieniaj danych w tych ćwiczeniach.** Historyczną wartość pozycji licz jako
+`quantity * unit_price`. `products.price` jest ceną bieżącą i może być inna.
+:::
+
+## Jak wykonywać zadania
+
+1. Zapisuj zapytania w swoim pliku `labNN_numer_albumu.sql`; przed każdym dodaj
+   komentarz, np. `-- Task 03`. Nie nadpisuj pliku startowego.
+2. Wykonuj **tylko zaznaczone zapytanie**, aby nie uruchamiać całego pliku ponownie.
+3. Sprawdzaj **Data Output** i **Messages**. Błąd składni popraw i uruchom zapytanie ponownie.
+4. Przed podejrzeniem rezultatu przewidź kolumny, liczbę wierszy i istotne wartości.
+5. Jeśli polecenie wymaga sortowania, zastosuj wskazane klucze. Bez ORDER BY
+   kolejność rekordów nie jest gwarantowana.
+
+Przykłady oznaczone „start” możesz uruchomić i zmodyfikować. W pozostałych
+zadaniach samodzielnie napisz SQL. Rozwijane wyniki kontrolne pokazują rezultat,
+nie gotowe rozwiązanie. Zadania dodatkowe są dla osób pracujących szybciej.
+
+## Zadania
+
+### Ściąga składni
+
+```sql
+SELECT column_name, expression AS result_name
+FROM schema_name.table_name
+WHERE row_condition
+GROUP BY column_name
+HAVING group_condition
+ORDER BY result_name DESC
+LIMIT 3;
+```
+
+To **szablon**, nie zapytanie do uruchomienia. Pomijaj niepotrzebne klauzule.
+Nazwy kolumn zapisujemy bez apostrofów, a teksty w apostrofach, np. `'network'`.
+`=` porównuje wartości, `<>` oznacza nierówność. `AND` wymaga obu warunków,
+`OR` przynajmniej jednego. Używaj nawiasów, aby jasno wskazać zamiar.
+
+### Zadanie 1. Obejrzyj dane i wybierz kolumny
+
+Odczytaj identyfikator, nazwę i cenę wszystkich produktów. Uruchom przykład, a następnie dodaj kolumnę `stock`. Zapisz własne zapytanie w pliku roboczym.
+
+**Przykład na start:**
+
+```sql
+SELECT product_id, product_name, price
+FROM shop_lab.products
+ORDER BY product_id;
+```
+
+**Kontrola:** liczba wierszy: 10.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | price | stock |
+| --- | --- | --- | --- |
+| 1 | Laptop | 3000.0 | 5 |
+| 2 | Monitor | 800.0 | 10 |
+| 3 | Keyboard | 100.0 | 20 |
+| 4 | Mouse | 50.0 | 0 |
+| 5 | Cable HDMI | 40.0 | 30 |
+| 6 | Router | 200.0 | 8 |
+| 7 | Switch | 400.0 | 3 |
+| 8 | Webcam | 150.0 | 0 |
+| 9 | Monitor Pro | 1200.0 | 2 |
+| 10 | Dock | 600.0 | 4 |
+
+</details>
+
+### Zadanie 2. Nadaj alias i oblicz wartość zapasu
+
+Dla każdego produktu pokaż nazwę oraz `price * stock` pod nazwą `stock_value`. Uporządkuj według identyfikatora. Kwoty są w PLN.
+
+**Wskazówka:** Alias nadajesz przez `AS`; mnożenie nie zmienia danych.
+
+**Kontrola:** liczba wierszy: 10.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_name | stock_value |
+| --- | --- |
+| Laptop | 15000.0 |
+| Monitor | 8000.0 |
+| Keyboard | 2000.0 |
+| Mouse | 0.0 |
+| Cable HDMI | 1200.0 |
+| Router | 1600.0 |
+| Switch | 1200.0 |
+| Webcam | 0.0 |
+| Monitor Pro | 2400.0 |
+| Dock | 2400.0 |
+
+</details>
+
+### Zadanie 3. Odfiltruj produkty według ceny
+
+Wyświetl identyfikator, nazwę i cenę produktów kosztujących co najmniej 400 PLN. Uporządkuj po identyfikatorze.
+
+**Przykład na start:**
+
+```sql
+SELECT product_id, product_name, price
+FROM shop_lab.products
+WHERE price >= 400
+ORDER BY product_id;
+```
+
+**Kontrola:** liczba wierszy: 5.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | price |
+| --- | --- | --- |
+| 1 | Laptop | 3000.0 |
+| 2 | Monitor | 800.0 |
+| 7 | Switch | 400.0 |
+| 9 | Monitor Pro | 1200.0 |
+| 10 | Dock | 600.0 |
+
+</details>
+
+### Zadanie 4. Połącz warunki AND
+
+Znajdź dostępne produkty z kategorii `accessories`. Dostępny oznacza `stock > 0`. Pokaż identyfikator i nazwę.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name |
+| --- | --- |
+| 3 | Keyboard |
+| 5 | Cable HDMI |
+| 10 | Dock |
+
+</details>
+
+### Zadanie 5. Zastosuj OR i nawiasy
+
+Wybierz produkty z kategorii `network` lub `displays`, ale tylko dostępne w liczbie co najmniej 3. Pokaż identyfikator, nazwę i stan. Użyj nawiasów wokół alternatywy.
+
+**Wskazówka:** AND ma wyższy priorytet niż OR. Porównaj wynik po usunięciu nawiasów i wyjaśnij różnicę.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | stock |
+| --- | --- | --- |
+| 2 | Monitor | 10 |
+| 6 | Router | 8 |
+| 7 | Switch | 3 |
+
+</details>
+
+### Zadanie 6. Użyj IN i BETWEEN
+
+Znajdź produkty z kategorii `accessories` lub `network` o cenie od 100 do 400 PLN włącznie. Pokaż identyfikator, nazwę i cenę.
+
+**Wskazówka:** `BETWEEN` obejmuje obie granice.
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name | price |
+| --- | --- | --- |
+| 3 | Keyboard | 100.0 |
+| 6 | Router | 200.0 |
+| 7 | Switch | 400.0 |
+| 8 | Webcam | 150.0 |
+
+</details>
+
+### Zadanie 7. Wyszukuj tekst przez LIKE
+
+Wyświetl nazwy produktów zaczynające się od `Monitor`. Następnie samodzielnie poszukaj nazw zawierających `o` oraz nazw o drugim znaku `o`. Do kontroli oddaj pierwsze zapytanie.
+
+**Przykład na start:**
+
+```sql
+SELECT product_name
+FROM shop_lab.products
+WHERE product_name LIKE 'Monitor%'
+ORDER BY product_id;
+```
+
+**Wskazówka:** `%` oznacza dowolny ciąg znaków, także pusty; `_` dokładnie jeden znak.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_name |
+| --- |
+| Monitor |
+| Monitor Pro |
+
+</details>
+
+### Zadanie 8. Porównaj LIKE z ILIKE
+
+Wyszukaj nazwy rozpoczynające się od małych liter `monitor`, najpierw przez LIKE, potem przez ILIKE. Do kontroli zapisz wersję ILIKE.
+
+**Wskazówka:** W tym zestawie LIKE z małym `monitor%` nie zwraca wierszy; ILIKE pomija wielkość liter.
+
+**Kontrola:** liczba wierszy: 2.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_name |
+| --- |
+| Monitor |
+| Monitor Pro |
+
+</details>
+
+### Zadanie 9. Znajdź brakujące wartości
+
+Wyświetl identyfikatory i nazwy produktów bez wpisanego dostawcy. Użyj `IS NULL`. Porównaj z błędnym warunkiem `supplier = NULL` i wyjaśnij, dlaczego nie daje oczekiwanego wyniku.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_id | product_name |
+| --- | --- |
+| 2 | Monitor |
+| 4 | Mouse |
+| 9 | Monitor Pro |
+
+</details>
+
+### Zadanie 10. Usuń powtórzenia w wyniku
+
+Wypisz różne kategorie produktów, każdą tylko raz, alfabetycznie. Porównaj z wynikiem bez DISTINCT.
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| category |
+| --- |
+| accessories |
+| computers |
+| displays |
+| network |
+
+</details>
+
+### Zadanie 11. Posortuj i ogranicz wynik
+
+Wypisz trzy najdroższe produkty: nazwa i cena. Użyj `ORDER BY price DESC, product_id` i `LIMIT 3`.
+
+**Wskazówka:** LIMIT bez ORDER BY nie określa, które trzy rekordy otrzymasz.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_name | price |
+| --- | --- |
+| Laptop | 3000.0 |
+| Monitor Pro | 1200.0 |
+| Monitor | 800.0 |
+
+</details>
+
+### Od wierszy do grup
+
+`COUNT(*)` liczy wiersze; `COUNT(kolumna)` liczy wartości różne od NULL.
+`SUM` i `AVG` działają na wartościach liczbowych, a `MIN` i `MAX` wybierają skrajne.
+Agregaty poza COUNT zwracają NULL dla pustego zbioru. AVG pomija NULL, lecz
+**nie pomija zera**. Dla grup pokaż w SELECT klucz grupowania oraz agregaty.
+
+Logiczny sposób czytania: **FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT**.
+To pomoc w rozumieniu znaczenia, a nie opis fizycznego planu wykonania silnika.
+Warunek na pojedynczy produkt umieść w WHERE; warunek na liczbę produktów
+w grupie w HAVING. `COUNT` i `AVG` nie wymagają deklarowania zmiennych.
+
+### Zadanie 12. Policz rekordy i wartości
+
+W jednym wyniku pokaż `COUNT(*) AS products`, `COUNT(supplier) AS known_suppliers` i `COUNT(DISTINCT supplier) AS suppliers`. Wyjaśnij różnice.
+
+**Przykład na start:**
+
+```sql
+SELECT COUNT(*) AS products, COUNT(supplier) AS known_suppliers, COUNT(DISTINCT supplier) AS suppliers
+FROM shop_lab.products;
+```
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| products | known_suppliers | suppliers |
+| --- | --- | --- |
+| 10 | 7 | 3 |
+
+</details>
+
+### Zadanie 13. Użyj SUM AVG MIN MAX
+
+Wyznacz sumę stanów oraz średnią, minimalną i maksymalną cenę produktu. Średnią zaokrąglij przez `ROUND(AVG(price), 2)`. Nie jest to średnia ważona stanem.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| total_stock | mean_price | min_price | max_price |
+| --- | --- | --- | --- |
+| 82 | 654.0 | 40.0 | 3000.0 |
+
+</details>
+
+### Zadanie 14. Utwórz grupy
+
+Dla każdej kategorii policz produkty i wyznacz średnią cenę zaokrągloną do dwóch miejsc. Pokaż kategorię, `product_count` i `mean_price`, uporządkuj po kategorii.
+
+**Przykład na start:**
+
+```sql
+SELECT category, COUNT(*) AS product_count, ROUND(AVG(price), 2) AS mean_price
+FROM shop_lab.products
+GROUP BY category
+ORDER BY category;
+```
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| category | product_count | mean_price |
+| --- | --- | --- |
+| accessories | 5 | 188.0 |
+| computers | 1 | 3000.0 |
+| displays | 2 | 1000.0 |
+| network | 2 | 300.0 |
+
+</details>
+
+### Zadanie 15. Odfiltruj grupy przez HAVING
+
+Zostaw tylko kategorie zawierające co najmniej dwa produkty. Zwróć kategorię i liczbę produktów.
+
+**Wskazówka:** WHERE filtruje wiersze przed grupowaniem, HAVING filtruje utworzone grupy.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| category | product_count |
+| --- | --- |
+| accessories | 5 |
+| displays | 2 |
+| network | 2 |
+
+</details>
+
+### Zadanie 16. Połącz WHERE i HAVING
+
+Pomiń produkty z zerowym stanem. W pozostałych danych znajdź kategorie zawierające co najmniej dwa produkty. Pokaż kategorię, liczbę oraz sumę stanów.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| category | product_count | total_stock |
+| --- | --- | --- |
+| accessories | 3 | 54 |
+| displays | 2 | 12 |
+| network | 2 | 11 |
+
+</details>
+
+### Zadanie 17. Pogrupuj zamówienia
+
+Dla każdego statusu zamówienia policz liczbę zamówień. Posortuj wynik malejąco według liczby, a przy remisie alfabetycznie po statusie.
+
+**Kontrola:** liczba wierszy: 3.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| status | order_count |
+| --- | --- |
+| paid | 4 |
+| new | 3 |
+| cancelled | 1 |
+
+</details>
+
+### Zadanie 18. Zbuduj raport wartości zapasu
+
+Dla każdej kategorii policz `SUM(price * stock) AS stock_value`. Zostaw kategorie z wartością co najmniej 2000 PLN i posortuj malejąco po wartości, przy remisie po kategorii.
+
+**Kontrola:** liczba wierszy: 4.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| category | stock_value |
+| --- | --- |
+| computers | 15000.0 |
+| displays | 10400.0 |
+| accessories | 5600.0 |
+| network | 2800.0 |
+
+</details>
+
+### Zadanie 19. Zastosuj funkcje tekstowe i COALESCE — dodatkowe
+
+Dodatkowo: wypisz nazwy produktów wielkimi literami przez UPPER oraz dostawcę. Zamiast brakującego dostawcy pokaż tekst `brak danych` przez COALESCE.
+
+**Kontrola:** liczba wierszy: 10.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| name_upper | supplier_label |
+| --- | --- |
+| LAPTOP | Acme |
+| MONITOR | brak danych |
+| KEYBOARD | Acme |
+| MOUSE | brak danych |
+| CABLE HDMI | CableCo |
+| ROUTER | NetCo |
+| SWITCH | NetCo |
+| WEBCAM | Acme |
+| MONITOR PRO | brak danych |
+| DOCK | Acme |
+
+</details>
+
+### Zadanie 20. Sprawdź agregację pustego zbioru — dodatkowe
+
+Dodatkowo: policz COUNT(*), SUM(stock) i AVG(price) dla produktów droższych niż 10000 PLN. Wyjaśnij różnicę między zerem a NULL; nie zmieniaj danych.
+
+**Kontrola:** liczba wierszy: 1.
+
+<details>
+<summary>Rozwiń wynik kontrolny po samodzielnej próbie</summary>
+
+| product_count | total_stock | mean_price |
+| --- | --- | --- |
+| 0 | NULL | NULL |
+
+</details>
+
+## Co pokazać prowadzącemu
+
+Zachowaj plik `.sql` z ponumerowanymi zapytaniami. Pokaż wykonanie zadań
+podstawowych; rozszerzenia wykonuj w pozostałym czasie. Przy omówieniu:
+
+1. Wyjaśnij różnicę między WHERE i HAVING na własnym raporcie.
+2. Pokaż wynik COUNT(*) i COUNT(supplier) oraz uzasadnij różnicę.
+3. Wskaż, jak nawiasy zmieniają znaczenie AND i OR.
+4. Pokaż raport wartości zapasu z zadania 18.
+
+## Dokumentacja
+
+[Agregaty](https://www.postgresql.org/docs/16/functions-aggregate.html) oraz [GROUP BY i HAVING](https://www.postgresql.org/docs/16/queries-table-expressions.html#QUERIES-GROUP).
+
+## Potwierdzenie zaliczenia
+
+Pokaż prowadzącemu plik zapytań i wyjaśnij wybrane wyniki. Po **ustnym zaliczeniu
+całego laboratorium 2** zapisz potwierdzenie. Nie zgłaszasz osobnych zadań do sprawdzenia.
+Datę i czas nada serwer. Ponowna próba nie tworzy drugiego wpisu dla tego samego
+e-maila i laboratorium. Wybierz tę samą grupę co na poprzednich zajęciach.
+
+```{=html}
+<div id="lab-confirmation" data-lab="lab02" data-endpoint="https://sebastianzajac.pl/rsod-quiz/lab-progress.php" style="padding:20px;border:1px solid #ccd8e4;border-radius:8px">
+<form>
+<p><label>E-mail WAT: <input name="email" type="email" autocomplete="email" maxlength="254" required></label></p>
+<p><label>Grupa: <select name="group" required><option value="">Wybierz grupę</option><option value="1">Grupa 1</option><option value="2">Grupa 2</option><option value="3">Grupa 3</option></select></label></p>
+<p><label><input type="checkbox" required> Prowadzący ustnie zaliczył mi całe laboratorium 2.</label></p>
+<button type="submit">Prowadzący zaliczył laboratorium 2 — zapisz potwierdzenie</button>
+</form><p role="status" aria-live="polite"></p></div>
+<script src="assets/js/lab-confirmation.js"></script>
+```

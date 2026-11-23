@@ -196,3 +196,30 @@ Open `results.php?view=labs&course=rsod2026` with existing instructor Basic Auth
 The default summary includes all dates/groups; filters select a date or group.
 Verify the live endpoint from the published handout and confirm unauthenticated
 summary access is denied. A Git push alone does not activate confirmations.
+
+
+## RSOD laboratories 2–4 and laboratory 1 recap
+
+Deploy the updated `lab-progress.php`, `lab-panel.php`, and `db.php` into the
+existing `/rsod-quiz/` directory before using the new handouts. Retain production
+`config.local.php`, authentication files and all stored data. Back up these PHP
+files and the live database first. No schema change is required for labs 2–4.
+
+The confirmation endpoint now accepts `lab01` through `lab04`. Uniqueness remains
+course/lab/email, so existing lab 1 confirmations stay unchanged. The protected
+RSOD summary includes all laboratories and supports an optional `lab` filter.
+Examples: `results.php?view=labs&course=rsod2026&lab=lab02` or the same URL with
+`lab03` or `lab04`. Existing date and group filters compose with this filter.
+
+`db.php` adds a default answer key for `rsod2026 / lab02-start` (8 questions,
+1 point each), including when a production configuration predates the new quiz.
+An explicit site-local key takes precedence. The existing `submit.php` and
+`results.php` handle scoring and summary display; keep their existing deployment.
+Quiz results are separate from whole-laboratory confirmations. The new handouts
+use the existing quiz engine and a shared confirmation script with a page-level
+`data-lab`; lab 1 keeps its default `lab01` behavior.
+
+Run `python3 _server/tests/test_lab_progress.py` to check the recap, filtering,
+idempotent per-lab confirmations and preservation of WDP teacher review.
+Instructor solutions and PostgreSQL verification inputs are in
+`_scenariusze/lab234/`; they are excluded from public page rendering.

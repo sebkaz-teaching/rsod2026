@@ -29,6 +29,9 @@ website:
       - section: "Laboratoria"
         contents:
           - laboratorium1.qmd
+          - laboratorium2.qmd
+          - laboratorium3.qmd
+          - laboratorium4.qmd
       - section: "Wykłady"
         contents:
           - lectures/wyklad1.qmd

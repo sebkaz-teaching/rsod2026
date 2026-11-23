@@ -20,7 +20,7 @@
       const response = await fetch(root.dataset.endpoint, {
         method: "POST", credentials: "omit", cache: "no-store",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({course: "rsod2026", lab: "lab01", action: "confirm",
+        body: JSON.stringify({course: "rsod2026", lab: root.dataset.lab || "lab01", action: "confirm",
           email: form.elements.email.value.trim().toLowerCase(), group: form.elements.group.value}),
         signal: AbortSignal.timeout(15000)
       });
