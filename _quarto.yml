@@ -11,6 +11,10 @@ project:
   # a direct URL) or links to a page that doesn't exist yet.
   render:
     - "*.qmd"
+    # Keep later laboratories unpublished until the next teaching block.
+    - "!laboratorium2.qmd"
+    - "!laboratorium3.qmd"
+    - "!laboratorium4.qmd"
     - "!docker/**"
     - "lectures/*.qmd"
     # - "!lectures/wyklad2.qmd"
@@ -29,9 +33,6 @@ website:
       - section: "Laboratoria"
         contents:
           - laboratorium1.qmd
-          - laboratorium2.qmd
-          - laboratorium3.qmd
-          - laboratorium4.qmd
       - section: "Wykłady"
         contents:
           - lectures/wyklad1.qmd
