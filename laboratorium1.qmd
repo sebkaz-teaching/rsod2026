@@ -223,7 +223,13 @@ na podstawie Twoich ustawień.
 
 1. Kliknij PPM na `lab1.equipment`.
 2. Wybierz **View/Edit Data** → **All Rows**.
-3. Odszukaj nagłówki czterech kolumn i przycisk **Add row** na pasku danych.
+3. Odszukaj nagłówki kolumn: `equipment_id`, `equipment_name`, `room`, `quantity`.
+4. Znajdź pusty wiersz siatki, w którym można rozpocząć wpisywanie danych.
+   W pustej tabeli jest to wiersz bezpośrednio pod nagłówkami. Komórki mogą
+   pokazywać `NULL` zamiast być całkowicie puste.
+
+Nowy rekord zaczniesz wpisywać **bezpośrednio w komórkach tego wiersza**.
+Nie trzeba szukać osobnego polecenia dodawania wiersza.
 
 **Sprawdź:** tabela nie zawiera jeszcze zapisanych rekordów.
 Siatka **View/Edit Data** służy do pracy na danych; formularz **Properties**
@@ -231,11 +237,19 @@ służy do właściwości i struktury obiektu.
 
 ### Zadanie 16. Wprowadź pierwszy rekord
 
-1. Kliknij **Add row**, aby dodać wiersz.
-2. Otwieraj edycję komórek dwukrotnym kliknięciem; jeśli pojawi się edytor
-   komórki, zatwierdzaj go przyciskiem **OK**.
-3. Wpisz kolejno: `1`, `Laptop`, `A101`, `12`.
-4. Kliknij **Save Data** na pasku siatki i sprawdź komunikat.
+1. W pustym wierszu kliknij komórkę pod nagłówkiem `equipment_id` i wpisz `1`.
+   Jeśli kliknięcie tylko zaznacza komórkę, otwórz jej edycję dwukrotnym kliknięciem.
+2. W **tym samym wierszu** kliknij komórkę `equipment_name` i wpisz `Laptop`.
+3. W komórce `room` wpisz `A101`, a w komórce `quantity` wpisz `12`.
+   Jeśli otworzył się osobny edytor komórki, zatwierdź w nim wartość przyciskiem **OK**.
+4. Sprawdź, czy wszystkie cztery wartości znajdują się w jednym wierszu:
+
+   | equipment_id | equipment_name | room | quantity |
+   |---|---|---|---|
+   | 1 | Laptop | A101 | 12 |
+
+5. Kliknij **Save Data** na pasku siatki i sprawdź komunikat zapisu.
+   W razie wątpliwości najedź kursorem na ikonę zapisu i odczytaj jej podpowiedź.
 
 **Sprawdź:** zapisano jeden rekord. W siatce tekst wpisuj **bez apostrofów**:
 `Laptop`, a nie `'Laptop'`. Zamknięcie edytora komórki nie zastępuje **Save Data**.
@@ -252,7 +266,10 @@ Dodaj i zapisz pięć kolejnych rekordów:
 | 5 | Router | B201 | 4 |
 | 6 | Drukarka | B202 | 1 |
 
-1. Dla każdego rekordu użyj **Add row** i uzupełnij wszystkie pola.
+1. Kliknij pierwszą komórkę kolejnego pustego wiersza siatki i wpisz identyfikator.
+   Uzupełnij pozostałe komórki **tego samego wiersza** danymi z tabeli powyżej.
+   Każdy kolejny produkt wpisuj w osobnym pustym wierszu, pod dotychczasowymi rekordami.
+   Nie nadpisuj danych Laptopa.
 2. Zapisuj dane po każdym rekordzie lub małej grupie rekordów.
 3. Sprawdź, czy nie pozostały niezapisane zmiany.
 
@@ -296,7 +313,7 @@ pozostały bez zmian.
 
 ### Zadanie 22. Zobacz reakcję na powtórzony identyfikator
 
-1. Dodaj próbny rekord: `1`, `Skaner`, `B202`, `1`.
+1. W kolejnym pustym wierszu siatki wpisz próbny rekord: `1`, `Skaner`, `B202`, `1`.
 2. Spróbuj zapisać dane i odczytaj komunikat o naruszeniu klucza głównego.
 3. Popraw identyfikator **niezapisanego wiersza** z `1` na `7`.
 4. Zapisz ponownie. Jeśli po błędzie wiersz zniknął, dodaj go od nowa z `7`.
@@ -624,6 +641,7 @@ powinna być usunięta.
 | Brak uprawnień do utworzenia bazy | Pokaż komunikat prowadzącemu; nie zmieniaj samodzielnie uprawnień kont. |
 | Obiekt nie pojawia się w drzewie | Odśwież gałąź i sprawdź właściwą bazę oraz schemat. |
 | Tabela jest widoczna, ale zapytanie zgłasza brak obiektu | Sprawdź połączenie Query Tool i pełną nazwę, np. `lab1.equipment`. |
+| Nie wiesz, gdzie dopisać rekord | W **View/Edit Data → All Rows** kliknij komórkę pustego wiersza pod danymi i rozpocznij wpisywanie. Jeśli komórka tylko się zaznacza, kliknij ją dwukrotnie. |
 | Nie można edytować rekordów | Otwórz tabelę przez **View/Edit Data** i sprawdź, czy ma klucz główny. |
 | Po ponownym otwarciu brakuje zmian | Sprawdź użycie **Save Data** i komunikat zapisu. |
 | Wynik SELECT pokazuje stare dane | Zapisz zmiany w siatce i wykonaj zapytanie ponownie. |

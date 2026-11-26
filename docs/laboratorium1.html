@@ -502,17 +502,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>Kliknij PPM na <code>lab1.equipment</code>.</li>
 <li>Wybierz <strong>View/Edit Data</strong> → <strong>All Rows</strong>.</li>
-<li>Odszukaj nagłówki czterech kolumn i przycisk <strong>Add row</strong> na pasku danych.</li>
+<li>Odszukaj nagłówki kolumn: <code>equipment_id</code>, <code>equipment_name</code>, <code>room</code>, <code>quantity</code>.</li>
+<li>Znajdź pusty wiersz siatki, w którym można rozpocząć wpisywanie danych. W pustej tabeli jest to wiersz bezpośrednio pod nagłówkami. Komórki mogą pokazywać <code>NULL</code> zamiast być całkowicie puste.</li>
 </ol>
+<p>Nowy rekord zaczniesz wpisywać <strong>bezpośrednio w komórkach tego wiersza</strong>. Nie trzeba szukać osobnego polecenia dodawania wiersza.</p>
 <p><strong>Sprawdź:</strong> tabela nie zawiera jeszcze zapisanych rekordów. Siatka <strong>View/Edit Data</strong> służy do pracy na danych; formularz <strong>Properties</strong> służy do właściwości i struktury obiektu.</p>
 </section>
 <section id="zadanie-16.-wprowadź-pierwszy-rekord" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-16.-wprowadź-pierwszy-rekord">Zadanie 16. Wprowadź pierwszy rekord</h3>
 <ol type="1">
-<li>Kliknij <strong>Add row</strong>, aby dodać wiersz.</li>
-<li>Otwieraj edycję komórek dwukrotnym kliknięciem; jeśli pojawi się edytor komórki, zatwierdzaj go przyciskiem <strong>OK</strong>.</li>
-<li>Wpisz kolejno: <code>1</code>, <code>Laptop</code>, <code>A101</code>, <code>12</code>.</li>
-<li>Kliknij <strong>Save Data</strong> na pasku siatki i sprawdź komunikat.</li>
+<li><p>W pustym wierszu kliknij komórkę pod nagłówkiem <code>equipment_id</code> i wpisz <code>1</code>. Jeśli kliknięcie tylko zaznacza komórkę, otwórz jej edycję dwukrotnym kliknięciem.</p></li>
+<li><p>W <strong>tym samym wierszu</strong> kliknij komórkę <code>equipment_name</code> i wpisz <code>Laptop</code>.</p></li>
+<li><p>W komórce <code>room</code> wpisz <code>A101</code>, a w komórce <code>quantity</code> wpisz <code>12</code>. Jeśli otworzył się osobny edytor komórki, zatwierdź w nim wartość przyciskiem <strong>OK</strong>.</p></li>
+<li><p>Sprawdź, czy wszystkie cztery wartości znajdują się w jednym wierszu:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>equipment_id</th>
+<th>equipment_name</th>
+<th>room</th>
+<th>quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Laptop</td>
+<td>A101</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>Kliknij <strong>Save Data</strong> na pasku siatki i sprawdź komunikat zapisu. W razie wątpliwości najedź kursorem na ikonę zapisu i odczytaj jej podpowiedź.</p></li>
 </ol>
 <p><strong>Sprawdź:</strong> zapisano jeden rekord. W siatce tekst wpisuj <strong>bez apostrofów</strong>: <code>Laptop</code>, a nie <code>'Laptop'</code>. Zamknięcie edytora komórki nie zastępuje <strong>Save Data</strong>.</p>
 </section>
@@ -562,7 +583,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <ol type="1">
-<li>Dla każdego rekordu użyj <strong>Add row</strong> i uzupełnij wszystkie pola.</li>
+<li>Kliknij pierwszą komórkę kolejnego pustego wiersza siatki i wpisz identyfikator. Uzupełnij pozostałe komórki <strong>tego samego wiersza</strong> danymi z tabeli powyżej. Każdy kolejny produkt wpisuj w osobnym pustym wierszu, pod dotychczasowymi rekordami. Nie nadpisuj danych Laptopa.</li>
 <li>Zapisuj dane po każdym rekordzie lub małej grupie rekordów.</li>
 <li>Sprawdź, czy nie pozostały niezapisane zmiany.</li>
 </ol>
@@ -609,7 +630,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="zadanie-22.-zobacz-reakcję-na-powtórzony-identyfikator" class="level3">
 <h3 class="anchored" data-anchor-id="zadanie-22.-zobacz-reakcję-na-powtórzony-identyfikator">Zadanie 22. Zobacz reakcję na powtórzony identyfikator</h3>
 <ol type="1">
-<li>Dodaj próbny rekord: <code>1</code>, <code>Skaner</code>, <code>B202</code>, <code>1</code>.</li>
+<li>W kolejnym pustym wierszu siatki wpisz próbny rekord: <code>1</code>, <code>Skaner</code>, <code>B202</code>, <code>1</code>.</li>
 <li>Spróbuj zapisać dane i odczytaj komunikat o naruszeniu klucza głównego.</li>
 <li>Popraw identyfikator <strong>niezapisanego wiersza</strong> z <code>1</code> na <code>7</code>.</li>
 <li>Zapisz ponownie. Jeśli po błędzie wiersz zniknął, dodaj go od nowa z <code>7</code>.</li>
@@ -1028,26 +1049,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Sprawdź połączenie Query Tool i pełną nazwę, np. <code>lab1.equipment</code>.</td>
 </tr>
 <tr class="odd">
+<td>Nie wiesz, gdzie dopisać rekord</td>
+<td>W <strong>View/Edit Data → All Rows</strong> kliknij komórkę pustego wiersza pod danymi i rozpocznij wpisywanie. Jeśli komórka tylko się zaznacza, kliknij ją dwukrotnie.</td>
+</tr>
+<tr class="even">
 <td>Nie można edytować rekordów</td>
 <td>Otwórz tabelę przez <strong>View/Edit Data</strong> i sprawdź, czy ma klucz główny.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Po ponownym otwarciu brakuje zmian</td>
 <td>Sprawdź użycie <strong>Save Data</strong> i komunikat zapisu.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Wynik SELECT pokazuje stare dane</td>
 <td>Zapisz zmiany w siatce i wykonaj zapytanie ponownie.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Nowa kolumna nie jest widoczna w siatce</td>
 <td>Zamknij zapisany widok danych i otwórz go ponownie.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Zapis zgłasza duplikat klucza</td>
 <td>Popraw identyfikator nowego wiersza; nie usuwaj poprawnego istniejącego rekordu.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Zapis zgłasza brak wymaganej wartości</td>
 <td>Uzupełnij kolumny z <strong>Not NULL</strong>, a następnie ponów zapis.</td>
 </tr>
