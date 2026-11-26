@@ -1072,5 +1072,280 @@
       "Laboratoria",
       "Laboratorium 1 — pierwsze kroki w pgAdmin"
     ]
+  },
+  {
+    "objectID": "laboratorium2.html",
+    "href": "laboratorium2.html",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "",
+    "text": "Czas\nPraca\n\n\n\n\n0–10 min\nTest z laboratorium 1\n\n\n10–20 min\nPrzygotowanie danych i orientacja\n\n\n20–45 min\nZadania 1–11: wybór kolumn, warunki i sortowanie\n\n\n45–70 min\nZadania 12–16: agregacje, GROUP BY i HAVING\n\n\n70–85 min\nZadania 17–18: samodzielne raporty\n\n\n85–90 min\nOmówienie i potwierdzenie zaliczenia\n\n\n\nZadania 19–20 są dodatkowe. Podczas ćwiczeń przechodzimy od wyniku zawierającego osobne produkty do wyniku opisującego całe grupy produktów.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#plan-bloku-90-minut",
+    "href": "laboratorium2.html#plan-bloku-90-minut",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "",
+    "text": "Czas\nPraca\n\n\n\n\n0–10 min\nTest z laboratorium 1\n\n\n10–20 min\nPrzygotowanie danych i orientacja\n\n\n20–45 min\nZadania 1–11: wybór kolumn, warunki i sortowanie\n\n\n45–70 min\nZadania 12–16: agregacje, GROUP BY i HAVING\n\n\n70–85 min\nZadania 17–18: samodzielne raporty\n\n\n85–90 min\nOmówienie i potwierdzenie zaliczenia\n\n\n\nZadania 19–20 są dodatkowe. Podczas ćwiczeń przechodzimy od wyniku zawierającego osobne produkty do wyniku opisującego całe grupy produktów.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#test-z-poprzednich-zajęć-10-minut",
+    "href": "laboratorium2.html#test-z-poprzednich-zajęć-10-minut",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Test z poprzednich zajęć — 10 minut",
+    "text": "Test z poprzednich zajęć — 10 minut\nOdpowiedz samodzielnie na osiem pytań z laboratorium 1. Każde pytanie jest warte 1 punkt. Podaj e-mail używany na zajęciach; wynik zostanie zapisany w podsumowaniu prowadzącego jako lab02-start. Kolejność odpowiedzi na ekranie jest losowa. Test dotyczy pgAdmin i pracy na Windows, a nie nowych zagadnień SQL.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#wspólny-zestaw-danych-sklep",
+    "href": "laboratorium2.html#wspólny-zestaw-danych-sklep",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Wspólny zestaw danych — sklep",
+    "text": "Wspólny zestaw danych — sklep\nPracujemy na Windows, w zainstalowanym pgAdmin i PostgreSQL. Wykorzystaj własną bazę z laboratorium 1. Nie zmieniaj baz innych osób. Jeżeli pracujesz na nowym stanowisku, połącz się z lokalnym serwerem i utwórz własną bazę zgodnie z instrukcją laboratorium 1.\n\nPobierz 00_setup.sql i zapisz na komputerze.\nW pgAdmin kliknij PPM na swojej bazie → Query Tool. Sprawdź bazę połączenia.\nOtwórz pobrany plik przez Open File. Zaznacz całą zawartość i wykonaj.\nSprawdź Messages, a następnie odśwież Schemas w drzewie.\nZnajdź schemat shop_lab z czterema tabelami. Skrypt uruchom tylko raz; laboratoria 2–4 korzystają z tego samego zestawu bez modyfikacji danych.\n\nJeśli schemat shop_lab już istnieje, nie usuwaj go. Jeżeli jest to Twój zestaw z wcześniejszego bloku, przejdź do kontroli danych. Gdy ponowne wykonanie skryptu zakończyło się błędem, wpisz ROLLBACK;, wykonaj je osobno i kontynuuj dopiero po sprawdzeniu stanu. Skrypt nie nadpisuje istniejącego schematu.\n\n\n\n\n\n\n\n\nTabela\nCo oznacza wiersz\nLiczba wierszy\n\n\n\n\nshop_lab.customers\nZarejestrowany klient\n6\n\n\nshop_lab.products\nProdukt i jego bieżąca cena oraz stan\n10\n\n\nshop_lab.orders\nZamówienie, także gościnne\n8\n\n\nshop_lab.order_items\nProdukt w zamówieniu, ilość i cena z chwili zamówienia\n12\n\n\n\nOtwórz każdą tabelę przez View/Edit Data → All Rows lub wykonaj SELECT *. Przeczytaj nazwy kolumn. W orders.customer_id brak wartości oznacza zamówienie gościnne. Klienci 5 i 6 nie mają zamówień; produkt 8 nie ma pozycji zamówienia; zamówienie 108 nie ma jeszcze pozycji. To celowe przypadki do ćwiczeń.\nPozycja ma klucz złożony (order_id, product_id): dany produkt pojawia się w danym zamówieniu najwyżej raz. Klucze obce łączą orders z customers oraz order_items z orders i products. Statusy: new — nowe, paid — opłacone, cancelled — anulowane. Kwoty zapisano jako numeric, w PLN.\n\n\n\n\n\n\nWażne\n\n\n\nNie zmieniaj danych w tych ćwiczeniach. Historyczną wartość pozycji licz jako quantity * unit_price. products.price jest ceną bieżącą i może być inna.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#jak-wykonywać-zadania",
+    "href": "laboratorium2.html#jak-wykonywać-zadania",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Jak wykonywać zadania",
+    "text": "Jak wykonywać zadania\n\nZapisuj zapytania w swoim pliku labNN_numer_albumu.sql; przed każdym dodaj komentarz, np. -- Task 03. Nie nadpisuj pliku startowego.\nWykonuj tylko zaznaczone zapytanie, aby nie uruchamiać całego pliku ponownie.\nSprawdzaj Data Output i Messages. Błąd składni popraw i uruchom zapytanie ponownie.\nPrzed podejrzeniem rezultatu przewidź kolumny, liczbę wierszy i istotne wartości.\nJeśli polecenie wymaga sortowania, zastosuj wskazane klucze. Bez ORDER BY kolejność rekordów nie jest gwarantowana.\n\nPrzykłady oznaczone „start” możesz uruchomić i zmodyfikować. W pozostałych zadaniach samodzielnie napisz SQL. Rozwijane wyniki kontrolne pokazują rezultat, nie gotowe rozwiązanie. Zadania dodatkowe są dla osób pracujących szybciej.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#zadania",
+    "href": "laboratorium2.html#zadania",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Zadania",
+    "text": "Zadania\n\nŚciąga składni\nSELECT column_name, expression AS result_name\nFROM schema_name.table_name\nWHERE row_condition\nGROUP BY column_name\nHAVING group_condition\nORDER BY result_name DESC\nLIMIT 3;\nTo szablon, nie zapytanie do uruchomienia. Pomijaj niepotrzebne klauzule. Nazwy kolumn zapisujemy bez apostrofów, a teksty w apostrofach, np. 'network'. = porównuje wartości, &lt;&gt; oznacza nierówność. AND wymaga obu warunków, OR przynajmniej jednego. Używaj nawiasów, aby jasno wskazać zamiar.\n\n\nZadanie 1. Obejrzyj dane i wybierz kolumny\nOdczytaj identyfikator, nazwę i cenę wszystkich produktów. Uruchom przykład, a następnie dodaj kolumnę stock. Zapisz własne zapytanie w pliku roboczym.\nPrzykład na start:\nSELECT product_id, product_name, price\nFROM shop_lab.products\nORDER BY product_id;\nKontrola: liczba wierszy: 10.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nprice\nstock\n\n\n\n\n1\nLaptop\n3000.0\n5\n\n\n2\nMonitor\n800.0\n10\n\n\n3\nKeyboard\n100.0\n20\n\n\n4\nMouse\n50.0\n0\n\n\n5\nCable HDMI\n40.0\n30\n\n\n6\nRouter\n200.0\n8\n\n\n7\nSwitch\n400.0\n3\n\n\n8\nWebcam\n150.0\n0\n\n\n9\nMonitor Pro\n1200.0\n2\n\n\n10\nDock\n600.0\n4\n\n\n\n\n\n\nZadanie 2. Nadaj alias i oblicz wartość zapasu\nDla każdego produktu pokaż nazwę oraz price * stock pod nazwą stock_value. Uporządkuj według identyfikatora. Kwoty są w PLN.\nWskazówka: Alias nadajesz przez AS; mnożenie nie zmienia danych.\nKontrola: liczba wierszy: 10.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_name\nstock_value\n\n\n\n\nLaptop\n15000.0\n\n\nMonitor\n8000.0\n\n\nKeyboard\n2000.0\n\n\nMouse\n0.0\n\n\nCable HDMI\n1200.0\n\n\nRouter\n1600.0\n\n\nSwitch\n1200.0\n\n\nWebcam\n0.0\n\n\nMonitor Pro\n2400.0\n\n\nDock\n2400.0\n\n\n\n\n\n\nZadanie 3. Odfiltruj produkty według ceny\nWyświetl identyfikator, nazwę i cenę produktów kosztujących co najmniej 400 PLN. Uporządkuj po identyfikatorze.\nPrzykład na start:\nSELECT product_id, product_name, price\nFROM shop_lab.products\nWHERE price &gt;= 400\nORDER BY product_id;\nKontrola: liczba wierszy: 5.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nprice\n\n\n\n\n1\nLaptop\n3000.0\n\n\n2\nMonitor\n800.0\n\n\n7\nSwitch\n400.0\n\n\n9\nMonitor Pro\n1200.0\n\n\n10\nDock\n600.0\n\n\n\n\n\n\nZadanie 4. Połącz warunki AND\nZnajdź dostępne produkty z kategorii accessories. Dostępny oznacza stock &gt; 0. Pokaż identyfikator i nazwę.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\n\n\n\n\n3\nKeyboard\n\n\n5\nCable HDMI\n\n\n10\nDock\n\n\n\n\n\n\nZadanie 5. Zastosuj OR i nawiasy\nWybierz produkty z kategorii network lub displays, ale tylko dostępne w liczbie co najmniej 3. Pokaż identyfikator, nazwę i stan. Użyj nawiasów wokół alternatywy.\nWskazówka: AND ma wyższy priorytet niż OR. Porównaj wynik po usunięciu nawiasów i wyjaśnij różnicę.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nstock\n\n\n\n\n2\nMonitor\n10\n\n\n6\nRouter\n8\n\n\n7\nSwitch\n3\n\n\n\n\n\n\nZadanie 6. Użyj IN i BETWEEN\nZnajdź produkty z kategorii accessories lub network o cenie od 100 do 400 PLN włącznie. Pokaż identyfikator, nazwę i cenę.\nWskazówka: BETWEEN obejmuje obie granice.\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nprice\n\n\n\n\n3\nKeyboard\n100.0\n\n\n6\nRouter\n200.0\n\n\n7\nSwitch\n400.0\n\n\n8\nWebcam\n150.0\n\n\n\n\n\n\nZadanie 7. Wyszukuj tekst przez LIKE\nWyświetl nazwy produktów zaczynające się od Monitor. Następnie samodzielnie poszukaj nazw zawierających o oraz nazw o drugim znaku o. Do kontroli oddaj pierwsze zapytanie.\nPrzykład na start:\nSELECT product_name\nFROM shop_lab.products\nWHERE product_name LIKE 'Monitor%'\nORDER BY product_id;\nWskazówka: % oznacza dowolny ciąg znaków, także pusty; _ dokładnie jeden znak.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_name\n\n\n\n\nMonitor\n\n\nMonitor Pro\n\n\n\n\n\n\nZadanie 8. Porównaj LIKE z ILIKE\nWyszukaj nazwy rozpoczynające się od małych liter monitor, najpierw przez LIKE, potem przez ILIKE. Do kontroli zapisz wersję ILIKE.\nWskazówka: W tym zestawie LIKE z małym monitor% nie zwraca wierszy; ILIKE pomija wielkość liter.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_name\n\n\n\n\nMonitor\n\n\nMonitor Pro\n\n\n\n\n\n\nZadanie 9. Znajdź brakujące wartości\nWyświetl identyfikatory i nazwy produktów bez wpisanego dostawcy. Użyj IS NULL. Porównaj z błędnym warunkiem supplier = NULL i wyjaśnij, dlaczego nie daje oczekiwanego wyniku.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\n\n\n\n\n2\nMonitor\n\n\n4\nMouse\n\n\n9\nMonitor Pro\n\n\n\n\n\n\nZadanie 10. Usuń powtórzenia w wyniku\nWypisz różne kategorie produktów, każdą tylko raz, alfabetycznie. Porównaj z wynikiem bez DISTINCT.\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncategory\n\n\n\n\naccessories\n\n\ncomputers\n\n\ndisplays\n\n\nnetwork\n\n\n\n\n\n\nZadanie 11. Posortuj i ogranicz wynik\nWypisz trzy najdroższe produkty: nazwa i cena. Użyj ORDER BY price DESC, product_id i LIMIT 3.\nWskazówka: LIMIT bez ORDER BY nie określa, które trzy rekordy otrzymasz.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_name\nprice\n\n\n\n\nLaptop\n3000.0\n\n\nMonitor Pro\n1200.0\n\n\nMonitor\n800.0\n\n\n\n\n\n\nOd wierszy do grup\nCOUNT(*) liczy wiersze; COUNT(kolumna) liczy wartości różne od NULL. SUM i AVG działają na wartościach liczbowych, a MIN i MAX wybierają skrajne. Agregaty poza COUNT zwracają NULL dla pustego zbioru. AVG pomija NULL, lecz nie pomija zera. Dla grup pokaż w SELECT klucz grupowania oraz agregaty.\nLogiczny sposób czytania: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. To pomoc w rozumieniu znaczenia, a nie opis fizycznego planu wykonania silnika. Warunek na pojedynczy produkt umieść w WHERE; warunek na liczbę produktów w grupie w HAVING. COUNT i AVG nie wymagają deklarowania zmiennych.\n\n\nZadanie 12. Policz rekordy i wartości\nW jednym wyniku pokaż COUNT(*) AS products, COUNT(supplier) AS known_suppliers i COUNT(DISTINCT supplier) AS suppliers. Wyjaśnij różnice.\nPrzykład na start:\nSELECT COUNT(*) AS products, COUNT(supplier) AS known_suppliers, COUNT(DISTINCT supplier) AS suppliers\nFROM shop_lab.products;\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproducts\nknown_suppliers\nsuppliers\n\n\n\n\n10\n7\n3\n\n\n\n\n\n\nZadanie 13. Użyj SUM AVG MIN MAX\nWyznacz sumę stanów oraz średnią, minimalną i maksymalną cenę produktu. Średnią zaokrąglij przez ROUND(AVG(price), 2). Nie jest to średnia ważona stanem.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ntotal_stock\nmean_price\nmin_price\nmax_price\n\n\n\n\n82\n654.0\n40.0\n3000.0\n\n\n\n\n\n\nZadanie 14. Utwórz grupy\nDla każdej kategorii policz produkty i wyznacz średnią cenę zaokrągloną do dwóch miejsc. Pokaż kategorię, product_count i mean_price, uporządkuj po kategorii.\nPrzykład na start:\nSELECT category, COUNT(*) AS product_count, ROUND(AVG(price), 2) AS mean_price\nFROM shop_lab.products\nGROUP BY category\nORDER BY category;\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncategory\nproduct_count\nmean_price\n\n\n\n\naccessories\n5\n188.0\n\n\ncomputers\n1\n3000.0\n\n\ndisplays\n2\n1000.0\n\n\nnetwork\n2\n300.0\n\n\n\n\n\n\nZadanie 15. Odfiltruj grupy przez HAVING\nZostaw tylko kategorie zawierające co najmniej dwa produkty. Zwróć kategorię i liczbę produktów.\nWskazówka: WHERE filtruje wiersze przed grupowaniem, HAVING filtruje utworzone grupy.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncategory\nproduct_count\n\n\n\n\naccessories\n5\n\n\ndisplays\n2\n\n\nnetwork\n2\n\n\n\n\n\n\nZadanie 16. Połącz WHERE i HAVING\nPomiń produkty z zerowym stanem. W pozostałych danych znajdź kategorie zawierające co najmniej dwa produkty. Pokaż kategorię, liczbę oraz sumę stanów.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncategory\nproduct_count\ntotal_stock\n\n\n\n\naccessories\n3\n54\n\n\ndisplays\n2\n12\n\n\nnetwork\n2\n11\n\n\n\n\n\n\nZadanie 17. Pogrupuj zamówienia\nDla każdego statusu zamówienia policz liczbę zamówień. Posortuj wynik malejąco według liczby, a przy remisie alfabetycznie po statusie.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nstatus\norder_count\n\n\n\n\npaid\n4\n\n\nnew\n3\n\n\ncancelled\n1\n\n\n\n\n\n\nZadanie 18. Zbuduj raport wartości zapasu\nDla każdej kategorii policz SUM(price * stock) AS stock_value. Zostaw kategorie z wartością co najmniej 2000 PLN i posortuj malejąco po wartości, przy remisie po kategorii.\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncategory\nstock_value\n\n\n\n\ncomputers\n15000.0\n\n\ndisplays\n10400.0\n\n\naccessories\n5600.0\n\n\nnetwork\n2800.0\n\n\n\n\n\n\nZadanie 19. Zastosuj funkcje tekstowe i COALESCE — dodatkowe\nDodatkowo: wypisz nazwy produktów wielkimi literami przez UPPER oraz dostawcę. Zamiast brakującego dostawcy pokaż tekst brak danych przez COALESCE.\nKontrola: liczba wierszy: 10.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nname_upper\nsupplier_label\n\n\n\n\nLAPTOP\nAcme\n\n\nMONITOR\nbrak danych\n\n\nKEYBOARD\nAcme\n\n\nMOUSE\nbrak danych\n\n\nCABLE HDMI\nCableCo\n\n\nROUTER\nNetCo\n\n\nSWITCH\nNetCo\n\n\nWEBCAM\nAcme\n\n\nMONITOR PRO\nbrak danych\n\n\nDOCK\nAcme\n\n\n\n\n\n\nZadanie 20. Sprawdź agregację pustego zbioru — dodatkowe\nDodatkowo: policz COUNT(*), SUM(stock) i AVG(price) dla produktów droższych niż 10000 PLN. Wyjaśnij różnicę między zerem a NULL; nie zmieniaj danych.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_count\ntotal_stock\nmean_price\n\n\n\n\n0\nNULL\nNULL",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#co-pokazać-prowadzącemu",
+    "href": "laboratorium2.html#co-pokazać-prowadzącemu",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Co pokazać prowadzącemu",
+    "text": "Co pokazać prowadzącemu\nZachowaj plik .sql z ponumerowanymi zapytaniami. Pokaż wykonanie zadań podstawowych; rozszerzenia wykonuj w pozostałym czasie. Przy omówieniu:\n\nWyjaśnij różnicę między WHERE i HAVING na własnym raporcie.\nPokaż wynik COUNT(*) i COUNT(supplier) oraz uzasadnij różnicę.\nWskaż, jak nawiasy zmieniają znaczenie AND i OR.\nPokaż raport wartości zapasu z zadania 18.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#dokumentacja",
+    "href": "laboratorium2.html#dokumentacja",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Dokumentacja",
+    "text": "Dokumentacja\nAgregaty oraz GROUP BY i HAVING.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium2.html#potwierdzenie-zaliczenia",
+    "href": "laboratorium2.html#potwierdzenie-zaliczenia",
+    "title": "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje",
+    "section": "Potwierdzenie zaliczenia",
+    "text": "Potwierdzenie zaliczenia\nPokaż prowadzącemu plik zapytań i wyjaśnij wybrane wyniki. Po ustnym zaliczeniu całego laboratorium 2 zapisz potwierdzenie. Nie zgłaszasz osobnych zadań do sprawdzenia. Datę i czas nada serwer. Ponowna próba nie tworzy drugiego wpisu dla tego samego e-maila i laboratorium. Wybierz tę samą grupę co na poprzednich zajęciach.\n\n\nE-mail WAT: \nGrupa: Wybierz grupęGrupa 1Grupa 2Grupa 3\n Prowadzący ustnie zaliczył mi całe laboratorium 2.\nProwadzący zaliczył laboratorium 2 — zapisz potwierdzenie",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 2 — SQL: filtrowanie, sortowanie i agregacje"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html",
+    "href": "laboratorium3.html",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "",
+    "text": "Czas\nPraca\n\n\n\n\n0–10 min\nPrzypomnienie agregacji i kontrola danych\n\n\n10–30 min\nZadania 1–6: podzapytania skalarne i IN\n\n\n30–55 min\nZadania 7–12: EXISTS, NOT EXISTS i NULL\n\n\n55–80 min\nZadania 13–16: korelacja, tabela pochodna i CTE\n\n\n80–90 min\nSamodzielne wyjaśnienie wyniku i potwierdzenie\n\n\n\nZadania 17–20 są dodatkowe. Celem jest wybór właściwego rodzaju podzapytania, a nie samo zwiększanie liczby zagnieżdżonych nawiasów.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#plan-bloku-90-minut",
+    "href": "laboratorium3.html#plan-bloku-90-minut",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "",
+    "text": "Czas\nPraca\n\n\n\n\n0–10 min\nPrzypomnienie agregacji i kontrola danych\n\n\n10–30 min\nZadania 1–6: podzapytania skalarne i IN\n\n\n30–55 min\nZadania 7–12: EXISTS, NOT EXISTS i NULL\n\n\n55–80 min\nZadania 13–16: korelacja, tabela pochodna i CTE\n\n\n80–90 min\nSamodzielne wyjaśnienie wyniku i potwierdzenie\n\n\n\nZadania 17–20 są dodatkowe. Celem jest wybór właściwego rodzaju podzapytania, a nie samo zwiększanie liczby zagnieżdżonych nawiasów.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#zanim-zaczniesz",
+    "href": "laboratorium3.html#zanim-zaczniesz",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "Zanim zaczniesz",
+    "text": "Zanim zaczniesz\nOtwórz Query Tool w swojej bazie i korzystaj ze schematu shop_lab z poprzedniego bloku. Oczekiwany stan: 6 klientów, 10 produktów, 8 zamówień, 12 pozycji. Nie uruchamiaj ponownie skryptu startowego i nie zmieniaj danych. Jeśli nie masz jeszcze zestawu, wykonaj przygotowanie danych z laboratorium 2. Pamiętaj o różnicy między ceną bieżącą products.price a historyczną order_items.unit_price.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#jak-wykonywać-zadania",
+    "href": "laboratorium3.html#jak-wykonywać-zadania",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "Jak wykonywać zadania",
+    "text": "Jak wykonywać zadania\n\nZapisuj zapytania w swoim pliku labNN_numer_albumu.sql; przed każdym dodaj komentarz, np. -- Task 03. Nie nadpisuj pliku startowego.\nWykonuj tylko zaznaczone zapytanie, aby nie uruchamiać całego pliku ponownie.\nSprawdzaj Data Output i Messages. Błąd składni popraw i uruchom zapytanie ponownie.\nPrzed podejrzeniem rezultatu przewidź kolumny, liczbę wierszy i istotne wartości.\nJeśli polecenie wymaga sortowania, zastosuj wskazane klucze. Bez ORDER BY kolejność rekordów nie jest gwarantowana.\n\nPrzykłady oznaczone „start” możesz uruchomić i zmodyfikować. W pozostałych zadaniach samodzielnie napisz SQL. Rozwijane wyniki kontrolne pokazują rezultat, nie gotowe rozwiązanie. Zadania dodatkowe są dla osób pracujących szybciej.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#zadania",
+    "href": "laboratorium3.html#zadania",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "Zadania",
+    "text": "Zadania\n\nTrzy rodzaje wyniku podzapytania\n\n\n\n\n\n\n\n\nKonstrukcja\nOczekiwany wynik podzapytania\nTypowe zastosowanie\n\n\n\n\nprice &gt; (SELECT ...)\nJedna kolumna i najwyżej jeden wiersz\nPorównanie ze średnią\n\n\nid IN (SELECT ...)\nJedna kolumna, dowolna liczba wierszy\nPrzynależność do listy\n\n\nEXISTS (SELECT ...)\nDowolne kolumny; liczy się istnienie wiersza\nCzy istnieje powiązany rekord?\n\n\n\nPodzapytanie skalarne z zerem wierszy daje NULL, z więcej niż jednym wierszem — błąd. Zwykłe AVG bez GROUP BY zwraca jeden wiersz. Sam warunek WHERE nie gwarantuje pojedynczego wyniku, chyba że wynika to np. z wyszukania po kluczu.\n\n\nZadanie 1. Przygotuj wartość progową\nPolicz średnią cenę wszystkich produktów, bez zaokrąglania. Zapisz ją roboczo i wskaż, że wynik ma jeden wiersz oraz jedną kolumnę.\nPrzykład na start:\nSELECT AVG(price) AS mean_price\nFROM shop_lab.products;\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nmean_price\n\n\n\n\n654.0\n\n\n\n\n\n\nZadanie 2. Porównaj cenę ze średnią\nZnajdź produkty droższe od średniej wszystkich cen. Użyj podzapytania w WHERE, a nie ręcznie przepisanej liczby. Pokaż identyfikator, nazwę i cenę.\nPrzykład na start:\nSELECT product_id, product_name, price\nFROM shop_lab.products\nWHERE price &gt; (SELECT AVG(price)\nFROM shop_lab.products)\nORDER BY product_id;\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nprice\n\n\n\n\n1\nLaptop\n3000.0\n\n\n2\nMonitor\n800.0\n\n\n9\nMonitor Pro\n1200.0\n\n\n\n\n\n\nZadanie 3. Znajdź najtańsze produkty\nWypisz identyfikator, nazwę i cenę wszystkich produktów o cenie równej minimum. Użyj MIN w podzapytaniu, bez LIMIT.\nWskazówka: W razie remisu warunek równości do MIN zwraca wszystkie najtańsze produkty.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nprice\n\n\n\n\n5\nCable HDMI\n40.0\n\n\n\n\n\n\nZadanie 4. Pobierz pojedynczą wartość z innego rekordu\nZnajdź produkty droższe od Routera o identyfikatorze 6. Cenę Routera odczytaj podzapytaniem po kluczu głównym. Pokaż identyfikator i nazwę.\nKontrola: liczba wierszy: 5.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\n\n\n\n\n1\nLaptop\n\n\n2\nMonitor\n\n\n7\nSwitch\n\n\n9\nMonitor Pro\n\n\n10\nDock\n\n\n\n\n\n\nZadanie 5. Zastosuj IN z podzapytaniem\nZnajdź klientów z co najmniej jednym opłaconym zamówieniem. Pokaż identyfikator i nazwę. W podzapytaniu odczytaj customer_id z orders o statusie paid.\nPrzykład na start:\nSELECT customer_id, customer_name\nFROM shop_lab.customers\nWHERE customer_id IN (SELECT customer_id\nFROM shop_lab.orders\nWHERE status = 'paid')\nORDER BY customer_id;\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n1\nAnna Kowalska\n\n\n2\nJan Nowak\n\n\n\n\n\n\nZadanie 6. Zastosuj dwa poziomy zagnieżdżenia\nZnajdź produkty występujące w opłaconych zamówieniach. Zewnętrzne zapytanie czyta products, kolejne order_items, a najgłębsze orders. Pokaż identyfikator i nazwę.\nKontrola: liczba wierszy: 6.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\n\n\n\n\n1\nLaptop\n\n\n2\nMonitor\n\n\n3\nKeyboard\n\n\n4\nMouse\n\n\n5\nCable HDMI\n\n\n6\nRouter\n\n\n\n\n\n\nCo oznacza korelacja?\nWewnętrzne zapytanie może odwoływać się do aliasu zewnętrznego. Czytaj je jako pytanie „czy dla tego klienta istnieje zamówienie?”. Taki model myślowy nie przesądza, ile razy silnik fizycznie wykona podzapytanie — optymalizator może zmienić sposób obliczeń. SELECT 1 w EXISTS oznacza, że interesuje nas istnienie wiersza, a nie jego zawartość.\n\n\nZadanie 7. Przeczytaj zapytanie skorelowane\nWykonaj przykład wybierający klientów z jakimkolwiek zamówieniem. Wskaż, skąd pochodzą aliasy c i o oraz co porównuje warunek o.customer_id = c.customer_id.\nPrzykład na start:\nSELECT c.customer_id, c.customer_name\nFROM shop_lab.customers AS c\nWHERE EXISTS (SELECT 1\nFROM shop_lab.orders AS o\nWHERE o.customer_id = c.customer_id)\nORDER BY c.customer_id;\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n1\nAnna Kowalska\n\n\n2\nJan Nowak\n\n\n3\nOla Lis\n\n\n4\nPiotr Wilk\n\n\n\n\n\n\nZadanie 8. Dodaj warunek wewnątrz EXISTS\nZnajdź klientów z opłaconym zamówieniem, tym razem przez EXISTS. Porównaj listę z zadaniem 5.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n1\nAnna Kowalska\n\n\n2\nJan Nowak\n\n\n\n\n\n\nZadanie 9. Znajdź klientów bez zamówień\nUżyj NOT EXISTS do znalezienia klientów bez żadnego zamówienia. Pokaż identyfikator i nazwę.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n5\nEwa Kot\n\n\n6\nAdam Zuk\n\n\n\n\n\n\nZadanie 10. Zobacz pułapkę NOT IN\nWykonaj przykład i porównaj z zadaniem 9. Obejrzyj osobno customer_id w orders. Znajdziesz tam NULL, oznaczający zamówienie gościnne.\nPrzykład na start:\nSELECT customer_id, customer_name\nFROM shop_lab.customers\nWHERE customer_id NOT IN (SELECT customer_id\nFROM shop_lab.orders)\nORDER BY customer_id;\nWskazówka: WHERE zachowuje tylko TRUE. Przy braku dopasowania i NULL w podzapytaniu NOT IN daje UNKNOWN, więc nie wybiera takich klientów.\nKontrola: liczba wierszy: 0.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\nBrak wierszy (0 rekordów).\n\n\n\nZadanie 11. Napraw NOT IN\nW podzapytaniu usuń brakujące identyfikatory przez WHERE customer_id IS NOT NULL. Sprawdź zgodność z NOT EXISTS.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n5\nEwa Kot\n\n\n6\nAdam Zuk\n\n\n\n\n\n\nZadanie 12. Znajdź produkt bez pozycji zamówienia\nPrzez NOT EXISTS znajdź produkty, których nie ma w żadnej pozycji zamówienia. Pokaż identyfikator i nazwę; uwzględniamy tutaj wszystkie statusy.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\n\n\n\n\n8\nWebcam\n\n\n\n\n\n\nZadanie 13. Policz zamówienia przy każdym kliencie\nW SELECT umieść skorelowane podzapytanie COUNT(*) liczące zamówienia danego klienta. Pokaż wszystkich klientów, także z zerem zamówień.\nPrzykład na start:\nSELECT c.customer_id, c.customer_name, (SELECT COUNT(*)\nFROM shop_lab.orders AS o\nWHERE o.customer_id = c.customer_id) AS order_count\nFROM shop_lab.customers AS c\nORDER BY c.customer_id;\nKontrola: liczba wierszy: 6.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\norder_count\n\n\n\n\n1\nAnna Kowalska\n2\n\n\n2\nJan Nowak\n2\n\n\n3\nOla Lis\n1\n\n\n4\nPiotr Wilk\n1\n\n\n5\nEwa Kot\n0\n\n\n6\nAdam Zuk\n0\n\n\n\n\n\n\nZadanie 14. Porównaj produkt ze średnią jego kategorii\nZnajdź produkty droższe od średniej w swojej kategorii. Użyj aliasów p i p2 oraz powiąż podzapytanie po category. Pokaż identyfikator, nazwę i kategorię.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\ncategory\n\n\n\n\n7\nSwitch\nnetwork\n\n\n9\nMonitor Pro\ndisplays\n\n\n10\nDock\naccessories\n\n\n\n\n\n\nWynik zapytania jako źródło danych\nPodzapytanie w FROM musi mieć alias w naszych przykładach, np. AS totals. Najpierw wyobraź sobie tabelę zawierającą wynik wewnętrznego SELECT, a następnie wykonaj na niej zewnętrzne filtrowanie lub agregację. WITH pozwala nazwać taki etap. Nie jest to deklaracja zmiennej ani utworzenie trwałego obiektu.\n\n\nZadanie 15. Użyj tabeli pochodnej\nNajpierw wyznacz wartość każdego zamówienia z pozycji: SUM(quantity * unit_price). Umieść zapytanie w FROM pod aliasem totals. Na zewnątrz zostaw wartości większe niż 1000 PLN. To wartości zapisanych pozycji niezależnie od statusu.\nPrzykład na start:\nSELECT totals.order_id, totals.order_total\nFROM (SELECT order_id, SUM(quantity * unit_price) AS order_total\nFROM shop_lab.order_items\nGROUP BY order_id) AS totals\nWHERE totals.order_total &gt; 1000\nORDER BY totals.order_id;\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\norder_id\norder_total\n\n\n\n\n101\n3080.0\n\n\n106\n1650.0\n\n\n107\n1600.0\n\n\n\n\n\n\nZadanie 16. Nazwij etap przez WITH\nPrzepisz poprzednie zadanie z użyciem WITH totals AS (...). Zachowaj te same kolumny i sortowanie. Porównaj oba wyniki.\nWskazówka: CTE nazywa wynik zapytania w obrębie jednej instrukcji. Nie tworzy trwałej tabeli.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\norder_id\norder_total\n\n\n\n\n101\n3080.0\n\n\n106\n1650.0\n\n\n107\n1600.0\n\n\n\n\n\n\nZadanie 17. Policz średnią wartości zamówień z pozycjami — dodatkowe\nDodatkowo: policz średnią sum policzonych dla poszczególnych zamówień. Użyj tabeli pochodnej lub CTE, zaokrąglij do dwóch miejsc. Zamówienie 108 bez pozycji nie wchodzi do tej średniej.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nmean_order_total\n\n\n\n\n1165.71\n\n\n\n\n\n\nZadanie 18. Połącz EXISTS i NOT EXISTS — dodatkowe\nDodatkowo: znajdź klientów, którzy mają opłacone zamówienie i nie mają żadnego anulowanego. Pokaż identyfikator i nazwę.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n1\nAnna Kowalska\n\n\n2\nJan Nowak\n\n\n\n\n\n\nZadanie 19. Sprawdź pusty wynik skalarny — dodatkowe\nDodatkowo: wykonaj podzapytanie skalarne szukające ceny produktu 999. Nie ma takiego produktu. Obejrzyj NULL w wyniku i wyjaśnij, czym różni się to od wyniku 0.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nmissing_price\n\n\n\n\nNULL\n\n\n\n\n\n\nZadanie 20. Wybierz rekordy o maksymalnym stanie — dodatkowe\nDodatkowo: znajdź wszystkie produkty o największym stock w swojej kategorii. Zastosuj korelację i MAX, bez sortowania z LIMIT. Zwróć identyfikator, nazwę i stan.\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\nstock\n\n\n\n\n1\nLaptop\n5\n\n\n2\nMonitor\n10\n\n\n5\nCable HDMI\n30\n\n\n6\nRouter\n8",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#co-pokazać-prowadzącemu",
+    "href": "laboratorium3.html#co-pokazać-prowadzącemu",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "Co pokazać prowadzącemu",
+    "text": "Co pokazać prowadzącemu\nZachowaj plik .sql z ponumerowanymi zapytaniami. Pokaż wykonanie zadań podstawowych; rozszerzenia wykonuj w pozostałym czasie. Przy omówieniu:\n\nWyjaśnij różnicę między podzapytaniem skalarnym, IN i EXISTS.\nPokaż, dlaczego NOT IN w zadaniu 10 nie zwraca klientów.\nWskaż odwołanie skorelowane i wyjaśnij jego sens.\nPorównaj tabelę pochodną z CTE z zadań 15–16.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#dokumentacja",
+    "href": "laboratorium3.html#dokumentacja",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "Dokumentacja",
+    "text": "Dokumentacja\nIN, EXISTS i NOT IN oraz WITH.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium3.html#potwierdzenie-zaliczenia",
+    "href": "laboratorium3.html#potwierdzenie-zaliczenia",
+    "title": "Laboratorium 3 — podzapytania i zapytania skorelowane",
+    "section": "Potwierdzenie zaliczenia",
+    "text": "Potwierdzenie zaliczenia\nPokaż prowadzącemu plik zapytań i wyjaśnij wybrane wyniki. Po ustnym zaliczeniu całego laboratorium 3 zapisz potwierdzenie. Nie zgłaszasz osobnych zadań do sprawdzenia. Datę i czas nada serwer. Ponowna próba nie tworzy drugiego wpisu dla tego samego e-maila i laboratorium. Wybierz tę samą grupę co na poprzednich zajęciach.\n\n\nE-mail WAT: \nGrupa: Wybierz grupęGrupa 1Grupa 2Grupa 3\n Prowadzący ustnie zaliczył mi całe laboratorium 3.\nProwadzący zaliczył laboratorium 3 — zapisz potwierdzenie",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 3 — podzapytania i zapytania skorelowane"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html",
+    "href": "laboratorium4.html",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "",
+    "text": "Czas\nPraca\n\n\n\n\n0–15 min\nZadania 1–3: od 12 par do rzeczywistych dopasowań\n\n\n15–40 min\nZadania 4–9: INNER, LEFT, RIGHT i FULL OUTER JOIN\n\n\n40–60 min\nZadania 10–12: ON kontra WHERE oraz COUNT\n\n\n60–80 min\nZadania 13–16: pozycje, sprzedaż i puste zamówienie\n\n\n80–90 min\nZadania 17–18: diagnoza mnożenia wierszy i omówienie\n\n\n\nZadania 19–20 są dodatkowe. Złączenie tworzy wiersze z dopasowanych par; nie jest po prostu „doklejeniem kolumn” bez wpływu na liczbę rekordów.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#plan-bloku-90-minut",
+    "href": "laboratorium4.html#plan-bloku-90-minut",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "",
+    "text": "Czas\nPraca\n\n\n\n\n0–15 min\nZadania 1–3: od 12 par do rzeczywistych dopasowań\n\n\n15–40 min\nZadania 4–9: INNER, LEFT, RIGHT i FULL OUTER JOIN\n\n\n40–60 min\nZadania 10–12: ON kontra WHERE oraz COUNT\n\n\n60–80 min\nZadania 13–16: pozycje, sprzedaż i puste zamówienie\n\n\n80–90 min\nZadania 17–18: diagnoza mnożenia wierszy i omówienie\n\n\n\nZadania 19–20 są dodatkowe. Złączenie tworzy wiersze z dopasowanych par; nie jest po prostu „doklejeniem kolumn” bez wpływu na liczbę rekordów.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#zanim-zaczniesz",
+    "href": "laboratorium4.html#zanim-zaczniesz",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "Zanim zaczniesz",
+    "text": "Zanim zaczniesz\nOtwórz Query Tool w swojej bazie i korzystaj ze schematu shop_lab z poprzedniego bloku. Oczekiwany stan: 6 klientów, 10 produktów, 8 zamówień, 12 pozycji. Nie uruchamiaj ponownie skryptu startowego i nie zmieniaj danych. Jeśli nie masz jeszcze zestawu, wykonaj przygotowanie danych z laboratorium 2. Pamiętaj o różnicy między ceną bieżącą products.price a historyczną order_items.unit_price.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#jak-wykonywać-zadania",
+    "href": "laboratorium4.html#jak-wykonywać-zadania",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "Jak wykonywać zadania",
+    "text": "Jak wykonywać zadania\n\nZapisuj zapytania w swoim pliku labNN_numer_albumu.sql; przed każdym dodaj komentarz, np. -- Task 03. Nie nadpisuj pliku startowego.\nWykonuj tylko zaznaczone zapytanie, aby nie uruchamiać całego pliku ponownie.\nSprawdzaj Data Output i Messages. Błąd składni popraw i uruchom zapytanie ponownie.\nPrzed podejrzeniem rezultatu przewidź kolumny, liczbę wierszy i istotne wartości.\nJeśli polecenie wymaga sortowania, zastosuj wskazane klucze. Bez ORDER BY kolejność rekordów nie jest gwarantowana.\n\nPrzykłady oznaczone „start” możesz uruchomić i zmodyfikować. W pozostałych zadaniach samodzielnie napisz SQL. Rozwijane wyniki kontrolne pokazują rezultat, nie gotowe rozwiązanie. Zadania dodatkowe są dla osób pracujących szybciej.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#zadania",
+    "href": "laboratorium4.html#zadania",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "Zadania",
+    "text": "Zadania\n\nNajpierw pary, potem dopasowania\nIloczyn kartezjański łączy każdy wiersz pierwszej tabeli z każdym wierszem drugiej. Przy 3 i 4 wierszach otrzymujesz 12 par. Warunek ON wskazuje, które pary są powiązane. Złączenie wewnętrzne po równości to nie działanie na samych nazwach kolumn, lecz wybór par spełniających konkretny warunek.\n\n\n\nKlient  Zamówienie\n101\n102\n103\n104\n\n\n\n\n1\n(1,101)\n(1,102)\n(1,103)\n(1,104)\n\n\n2\n(2,101)\n(2,102)\n(2,103)\n(2,104)\n\n\n3\n(3,101)\n(3,102)\n(3,103)\n(3,104)\n\n\n\nZakreśl te pary, w których orders.customer_id zgadza się z identyfikatorem klienta. CROSS JOIN jest też użyteczny celowo, np. do tworzenia wszystkich wariantów rozmiar × kolor. Błędem jest jego niezamierzone użycie w raporcie.\n\n\nZadanie 1. Zbuduj iloczyn kartezjański 3 × 4\nPrzed uruchomieniem rozpisz na kartce pary klientów 1–3 i zamówień 101–104. Ile par przewidujesz? Wykonaj przykład. Nie wszystkie pary opisują rzeczywiste zamówienia tych klientów.\nPrzykład na start:\nSELECT c.customer_id, o.order_id\nFROM shop_lab.customers AS c\nCROSS JOIN shop_lab.orders AS o\nWHERE c.customer_id &lt;= 3 AND o.order_id &lt;= 104\nORDER BY c.customer_id, o.order_id;\nKontrola: liczba wierszy: 12.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\norder_id\n\n\n\n\n1\n101\n\n\n1\n102\n\n\n1\n103\n\n\n1\n104\n\n\n2\n101\n\n\n2\n102\n\n\n2\n103\n\n\n2\n104\n\n\n3\n101\n\n\n3\n102\n\n\n3\n103\n\n\n3\n104\n\n\n\n\n\n\nZadanie 2. Wybierz pasujące pary z iloczynu\nDo zapytania z zadania 1 dodaj AND o.customer_id = c.customer_id. Porównaj liczbę wierszy oraz konkretne pary.\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\norder_id\n\n\n\n\n1\n101\n\n\n1\n102\n\n\n2\n103\n\n\n3\n104\n\n\n\n\n\n\nZadanie 3. Przepisz warunek jako INNER JOIN\nPrzenieś warunek powiązania do ON i użyj INNER JOIN. Zachowaj ograniczenie do tych samych klientów i zamówień. Porównaj pary z zadaniem 2.\nPrzykład na start:\nSELECT c.customer_id, o.order_id\nFROM shop_lab.customers AS c\nINNER JOIN shop_lab.orders AS o\nON o.customer_id = c.customer_id\nWHERE c.customer_id &lt;= 3 AND o.order_id &lt;= 104\nORDER BY c.customer_id, o.order_id;\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\norder_id\n\n\n\n\n1\n101\n\n\n1\n102\n\n\n2\n103\n\n\n3\n104\n\n\n\n\n\n\nCo zachowuje dany rodzaj złączenia?\n\n\n\n\n\n\n\nZłączenie\nCo trafia do wyniku\n\n\n\n\nINNER JOIN\nWszystkie pary spełniające ON\n\n\nLEFT JOIN\nDopasowane pary oraz niedopasowane wiersze lewej tabeli\n\n\nRIGHT JOIN\nDopasowane pary oraz niedopasowane wiersze prawej tabeli\n\n\nFULL OUTER JOIN\nDopasowane pary oraz niedopasowane wiersze obu tabel\n\n\n\nW niedopasowanym wierszu brakująca strona jest wypełniana NULL. Kilka dopasowań daje kilka wierszy. Rysunek „przecięcia zbiorów” nie oddaje tego mnożenia, dlatego porównujemy konkretne pary kluczy i liczby wierszy.\n\n\nZadanie 4. Odczytaj wszystkie dopasowane zamówienia\nUsuń ograniczenia identyfikatorów. Połącz klientów i zamówienia przez INNER JOIN, pokaż customer_id, customer_name, order_id, status. Wskaż zamówienia i klientów, których tu nie ma.\nKontrola: liczba wierszy: 6.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\norder_id\nstatus\n\n\n\n\n1\nAnna Kowalska\n101\npaid\n\n\n1\nAnna Kowalska\n102\nnew\n\n\n2\nJan Nowak\n103\npaid\n\n\n2\nJan Nowak\n107\npaid\n\n\n3\nOla Lis\n104\ncancelled\n\n\n4\nPiotr Wilk\n106\nnew\n\n\n\n\n\n\nZadanie 5. Zachowaj klientów przez LEFT JOIN\nZamień INNER na LEFT JOIN. Zachowaj kolejność tabel: customers po lewej. Pokaż identyfikator i nazwę klienta oraz order_id.\nPrzykład na start:\nSELECT c.customer_id, c.customer_name, o.order_id\nFROM shop_lab.customers AS c\nLEFT JOIN shop_lab.orders AS o\nON o.customer_id = c.customer_id\nORDER BY c.customer_id, o.order_id;\nWskazówka: Jeden klient może mieć kilka dopasowań. LEFT JOIN nie gwarantuje jednego wiersza na klienta.\nKontrola: liczba wierszy: 8.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\norder_id\n\n\n\n\n1\nAnna Kowalska\n101\n\n\n1\nAnna Kowalska\n102\n\n\n2\nJan Nowak\n103\n\n\n2\nJan Nowak\n107\n\n\n3\nOla Lis\n104\n\n\n4\nPiotr Wilk\n106\n\n\n5\nEwa Kot\nNULL\n\n\n6\nAdam Zuk\nNULL\n\n\n\n\n\n\nZadanie 6. Wyszukaj brak dopasowania\nNa podstawie LEFT JOIN znajdź klientów bez zamówień. Sprawdź o.order_id IS NULL, czyli brak klucza po stronie zamówienia. Porównaj z NOT EXISTS z lab 3.\nKontrola: liczba wierszy: 2.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\n\n\n\n\n5\nEwa Kot\n\n\n6\nAdam Zuk\n\n\n\n\n\n\nZadanie 7. Zachowaj zamówienia przez RIGHT JOIN\nUżyj customers RIGHT JOIN orders. Pokaż customer_id z customers, customer_name oraz order_id. Wskaż zamówienia gościnne.\nPrzykład na start:\nSELECT c.customer_id, c.customer_name, o.order_id\nFROM shop_lab.customers AS c\nRIGHT JOIN shop_lab.orders AS o\nON o.customer_id = c.customer_id\nORDER BY o.order_id;\nKontrola: liczba wierszy: 8.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\norder_id\n\n\n\n\n1\nAnna Kowalska\n101\n\n\n1\nAnna Kowalska\n102\n\n\n2\nJan Nowak\n103\n\n\n3\nOla Lis\n104\n\n\nNULL\nNULL\n105\n\n\n4\nPiotr Wilk\n106\n\n\n2\nJan Nowak\n107\n\n\nNULL\nNULL\n108\n\n\n\n\n\n\nZadanie 8. Zamień RIGHT na LEFT\nOdwróć kolejność tabel z zadania 7 i użyj LEFT JOIN. Zwróć te same kolumny oraz kolejność wierszy. Czy dane się zmieniły?\nKontrola: liczba wierszy: 8.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\norder_id\n\n\n\n\n1\nAnna Kowalska\n101\n\n\n1\nAnna Kowalska\n102\n\n\n2\nJan Nowak\n103\n\n\n3\nOla Lis\n104\n\n\nNULL\nNULL\n105\n\n\n4\nPiotr Wilk\n106\n\n\n2\nJan Nowak\n107\n\n\nNULL\nNULL\n108\n\n\n\n\n\n\nZadanie 9. Zachowaj obie strony przez FULL OUTER JOIN\nPołącz customers i orders przez FULL OUTER JOIN. Pokaż identyfikator i nazwę klienta oraz order_id. Uporządkuj po c.customer_id NULLS LAST, a potem o.order_id. Rozpoznaj dopasowane wiersze, klientów bez zamówień i zamówienia gościnne.\nPrzykład na start:\nSELECT c.customer_id, c.customer_name, o.order_id\nFROM shop_lab.customers AS c\nFULL OUTER JOIN shop_lab.orders AS o\nON o.customer_id = c.customer_id\nORDER BY c.customer_id NULLS LAST, o.order_id;\nKontrola: liczba wierszy: 10.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\ncustomer_name\norder_id\n\n\n\n\n1\nAnna Kowalska\n101\n\n\n1\nAnna Kowalska\n102\n\n\n2\nJan Nowak\n103\n\n\n2\nJan Nowak\n107\n\n\n3\nOla Lis\n104\n\n\n4\nPiotr Wilk\n106\n\n\n5\nEwa Kot\nNULL\n\n\n6\nAdam Zuk\nNULL\n\n\nNULL\nNULL\n105\n\n\nNULL\nNULL\n108\n\n\n\n\n\n\nON i WHERE odpowiadają na różne pytania\nON ustala dopasowanie podczas złączenia. WHERE filtruje wynik po złączeniu, łącznie z wierszami uzupełnionymi NULL. Dla złączenia zewnętrznego przeniesienie warunku z ON do WHERE może więc zmienić wynik. Porównaj zadania 10 i 11, przewidując wcześniej los klienta bez opłaconego zamówienia.\n\n\nZadanie 10. Umieść filtr w ON\nDo LEFT JOIN od klientów dodaj w ON warunek, że status zamówienia to paid. Pokaż customer_id i order_id, zachowując wszystkich klientów.\nKontrola: liczba wierszy: 7.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\norder_id\n\n\n\n\n1\n101\n\n\n2\n103\n\n\n2\n107\n\n\n3\nNULL\n\n\n4\nNULL\n\n\n5\nNULL\n\n\n6\nNULL\n\n\n\n\n\n\nZadanie 11. Przenieś filtr do WHERE\nPołącz klientów z dowolnymi zamówieniami przez LEFT JOIN, ale o.status = 'paid' umieść w WHERE. Porównaj z zadaniem 10: którzy klienci zniknęli i dlaczego?\nWskazówka: WHERE usuwa również wiersze uzupełnione NULL, bo porównanie NULL ze statusem nie daje TRUE.\nKontrola: liczba wierszy: 3.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\norder_id\n\n\n\n\n1\n101\n\n\n2\n103\n\n\n2\n107\n\n\n\n\n\n\nZadanie 12. Policz zamówienia po LEFT JOIN\nDla każdego klienta pokaż COUNT(*) jako joined_rows oraz COUNT(o.order_id) jako order_count. Wyjaśnij różnicę dla klientów bez zamówień.\nPrzykład na start:\nSELECT c.customer_id, COUNT(*) AS joined_rows, COUNT(o.order_id) AS order_count\nFROM shop_lab.customers AS c\nLEFT JOIN shop_lab.orders AS o\nON o.customer_id = c.customer_id\nGROUP BY c.customer_id\nORDER BY c.customer_id;\nKontrola: liczba wierszy: 6.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\njoined_rows\norder_count\n\n\n\n\n1\n2\n2\n\n\n2\n2\n2\n\n\n3\n1\n1\n\n\n4\n1\n1\n\n\n5\n1\n0\n\n\n6\n1\n0\n\n\n\n\n\n\nZadanie 13. Połącz pozycje z produktami\nDla każdej pozycji zamówienia pokaż order_id, product_name, quantity, unit_price i wartość quantity * unit_price jako line_total. Nie zastępuj unit_price bieżącą ceną produktu.\nKontrola: liczba wierszy: 12.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\norder_id\nproduct_name\nquantity\nunit_price\nline_total\n\n\n\n\n101\nLaptop\n1\n2900.0\n2900.0\n\n\n101\nKeyboard\n2\n90.0\n180.0\n\n\n102\nMonitor\n1\n800.0\n800.0\n\n\n102\nMouse\n2\n50.0\n100.0\n\n\n103\nCable HDMI\n3\n40.0\n120.0\n\n\n103\nRouter\n2\n180.0\n360.0\n\n\n104\nSwitch\n1\n400.0\n400.0\n\n\n105\nMouse\n1\n50.0\n50.0\n\n\n106\nMonitor Pro\n1\n1100.0\n1100.0\n\n\n106\nDock\n1\n550.0\n550.0\n\n\n107\nMonitor\n2\n750.0\n1500.0\n\n\n107\nKeyboard\n1\n100.0\n100.0\n\n\n\n\n\n\nZadanie 14. Zsumuj opłaconą sprzedaż\nPołącz orders z order_items i policz SUM(quantity * unit_price) tylko dla statusu paid. Wynik nazwij paid_total. Bez rozbijania na klientów.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\npaid_total\n\n\n\n\n5210.0\n\n\n\n\n\n\nZadanie 15. Zbuduj raport trzech tabel\nPołącz orders, order_items i products. Dla każdej kategorii policz wartość pozycji opłaconych zamówień jako paid_total. Posortuj malejąco po wartości, przy remisie po kategorii.\nKontrola: liczba wierszy: 4.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncategory\npaid_total\n\n\n\n\ncomputers\n2900.0\n\n\ndisplays\n1500.0\n\n\naccessories\n450.0\n\n\nnetwork\n360.0\n\n\n\n\n\n\nZadanie 16. Pokaż również zamówienie bez pozycji\nDla każdego zamówienia pokaż order_id i SUM(quantity * unit_price), zastępując brak sumy zerem przez COALESCE. Użyj LEFT JOIN. Uwzględnij wszystkie statusy.\nKontrola: liczba wierszy: 8.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\norder_id\norder_total\n\n\n\n\n101\n3080.0\n\n\n102\n900.0\n\n\n103\n480.0\n\n\n104\n400.0\n\n\n105\n50.0\n\n\n106\n1650.0\n\n\n107\n1600.0\n\n\n108\n0\n\n\n\n\n\n\nUstal, co oznacza jeden wiersz\nPrzed agregacją nazwij poziom szczegółowości: klient, zamówienie czy pozycja? Po dołączeniu pozycji identyfikator zamówienia powtarza się w każdej jego pozycji. COUNT(DISTINCT order_id) policzy zamówienia, lecz nie naprawia automatycznie innych agregatów. Nie używaj SUM(DISTINCT kwota) do usuwania przypadkowych powtórzeń: dwie rzeczywiste pozycje mogą mieć równą wartość.\n\n\nZadanie 17. Wykryj mnożenie rekordów w raporcie\nPołącz customers → orders → order_items przez dwa LEFT JOIN. Dla każdego klienta porównaj COUNT(o.order_id) jako repeated_orders z COUNT(DISTINCT o.order_id) jako order_count. Wyjaśnij wynik dla klienta 1.\nKontrola: liczba wierszy: 6.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_id\nrepeated_orders\norder_count\n\n\n\n\n1\n4\n2\n\n\n2\n4\n2\n\n\n3\n1\n1\n\n\n4\n2\n1\n\n\n5\n0\n0\n\n\n6\n0\n0\n\n\n\n\n\n\nZadanie 18. Sprawdź koszt błędnego iloczynu\nNajpierw policz sumę quantity * unit_price tylko w order_items. Następnie celowo dodaj CROSS JOIN customers i ponownie policz sumę. Zwróć dwie kolumny poprawna i błędna przez dwa podzapytania skalarne. Wyjaśnij, przez ile pomnożył się wynik.\nWskazówka: To celowy błędny raport do diagnozy. DISTINCT na kwotach nie jest naprawą — różne pozycje mogą mieć taką samą wartość.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncorrect_total\nwrong_total\n\n\n\n\n8160.0\n48960.0\n\n\n\n\n\n\nZadanie 19. Połącz cztery tabele — dodatkowe\nDodatkowo: wypisz customer_name, order_id i product_name dla pozycji opłaconych zamówień zarejestrowanych klientów. Użyj czterech tabel i jawnych warunków ON. Zamówienia gościnne mają zostać pominięte.\nKontrola: liczba wierszy: 6.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\ncustomer_name\norder_id\nproduct_name\n\n\n\n\nAnna Kowalska\n101\nLaptop\n\n\nAnna Kowalska\n101\nKeyboard\n\n\nJan Nowak\n103\nCable HDMI\n\n\nJan Nowak\n103\nRouter\n\n\nJan Nowak\n107\nMonitor\n\n\nJan Nowak\n107\nKeyboard\n\n\n\n\n\n\nZadanie 20. Znajdź produkty bez sprzedaży przez złączenie — dodatkowe\nDodatkowo: wypisz produkty bez jakiejkolwiek pozycji zamówienia. Użyj LEFT JOIN i sprawdź brak klucza po stronie order_items. Porównaj z lab 3.\nKontrola: liczba wierszy: 1.\n\n\nRozwiń wynik kontrolny po samodzielnej próbie\n\n\n\n\nproduct_id\nproduct_name\n\n\n\n\n8\nWebcam",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#co-pokazać-prowadzącemu",
+    "href": "laboratorium4.html#co-pokazać-prowadzącemu",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "Co pokazać prowadzącemu",
+    "text": "Co pokazać prowadzącemu\nZachowaj plik .sql z ponumerowanymi zapytaniami. Pokaż wykonanie zadań podstawowych; rozszerzenia wykonuj w pozostałym czasie. Przy omówieniu:\n\nWypisz 12 par i wskaż, które cztery spełniają warunek dopasowania.\nPorównaj INNER, LEFT, RIGHT i FULL na konkretnych kluczach.\nWyjaśnij różnicę wyników zadań 10 i 11.\nPokaż poprawną sumę opłaconej sprzedaży oraz przyczynę mnożenia kwot w zadaniu 18.\n\nPo tym bloku przechodzimy na kolejnych sześciu spotkaniach po 90 minut do PL/pgSQL: bloków, zmiennych, sterowania przebiegiem, funkcji oraz obsługi błędów. Zwykły SQL pozostaje podstawą odczytu danych wewnątrz tych konstrukcji.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#dokumentacja",
+    "href": "laboratorium4.html#dokumentacja",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "Dokumentacja",
+    "text": "Dokumentacja\nZłączenia i wyrażenia tabelowe.",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
+  },
+  {
+    "objectID": "laboratorium4.html#potwierdzenie-zaliczenia",
+    "href": "laboratorium4.html#potwierdzenie-zaliczenia",
+    "title": "Laboratorium 4 — złączenia i iloczyn kartezjański",
+    "section": "Potwierdzenie zaliczenia",
+    "text": "Potwierdzenie zaliczenia\nPokaż prowadzącemu plik zapytań i wyjaśnij wybrane wyniki. Po ustnym zaliczeniu całego laboratorium 4 zapisz potwierdzenie. Nie zgłaszasz osobnych zadań do sprawdzenia. Datę i czas nada serwer. Ponowna próba nie tworzy drugiego wpisu dla tego samego e-maila i laboratorium. Wybierz tę samą grupę co na poprzednich zajęciach.\n\n\nE-mail WAT: \nGrupa: Wybierz grupęGrupa 1Grupa 2Grupa 3\n Prowadzący ustnie zaliczył mi całe laboratorium 4.\nProwadzący zaliczył laboratorium 4 — zapisz potwierdzenie",
+    "crumbs": [
+      "Laboratoria",
+      "Laboratorium 4 — złączenia i iloczyn kartezjański"
+    ]
   }
 ]
